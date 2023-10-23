@@ -48,5 +48,30 @@
         </div>
     </form>
 </div>
+
+<script type="application/javascript">
+    $(function (){
+        const forms = $(".needs-validation");
+
+        if(forms instanceof Array){
+            forms.map(form=>{
+                validation(form[0]);
+            })
+        }
+        else {
+            validation(forms[0])
+        }
+    })
+
+    function validation(form) {
+        $(form).submit((event) => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            $(form).addClass("was-validated");
+        })
+    }
+</script>
 </body>
 </html>
