@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,6 +25,7 @@ class AccountControllerTest {
         this.mockMvc.perform(get("/sign-up"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("signUpForm"))
+                .andExpect(model().attributeExists("signUpForm"))
                 .andDo(print());
     }
 }
