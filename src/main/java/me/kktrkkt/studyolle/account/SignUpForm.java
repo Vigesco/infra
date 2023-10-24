@@ -2,6 +2,7 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.kktrkkt.studyolle.util.validator.Unique;
 
 import javax.validation.constraints.*;
 
@@ -10,10 +11,12 @@ public class SignUpForm {
 
     @NotEmpty(message = "Nickname should not be empty")
     @Size(min = 3, max = 20, message = "Nickname length should be between 3 and 20")
+    @Unique(table="Account", column="nickname", message = "Nickname is already Existed")
     private String nickname;
 
     @NotEmpty(message = "Email should not be empty")
     @Email(message = "Please provide a valid email address")
+    @Unique(table="Account", column="email", message = "Email is already Existed")
     private String email;
 
     @NotEmpty(message = "Password should not be empty")

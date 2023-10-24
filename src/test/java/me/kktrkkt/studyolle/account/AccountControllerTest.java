@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -18,13 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class AccountControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private AccountRepository accounts;
 
     @DisplayName("회원가입 페이지 조회 테스트")
     @Test
@@ -41,7 +44,7 @@ class AccountControllerTest {
     void signUpSuccess() throws Exception {
         String nickname = "kktrkkt";
         String email = "kktrkkt@email.com";
-        String password = "passwrod!@#$";
+        String password = "password!@#$";
 
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", nickname)
@@ -58,7 +61,7 @@ class AccountControllerTest {
     void signUpEmailFailure() throws Exception {
         String nickname = "kktrkkt";
         String email = "kktrkkt";
-        String password = "passwrod!@#$";
+        String password = "password!@#$";
 
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", nickname)
@@ -68,6 +71,32 @@ class AccountControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("signUpForm"))
                 .andExpect(content().string(containsString("Please provide a valid email address")))
+                .andDo(print());
+    }
+
+    @DisplayName("회원가입 닉네임 중복 검증 실패 테스트")
+    @Test
+    void signUpNicknameUnqueFailure() throws Exception {
+        Account kktrkkt = Account.builder()
+                .nickname("kktrkkt")
+                .email("test@email.com")
+                .password("password!@#$")
+                .build();
+
+        accounts.save(kktrkkt);
+
+        String nickname = "kktrkkt";
+        String email = "kktrkkt@email.com";
+        String password = "password!@#$";
+
+        this.mockMvc.perform(post("/sign-up").with(csrf())
+                        .param("nickname", nickname)
+                        .param("email", email)
+                        .param("password", password)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(view().name("signUpForm"))
+                .andExpect(content().string(containsString("Nickname is already Existed")))
                 .andDo(print());
     }
 }
