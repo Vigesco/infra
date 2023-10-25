@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -24,20 +23,26 @@ public class AccountController {
 
     private final AccountRepository accounts;
 
-
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
-        model.addAttribute("signUpForm", new SignUpForm());
+        model.addAttribute(new SignUpForm());
         return SIGN_UP_FORM;
     }
 
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
-    public String signUpSubmit(@ModelAttribute @Valid SignUpForm signUpForm, Errors errors, HttpServletResponse response) {
+    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors, HttpServletResponse response) {
         if(errors.hasErrors()){
             response.setStatus(200);
             return SIGN_UP_FORM;
         }
+        else{
+            processSignUp(signUpForm);
+            return "redirect:/";
+        }
+    }
+
+    private void processSignUp(SignUpForm signUpForm) {
         String encodePassword = encoder.encode(signUpForm.getPassword());
         Account account = Account.builder()
                 .nickname(signUpForm.getNickname())
@@ -45,7 +50,6 @@ public class AccountController {
                 .password(encodePassword)
                 .build();
         accounts.save(account);
-        return "redirect:/";
     }
 
 }
