@@ -66,9 +66,9 @@ class AccountControllerTest {
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
-    @DisplayName("회원가입 이메일 검증 실패 테스트")
+    @DisplayName("회원가입 처리 - 이메일 형식 오류")
     @Test
-    void signUpEmailFailure() throws Exception {
+    void singUpSubmit_with_wrong_email() throws Exception {
         String nickname = "kktrkkt";
         String email = "kktrkkt";
         String password = "password!@#$";
