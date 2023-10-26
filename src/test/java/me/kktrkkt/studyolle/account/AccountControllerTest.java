@@ -1,15 +1,21 @@
 package me.kktrkkt.studyolle.account;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +33,9 @@ class AccountControllerTest {
     @Autowired
     private AccountRepository accounts;
 
+    @MockBean
+    private JavaMailSender javaMailSender;
+
     @DisplayName("회원가입 페이지 조회 테스트")
     @Test
     void signUpForm() throws Exception {
@@ -37,9 +46,9 @@ class AccountControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("회원가입 성공 테스트")
+    @DisplayName("회원가입 처리 - 성공")
     @Test
-    void signUpSuccess() throws Exception {
+    void singUpSubmit_success() throws Exception {
         String nickname = "kktrkkt";
         String email = "kktrkkt@email.com";
         String password = "password!@#$";
@@ -52,6 +61,9 @@ class AccountControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
+
+        Assertions.assertTrue(accounts.existsByEmail(email));
+        then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
     @DisplayName("회원가입 이메일 검증 실패 테스트")
