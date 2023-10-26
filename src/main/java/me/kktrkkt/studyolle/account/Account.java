@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.*;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
-public class Account {
+public class Account extends AbstractAggregateRoot<Account> {
 
     @Id @GeneratedValue
     private Long id;
@@ -51,4 +52,9 @@ public class Account {
     private boolean studyUpdatedByEmail;
 
     private boolean studyUpdatedByWeb = true;
+
+    public Account createNew() {
+        registerEvent(this);
+        return this;
+    }
 }

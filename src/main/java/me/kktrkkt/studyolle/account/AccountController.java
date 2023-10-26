@@ -2,7 +2,6 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -25,8 +24,6 @@ public class AccountController {
     private final PasswordEncoder encoder;
 
     private final AccountRepository accounts;
-
-    private final JavaMailSender javaMailSender;
 
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
@@ -57,13 +54,8 @@ public class AccountController {
                 .emailCheckToken(emailCheckToken)
                 .build();
 
-        Account newAccount = accounts.save(account);
-
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject("스터디 올래, 회원가입  인증");
-        simpleMailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken() +
-                "&email=" + newAccount.getEmail());
-        javaMailSender.send(simpleMailMessage);
+        accounts.save(account.createNew());
     }
+
 
 }
