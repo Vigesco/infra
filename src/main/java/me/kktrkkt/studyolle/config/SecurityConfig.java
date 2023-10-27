@@ -23,7 +23,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/sign-up", "/").permitAll()
+                .mvcMatchers("/", "/sign-up", "/check-email-token").permitAll()
                 .anyRequest().authenticated();
         http.formLogin()
                 .permitAll();

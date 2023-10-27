@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,24 @@ public class AccountController {
             processSignUp(signUpForm);
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/check-email-token")
+    public String checkEmailToken(@RequestParam String token, @RequestParam String email, Model model){
+        Account account = accounts.findByEmail(email)
+                .orElseThrow((()->new EmailNotFoundException(email)));
+
+        boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
+
+        if(isTokenCorrect){
+            model.addAttribute("message", "이메일을 확인했습니다." +
+                    account.getId() + "번째 회원, " +
+                    account.getNickname() + "님 가입을 축하드립니다.");
+        }
+
+        model.addAttribute("isTokenCorrect", isTokenCorrect);
+        return "checkEmailToken";
+
     }
 
     private void processSignUp(SignUpForm signUpForm) {

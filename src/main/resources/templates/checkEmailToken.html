@@ -1,0 +1,17 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (~{::body}, 'STUDY OLLE')}">
+
+<body>
+<div class="py-5 text-center">
+    <h3>스터디올래 이메일 확인</h3>
+</div>
+<div class="row justify-content-center">
+    <div class="text-center" th:if="${isTokenCorrect}">
+        <h1 th:text="${message}"></h1>
+        <span class="text-sm-center text-info">이제부터 가입할 때 사용한 이메일 또는 닉네임과 패스워드로 로그인할 수 있습니다</span>
+    </div>
+    <div class="text-center" th:if="${!isTokenCorrect}">
+        <span class="text-sm-center text-danger">이메일 확인 링크가 정확하지 않습니다</span>
+    </div>
+</div>
+</body>
