@@ -2,7 +2,6 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.UUID;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,9 +20,7 @@ public class AccountController {
 
     private static final String SIGN_UP_FORM = "signUpForm";
 
-    private final PasswordEncoder encoder;
-
-    private final AccountRepository accounts;
+    private final AccountService accountService;
 
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
@@ -39,41 +36,28 @@ public class AccountController {
             return SIGN_UP_FORM;
         }
         else{
-            processSignUp(signUpForm);
+            accountService.processSignUp(signUpForm);
             return "redirect:/";
         }
     }
 
     @GetMapping("/check-email-token")
     public String checkEmailToken(@RequestParam String token, @RequestParam String email, Model model){
-        Account account = accounts.findByEmail(email)
-                .orElseThrow((()->new EmailNotFoundException(email)));
+        boolean isTokenCorrect = accountService.verifyEmailToken(email, token);
 
-        boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
-
+        model.addAttribute("isTokenCorrect", isTokenCorrect);
         if(isTokenCorrect){
+            Account account = accountService.findByEmail(email);
             model.addAttribute("message", "이메일을 확인했습니다." +
                     account.getId() + "번째 회원, " +
                     account.getNickname() + "님 가입을 축하드립니다.");
         }
 
-        model.addAttribute("isTokenCorrect", isTokenCorrect);
         return "checkEmailToken";
 
     }
 
-    private void processSignUp(SignUpForm signUpForm) {
-        String encodePassword = encoder.encode(signUpForm.getPassword());
-        String emailCheckToken = String.valueOf(UUID.randomUUID());
-        Account account = Account.builder()
-                .nickname(signUpForm.getNickname())
-                .email(signUpForm.getEmail())
-                .password(encodePassword)
-                .emailCheckToken(emailCheckToken)
-                .build();
 
-        accounts.save(account.createNew());
-    }
 
 
 }
