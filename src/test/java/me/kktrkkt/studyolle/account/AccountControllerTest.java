@@ -13,7 +13,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -26,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 class AccountControllerTest {
+
+    private static final String KKTRKKT_EMAIL = "kktrkkt@email.com";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,19 +55,18 @@ class AccountControllerTest {
     @Test
     void singUpSubmit_success() throws Exception {
         String nickname = "kktrkkt";
-        String email = "kktrkkt@email.com";
         String password = "password!@#$";
 
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", nickname)
-                        .param("email", email)
+                        .param("email", KKTRKKT_EMAIL)
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
 
-        Assertions.assertTrue(accounts.existsByEmail(email));
+        Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
@@ -96,17 +100,48 @@ class AccountControllerTest {
         accounts.save(kktrkkt);
 
         String nickname = "kktrkkt";
-        String email = "kktrkkt@email.com";
         String password = "password!@#$";
 
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", nickname)
-                        .param("email", email)
+                        .param("email", KKTRKKT_EMAIL)
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("signUpForm"))
                 .andExpect(content().string(containsString("Nickname is already Existed")))
+                .andDo(print());
+    }
+
+    @DisplayName("이메일 토큰 검증 테스트 - 성공")
+    @Test
+    public void verifyEmailToken_success() throws Exception {
+        singUpSubmit_success();
+        Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
+        assertNotNull(kktrkkt);
+
+        this.mockMvc.perform(get("/check-email-token")
+                .param("token", kktrkkt.getEmailCheckToken())
+                .param("email", kktrkkt.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailToken"))
+                .andExpect(model().attribute("isTokenCorrect", true))
+                .andDo(print());
+    }
+
+    @DisplayName("이메일 토큰 검증 테스트 - 실패")
+    @Test
+    public void verifyEmailToken_faliure() throws Exception {
+        singUpSubmit_success();
+        Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
+        assertNotNull(kktrkkt);
+
+        this.mockMvc.perform(get("/check-email-token")
+                        .param("token", String.valueOf(UUID.randomUUID()))
+                        .param("email", kktrkkt.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailToken"))
+                .andExpect(model().attribute("isTokenCorrect", false))
                 .andDo(print());
     }
 }
