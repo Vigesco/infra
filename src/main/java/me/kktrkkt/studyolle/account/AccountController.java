@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 public class AccountController {
 
     private static final String SIGN_UP_FORM = "signUpForm";
+    private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
+
 
     private final AccountService accountService;
 
@@ -53,11 +54,6 @@ public class AccountController {
                     account.getNickname() + "님 가입을 축하드립니다.");
         }
 
-        return "checkEmailToken";
-
+        return CHECK_EMAIL_TOKEN_FORM;
     }
-
-
-
-
 }
