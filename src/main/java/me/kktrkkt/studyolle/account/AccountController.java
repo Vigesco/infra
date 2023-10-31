@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,26 +56,26 @@ public class AccountController {
         }
 
         Account account = optionalAccount.get();
-
         boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
         if(!isTokenCorrect){
             model.addAttribute("error", "wrong.token");
             return CHECK_EMAIL_TOKEN_FORM;
         }
 
-        account.setEmailVerified(true);
-        account.setJoinedAt(LocalDateTime.now());
-        Account save = accounts.save(account);
+        account.completeSignUp();
 
+        int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
+        model.addAttribute("ordreByJoinedAt", orderByJoinedAt);
+        model.addAttribute("nickname", account.getNickname());
+
+        return CHECK_EMAIL_TOKEN_FORM;
+    }
+
+    private int getOrderByJoinedAtWithOutNull(Account save) {
         List<Account> findAllOrderByJoinedAt = accounts.findAll(Sort.by("joinedAt")).stream()
                 .filter(x -> x.getJoinedAt() != null)
                 .collect(Collectors.toList());
-        int orderByJoinedAt = findAllOrderByJoinedAt.indexOf(save) + 1;
-
-        model.addAttribute("ordreByJoinedAt", orderByJoinedAt);
-        model.addAttribute("nickname", save.getNickname());
-
-        return CHECK_EMAIL_TOKEN_FORM;
+        return findAllOrderByJoinedAt.indexOf(save) + 1;
     }
 
 }

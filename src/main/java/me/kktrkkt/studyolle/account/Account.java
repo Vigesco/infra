@@ -57,4 +57,9 @@ public class Account extends AbstractAggregateRoot<Account> {
         registerEvent(this);
         return this;
     }
+
+    public void completeSignUp() {
+        this.emailVerified = true;
+        this.joinedAt = LocalDateTime.now();
+    }
 }
