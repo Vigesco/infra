@@ -126,6 +126,8 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
                 .andExpect(model().attributeDoesNotExist("error"))
+                .andExpect(model().attributeExists("ordreByJoinedAt"))
+                .andExpect(model().attributeExists("nickname"))
                 .andDo(print());
     }
 
