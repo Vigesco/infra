@@ -125,7 +125,7 @@ class AccountControllerTest {
                 .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
-                .andExpect(model().attribute("isTokenCorrect", true))
+                .andExpect(model().attributeDoesNotExist("error"))
                 .andDo(print());
     }
 
@@ -141,7 +141,29 @@ class AccountControllerTest {
                         .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
-                .andExpect(model().attribute("isTokenCorrect", false))
+                .andExpect(model().attributeExists("error"))
                 .andDo(print());
     }
+
+    /**
+     * 이메일 토큰 검증 성공 이후를 기준으로 정식 회원으로 인정하며, 정식 회원을 기준으로 몇번째 가입했는지 정보가 나와야한다
+     */
+    @DisplayName("이메일 토큰 검증 테스트 - 순서 검증")
+    @Test
+    public void verifyEmailToken_verifyOrder() throws Exception {
+        accounts.save(Account.builder().email("test1@email.com")
+                .nickname("nickname1").build());
+
+        singUpSubmit_success();
+        Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
+        assertNotNull(kktrkkt);
+
+        this.mockMvc.perform(get("/check-email-token")
+                        .param("token", kktrkkt.getEmailCheckToken())
+                        .param("email", kktrkkt.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("ordreByJoinedAt", 1))
+                .andDo(print());
+    }
+
 }

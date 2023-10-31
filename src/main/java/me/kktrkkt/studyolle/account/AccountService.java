@@ -14,11 +14,6 @@ public class AccountService {
 
     private final AccountRepository accounts;
 
-    public Account findByEmail(String email) {
-        return accounts.findByEmail(email)
-                .orElseThrow((()->new EmailNotFoundException(email)));
-    }
-
     public Account processSignUp(SignUpForm signUpForm) {
         String encodePassword = encoder.encode(signUpForm.getPassword());
         String emailCheckToken = String.valueOf(UUID.randomUUID());
@@ -30,10 +25,5 @@ public class AccountService {
                 .build();
 
         return accounts.save(account.createNew());
-    }
-
-    public boolean verifyEmailToken(String email, String token) {
-        Account account = findByEmail(email);
-        return account.getEmailCheckToken().equals(token);
     }
 }

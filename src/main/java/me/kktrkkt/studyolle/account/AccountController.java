@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,8 +25,9 @@ public class AccountController {
     private static final String SIGN_UP_FORM = "signUpForm";
     private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
 
-
     private final AccountService accountService;
+
+    private final AccountRepository accounts;
 
     @GetMapping("/sign-up")
     public String signUpForm(Model model) {
@@ -44,16 +50,33 @@ public class AccountController {
 
     @GetMapping("/check-email-token")
     public String checkEmailToken(@RequestParam String token, @RequestParam String email, Model model){
-        boolean isTokenCorrect = accountService.verifyEmailToken(email, token);
-
-        model.addAttribute("isTokenCorrect", isTokenCorrect);
-        if(isTokenCorrect){
-            Account account = accountService.findByEmail(email);
-            model.addAttribute("message", "이메일을 확인했습니다." +
-                    account.getId() + "번째 회원, " +
-                    account.getNickname() + "님 가입을 축하드립니다.");
+        Optional<Account> optionalAccount = accounts.findByEmail(email);
+        if(optionalAccount.isEmpty()){
+            model.addAttribute("error", "wrong.email");
+            return CHECK_EMAIL_TOKEN_FORM;
         }
+
+        Account account = optionalAccount.get();
+
+        boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
+        if(!isTokenCorrect){
+            model.addAttribute("error", "wrong.token");
+            return CHECK_EMAIL_TOKEN_FORM;
+        }
+
+        account.setEmailVerified(true);
+        account.setJoinedAt(LocalDateTime.now());
+        Account save = accounts.save(account);
+
+        List<Account> findAllOrderByJoinedAt = accounts.findAll(Sort.by("joinedAt")).stream()
+                .filter(x -> x.getJoinedAt() != null)
+                .collect(Collectors.toList());
+        int orderByJoinedAt = findAllOrderByJoinedAt.indexOf(save) + 1;
+
+        model.addAttribute("ordreByJoinedAt", orderByJoinedAt);
+        model.addAttribute("nickname", save.getNickname());
 
         return CHECK_EMAIL_TOKEN_FORM;
     }
+
 }
