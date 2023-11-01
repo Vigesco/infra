@@ -12,8 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +77,11 @@ class AccountControllerTest {
                 .andDo(print());
 
         Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
-        Assertions.assertNotNull(session.getAttribute("SPRING_SECURITY_CONTEXT"));
+        SecurityContextImpl securityContext = (SecurityContextImpl) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        Assertions.assertNotNull(securityContext);
+        Assertions.assertTrue(securityContext.getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(x->x.equals(Authority.notVerifiedUser().getAuthority())));
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
