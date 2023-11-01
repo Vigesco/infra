@@ -127,7 +127,7 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
                 .andExpect(model().attributeDoesNotExist("error"))
-                .andExpect(model().attributeExists("ordreByJoinedAt"))
+                .andExpect(model().attributeExists("orderByJoinedAt"))
                 .andExpect(model().attributeExists("nickname"))
                 .andDo(print());
     }
@@ -165,7 +165,7 @@ class AccountControllerTest {
                         .param("token", kktrkkt.getEmailCheckToken())
                         .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("ordreByJoinedAt", 1))
+                .andExpect(model().attribute("orderByJoinedAt", 1))
                 .andDo(print());
     }
 
