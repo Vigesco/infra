@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -92,6 +93,7 @@ class AccountControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("signUpForm"))
                 .andExpect(content().string(containsString("Please provide a valid email address")))
+                .andExpect(unauthenticated())
                 .andDo(print());
     }
 
@@ -115,6 +117,7 @@ class AccountControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("signUpForm"))
                 .andExpect(content().string(containsString("Nickname is already Existed")))
+                .andExpect(unauthenticated())
                 .andDo(print());
     }
 
@@ -150,6 +153,7 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
                 .andExpect(model().attributeExists("error"))
+                .andExpect(unauthenticated())
                 .andDo(print());
     }
 
