@@ -1,18 +1,15 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.*;
-import org.springframework.data.domain.AbstractAggregateRoot;
+import me.kktrkkt.studyolle.model.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor
-public class Account extends AbstractAggregateRoot<Account> {
-
-    @Id @GeneratedValue
-    private Long id;
+public class Account extends BaseEntity<Account> {
 
     @Column(unique = true)
     private String email;
