@@ -32,6 +32,6 @@ public class AccountService {
 
     public void login(Account account) {
         SecurityContextHolder.getContext()
-                .setAuthentication(new UsernamePasswordAuthenticationToken(account, null, account.getAuthorities()));
+                .setAuthentication(new UsernamePasswordAuthenticationToken(new AccountUserDetails(account), null, account.getAuthorities()));
     }
 }
