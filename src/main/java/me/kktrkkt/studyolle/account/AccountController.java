@@ -58,8 +58,7 @@ public class AccountController {
         }
 
         Account account = optionalAccount.get();
-        boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
-        if(!isTokenCorrect){
+        if(!account.isValidToken(token)){
             model.addAttribute("error", "wrong.token");
             return CHECK_EMAIL_TOKEN_FORM;
         }

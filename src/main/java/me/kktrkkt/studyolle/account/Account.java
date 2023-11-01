@@ -72,4 +72,9 @@ public class Account extends BaseEntity<Account> {
         }
         this.authorities.add(authority);
     }
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
+    }
+
 }
