@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
@@ -31,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AccountControllerTest {
 
     private static final String KKTRKKT_EMAIL = "kktrkkt@email.com";
+    private final String KKTRKKT_NICKNAME = "kktrkkt";
+    private final String KKTRKKT_PASSWORD = "password!@#$";
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,19 +58,18 @@ class AccountControllerTest {
     @DisplayName("회원가입 처리 - 성공")
     @Test
     void singUpSubmit_success() throws Exception {
-        String nickname = "kktrkkt";
-        String password = "password!@#$";
-
         this.mockMvc.perform(post("/sign-up").with(csrf())
-                        .param("nickname", nickname)
+                        .param("nickname", KKTRKKT_NICKNAME)
                         .param("email", KKTRKKT_EMAIL)
-                        .param("password", password)
+                        .param("password", KKTRKKT_PASSWORD)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
 
-        Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
+        Optional<Account> kktrkktAccount = accounts.findByEmail(KKTRKKT_EMAIL);
+        Assertions.assertTrue(kktrkktAccount.isPresent());
+        System.out.println(kktrkktAccount.get().getAuthorities());
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
@@ -91,21 +94,19 @@ class AccountControllerTest {
     @DisplayName("회원가입 닉네임 중복 검증 실패 테스트")
     @Test
     void signUpNicknameUnqueFailure() throws Exception {
+        String testEmail = "test@email.com";
         Account kktrkkt = Account.builder()
-                .nickname("kktrkkt")
-                .email("test@email.com")
-                .password("password!@#$")
+                .nickname(KKTRKKT_NICKNAME)
+                .email(testEmail)
+                .password(KKTRKKT_PASSWORD)
                 .build();
 
         accounts.save(kktrkkt);
 
-        String nickname = "kktrkkt";
-        String password = "password!@#$";
-
         this.mockMvc.perform(post("/sign-up").with(csrf())
-                        .param("nickname", nickname)
+                        .param("nickname", KKTRKKT_NICKNAME)
                         .param("email", KKTRKKT_EMAIL)
-                        .param("password", password)
+                        .param("password", KKTRKKT_PASSWORD)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("signUpForm"))
@@ -168,4 +169,40 @@ class AccountControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("로그인 페이지 조회 테스트")
+    @Test
+    public void loginForm() throws Exception {
+        this.mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("loginForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("로그인 처리 테스트 - 성공")
+    @Test
+    public void loginSubmit_success() throws Exception {
+        verifyEmailToken_success();
+        this.mockMvc.perform(post("/login")
+                        .param("emailOrNickname", KKTRKKT_NICKNAME)
+                        .param("password", KKTRKKT_PASSWORD)
+                        .param("rememberMe", "false")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andDo(print());
+    }
+
+    @DisplayName("로그인 처리 테스트 - 실패")
+    @Test
+    public void loginSubmit_failure() throws Exception {
+        verifyEmailToken_success();
+        this.mockMvc.perform(post("/login")
+                        .param("emailOrNickname", KKTRKKT_NICKNAME)
+                        .param("password", "badPassword")
+                        .param("rememberMe", "false")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error"))
+                .andDo(print());
+    }
 }

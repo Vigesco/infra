@@ -23,6 +23,7 @@ public class AccountController {
 
     private static final String SIGN_UP_FORM = "signUpForm";
     private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
+    private static final String LOGIN_FORM = "loginForm";
 
     private final AccountService accountService;
 
@@ -78,4 +79,8 @@ public class AccountController {
         return findAllOrderByJoinedAt.indexOf(save) + 1;
     }
 
+    @GetMapping("/login")
+    public String loginForm() {
+        return LOGIN_FORM;
+    }
 }

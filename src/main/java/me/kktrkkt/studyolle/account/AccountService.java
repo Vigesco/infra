@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,6 +26,7 @@ public class AccountService {
                 .password(encodePassword)
                 .emailCheckToken(emailCheckToken)
                 .build();
+        account.addAuthority(Authority.notVerifiedUser());
 
         return accounts.save(account.createNew());
     }

@@ -5,6 +5,8 @@ import me.kktrkkt.studyolle.model.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -50,6 +52,9 @@ public class Account extends BaseEntity<Account> {
 
     private boolean studyUpdatedByWeb = true;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Authority> authorities;
+
     public Account createNew() {
         registerEvent(this);
         return this;
@@ -58,5 +63,13 @@ public class Account extends BaseEntity<Account> {
     public void completeSignUp() {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
+        addAuthority(Authority.user());
+    }
+
+    public void addAuthority(Authority authority) {
+        if(this.authorities == null){
+            this.authorities = new ArrayList<>();
+        }
+        this.authorities.add(authority);
     }
 }
