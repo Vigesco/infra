@@ -43,7 +43,8 @@ public class AccountController {
             return SIGN_UP_FORM;
         }
         else{
-            accountService.processSignUp(signUpForm);
+            Account account = accountService.processSignUp(signUpForm);
+            accountService.login(account);
             return "redirect:/";
         }
     }
@@ -64,6 +65,7 @@ public class AccountController {
         }
 
         account.completeSignUp();
+        accountService.login(account);
 
         int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
         model.addAttribute("orderByJoinedAt", orderByJoinedAt);

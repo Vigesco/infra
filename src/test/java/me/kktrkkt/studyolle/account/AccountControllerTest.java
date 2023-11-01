@@ -11,7 +11,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -21,6 +25,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mockitoSession;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,18 +63,19 @@ class AccountControllerTest {
     @DisplayName("회원가입 처리 - 성공")
     @Test
     void singUpSubmit_success() throws Exception {
+        MockHttpSession session = new MockHttpSession();
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", KKTRKKT_NICKNAME)
                         .param("email", KKTRKKT_EMAIL)
                         .param("password", KKTRKKT_PASSWORD)
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .session(session))
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
 
-        Optional<Account> kktrkktAccount = accounts.findByEmail(KKTRKKT_EMAIL);
-        Assertions.assertTrue(kktrkktAccount.isPresent());
-        System.out.println(kktrkktAccount.get().getAuthorities());
+        Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
+        Assertions.assertNotNull(session.getAttribute("SPRING_SECURITY_CONTEXT"));
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
@@ -121,15 +127,18 @@ class AccountControllerTest {
         Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
         assertNotNull(kktrkkt);
 
+        MockHttpSession session = new MockHttpSession();
         this.mockMvc.perform(get("/check-email-token")
-                .param("token", kktrkkt.getEmailCheckToken())
-                .param("email", kktrkkt.getEmail()))
+                        .param("token", kktrkkt.getEmailCheckToken())
+                        .param("email", kktrkkt.getEmail())
+                        .session(session))
                 .andExpect(status().isOk())
                 .andExpect(view().name("checkEmailToken"))
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("orderByJoinedAt"))
                 .andExpect(model().attributeExists("nickname"))
                 .andDo(print());
+        Assertions.assertNotNull(session.getAttribute("SPRING_SECURITY_CONTEXT"));
     }
 
     @DisplayName("이메일 토큰 검증 테스트 - 실패")
