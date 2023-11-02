@@ -194,7 +194,7 @@ class AccountControllerTest {
         this.mockMvc.perform(post("/login")
                         .param("emailOrNickname", KKTRKKT_NICKNAME)
                         .param("password", KKTRKKT_PASSWORD)
-                        .param("rememberMe", "false")
+                        .param("remember-me", "false")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
@@ -208,10 +208,25 @@ class AccountControllerTest {
         this.mockMvc.perform(post("/login")
                         .param("emailOrNickname", KKTRKKT_NICKNAME)
                         .param("password", "badPassword")
-                        .param("rememberMe", "false")
+                        .param("remember-me", "false")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?error"))
+                .andDo(print());
+    }
+
+    @DisplayName("로그인 자동 로그인 테스트")
+    @Test
+    public void loginRememberMe() throws Exception {
+        verifyEmailToken_success();
+        this.mockMvc.perform(post("/login")
+                        .param("emailOrNickname", KKTRKKT_NICKNAME)
+                        .param("password", KKTRKKT_PASSWORD)
+                        .param("remember-me", "true")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(cookie().exists("remember-me"))
                 .andDo(print());
     }
 }
