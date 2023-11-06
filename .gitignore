@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### NPM ###
+src/main/resources/static/resources/node_modules
+node
