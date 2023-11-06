@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../../static/resources/node_modules/font-awesome/css/font-awesome.min.css" th:href="@{/resources/node_modules/font-awesome/css/font-awesome.min.css}">
     <script src="/static/resources/node_modules/jquery/dist/jquery.min.js" th:src="@{/resources/node_modules/jquery/dist/jquery.min.js}"></script>
     <script src="/static/resources/node_modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/resources/node_modules/bootstrap/dist/js/bootstrap.min.js}"></script>
+    <script src="/static/resources/node_modules/jdenticon/dist/jdenticon.min.js" th:src="@{/resources/node_modules/jdenticon/dist/jdenticon.min.js}"></script>
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -45,7 +46,8 @@
                 </li>
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        프로필
+                        <svg data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+                             width="28" height="28" class="rounded-5 border bg-light"></svg>
                     </a>
                     <ul class="dropdown-menu dropdown-menu">
                         <h6 class="dropdown-header">
