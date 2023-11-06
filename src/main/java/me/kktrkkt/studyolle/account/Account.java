@@ -1,18 +1,17 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.*;
-import org.springframework.data.domain.AbstractAggregateRoot;
+import me.kktrkkt.studyolle.model.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor
-public class Account extends AbstractAggregateRoot<Account> {
-
-    @Id @GeneratedValue
-    private Long id;
+public class Account extends BaseEntity<Account> {
 
     @Column(unique = true)
     private String email;
@@ -53,6 +52,9 @@ public class Account extends AbstractAggregateRoot<Account> {
 
     private boolean studyUpdatedByWeb = true;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Authority> authorities;
+
     public Account createNew() {
         registerEvent(this);
         return this;
@@ -61,5 +63,18 @@ public class Account extends AbstractAggregateRoot<Account> {
     public void completeSignUp() {
         this.emailVerified = true;
         this.joinedAt = LocalDateTime.now();
+        addAuthority(Authority.user());
     }
+
+    public void addAuthority(Authority authority) {
+        if(this.authorities == null){
+            this.authorities = new ArrayList<>();
+        }
+        this.authorities.add(authority);
+    }
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
+    }
+
 }

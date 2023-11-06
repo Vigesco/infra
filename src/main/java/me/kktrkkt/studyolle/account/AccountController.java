@@ -23,6 +23,7 @@ public class AccountController {
 
     private static final String SIGN_UP_FORM = "signUpForm";
     private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
+    private static final String LOGIN_FORM = "loginForm";
 
     private final AccountService accountService;
 
@@ -42,7 +43,8 @@ public class AccountController {
             return SIGN_UP_FORM;
         }
         else{
-            accountService.processSignUp(signUpForm);
+            Account account = accountService.processSignUp(signUpForm);
+            accountService.login(account);
             return "redirect:/";
         }
     }
@@ -56,16 +58,16 @@ public class AccountController {
         }
 
         Account account = optionalAccount.get();
-        boolean isTokenCorrect = account.getEmailCheckToken().equals(token);
-        if(!isTokenCorrect){
+        if(!account.isValidToken(token)){
             model.addAttribute("error", "wrong.token");
             return CHECK_EMAIL_TOKEN_FORM;
         }
 
         account.completeSignUp();
+        accountService.login(account);
 
         int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
-        model.addAttribute("ordreByJoinedAt", orderByJoinedAt);
+        model.addAttribute("orderByJoinedAt", orderByJoinedAt);
         model.addAttribute("nickname", account.getNickname());
 
         return CHECK_EMAIL_TOKEN_FORM;
@@ -78,4 +80,8 @@ public class AccountController {
         return findAllOrderByJoinedAt.indexOf(save) + 1;
     }
 
+    @GetMapping("/login")
+    public String loginForm() {
+        return LOGIN_FORM;
+    }
 }

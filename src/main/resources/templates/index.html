@@ -1,9 +1,9 @@
-<html xmlns:th="https://www.thymeleaf.org"
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{fragments/layout :: layout (~{::body}, 'STUDY OLLE')}">
 
 <body>
 <div class="py-5 text-center">
-    <h2>환영합니다</h2>
+    <h2><span sec:authorize-expr="isAuthenticated()"><span sec:authentication="principal.account.nickname">Nickname</span>님</span> 환영합니다</h2>
 </div>
 
 </body>

@@ -1,6 +1,8 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,13 @@ public class AccountService {
                 .password(encodePassword)
                 .emailCheckToken(emailCheckToken)
                 .build();
+        account.addAuthority(Authority.notVerifiedUser());
 
         return accounts.save(account.createNew());
+    }
+
+    public void login(Account account) {
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UsernamePasswordAuthenticationToken(new AccountUserDetails(account), null, account.getAuthorities()));
     }
 }
