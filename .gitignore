@@ -35,3 +35,6 @@ build/
 ### NPM ###
 src/main/resources/static/resources/node_modules
 node
+
+### properties ###
+src/main/resources/application.yml
