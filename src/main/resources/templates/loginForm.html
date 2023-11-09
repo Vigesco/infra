@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout (~{::body}, 'SIGN UP')}">
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
 
 <body>
 <div class="py-5 text-center">

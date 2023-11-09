@@ -1,6 +1,6 @@
 <!doctype html>
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-        th:fragment="layout (template, title)">
+        th:fragment="layout (title, content, alert)">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -67,8 +67,10 @@
     </div>
 </nav>
 
+<th:block th:insert="${alert}" />
+
 <div class="container">
-    <th:block th:insert="${template}" />
+    <th:block th:insert="${content}" />
 </div>
 </body>
 </html>
