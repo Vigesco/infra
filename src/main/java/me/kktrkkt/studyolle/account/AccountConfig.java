@@ -13,7 +13,7 @@ public class AccountConfig {
     private final JavaMailSender javaMailSender;
 
     @EventListener
-    public void AccountCreateNewHandler(Account account) {
+    public void sendValidationEmail(Account account) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject("스터디 올래, 회원가입  인증");
         simpleMailMessage.setText("/check-email-token?token=" + account.getEmailCheckToken() +

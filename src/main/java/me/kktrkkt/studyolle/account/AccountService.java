@@ -16,6 +16,8 @@ public class AccountService {
 
     private final AccountRepository accounts;
 
+    private final AccountConfig accountConfig;
+
     public Account processSignUp(SignUpForm signUpForm) {
         String encodePassword = encoder.encode(signUpForm.getPassword());
         String emailCheckToken = String.valueOf(UUID.randomUUID());
@@ -33,5 +35,10 @@ public class AccountService {
     public void login(Account account) {
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(new AccountUserDetails(account), null, account.getAuthorities()));
+    }
+
+    public void sendValidationEmail(String email) {
+        Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        accountConfig.sendValidationEmail(account);
     }
 }

@@ -24,6 +24,7 @@ public class AccountController {
     private static final String SIGN_UP_FORM = "signUpForm";
     private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
     private static final String LOGIN_FORM = "loginForm";
+    private static final String CHECK_EMAIL_FORM = "checkEmailForm";
 
     private final AccountService accountService;
 
@@ -84,4 +85,17 @@ public class AccountController {
     public String loginForm() {
         return LOGIN_FORM;
     }
+
+    @GetMapping("/check-email")
+    public String checkEmailForm() {
+        return CHECK_EMAIL_FORM;
+    }
+
+    @PostMapping("/check-email")
+    public String sendValidationEmail(String email, Model model) {
+        accountService.sendValidationEmail(email);
+        model.addAttribute("success", "success");
+        return CHECK_EMAIL_FORM;
+    }
+
 }
