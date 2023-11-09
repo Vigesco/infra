@@ -2,7 +2,7 @@
       th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
 
 <alert>
-    <div class="alert alert-danger" role="alert" th:if="${!#authentication.principal.account.emailVerified}">
+    <div class="alert alert-warning" role="alert" sec:authorize-expr="isAuthenticated()" th:if="${!#authentication.principal.account.emailVerified}">
         스터디올레 가입을 완료하려면 <a th:href="@{/check-email}">계정 인증 이메일을 확인</a>하세요
     </div>
 </alert>
