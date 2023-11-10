@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +13,8 @@ public class AccountConfig {
 
     private final JavaMailSender javaMailSender;
 
+    private final AccountRepository accountRepository;
+
     @EventListener
     public void sendValidationEmail(Account account) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -19,5 +22,10 @@ public class AccountConfig {
         simpleMailMessage.setText("/check-email-token?token=" + account.getEmailCheckToken() +
                 "&email=" + account.getEmail());
         javaMailSender.send(simpleMailMessage);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void resetNumberOfEmailsSent() {
+        accountRepository.resetNumberOfEmailsSent();
     }
 }
