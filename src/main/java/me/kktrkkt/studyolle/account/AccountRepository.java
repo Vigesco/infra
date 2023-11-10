@@ -1,7 +1,10 @@
 package me.kktrkkt.studyolle.account;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
@@ -11,4 +14,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByEmail(String email);
 
     Optional<Account> findByEmailOrNickname(String email, String nickname);
+
+    @Modifying
+    @Query("update Account a set a.numberOfEmailsSentToday = 0 where a.numberOfEmailsSentToday <> 0")
+    List<Account> resetNumberOfEmailsSent();
 }
