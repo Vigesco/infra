@@ -25,6 +25,8 @@ public class Account extends BaseEntity<Account> {
 
     private String emailCheckToken;
 
+    private int numberOfEmailsSentToday = 0;
+
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     private LocalDateTime joinedAt;
@@ -77,4 +79,7 @@ public class Account extends BaseEntity<Account> {
         return this.emailCheckToken.equals(token);
     }
 
+    public boolean canSendValidationEmail() {
+        return this.numberOfEmailsSentToday < 5;
+    }
 }
