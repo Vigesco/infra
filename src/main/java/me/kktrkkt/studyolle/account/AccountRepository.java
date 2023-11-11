@@ -17,5 +17,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Modifying
     @Query("update Account a set a.numberOfEmailsSentToday = 0 where a.numberOfEmailsSentToday <> 0")
-    List<Account> resetNumberOfEmailsSent();
+    void resetNumberOfEmailsSent();
 }
