@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -87,14 +88,21 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmailForm() {
+    public String checkEmailForm(Model model) {
         return CHECK_EMAIL_FORM;
     }
 
     @PostMapping("/check-email")
     public String sendValidationEmail(String email, Model model) {
+        Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+        if(!account.canSendValidationEmail()) {
+            model.addAttribute("error", "인증 이메일은 하루에 최대 5건만 보낼 수 있습니다!");
+            return CHECK_EMAIL_FORM;
+        }
+
         accountService.sendValidationEmail(email);
         model.addAttribute("success", "success");
+        model.addAttribute(account);
         return CHECK_EMAIL_FORM;
     }
 

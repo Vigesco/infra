@@ -82,4 +82,8 @@ public class Account extends BaseEntity<Account> {
     public boolean canSendValidationEmail() {
         return this.numberOfEmailsSentToday < 5;
     }
+
+    public void plusNumberOfEmailsSentToday(int num){
+        this.numberOfEmailsSentToday += num;
+    }
 }

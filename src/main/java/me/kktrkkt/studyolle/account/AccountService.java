@@ -40,5 +40,7 @@ public class AccountService {
     public void sendValidationEmail(String email) {
         Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
         accountConfig.sendValidationEmail(account);
+        account.plusNumberOfEmailsSentToday(1);
+        accounts.save(account);
     }
 }
