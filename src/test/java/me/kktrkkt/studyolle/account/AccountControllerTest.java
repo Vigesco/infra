@@ -23,6 +23,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
@@ -61,7 +63,7 @@ class AccountControllerTest {
 
     @DisplayName("회원가입 처리 - 성공")
     @Test
-    void singUpSubmit_success() throws Exception {
+    MockHttpSession singUpSubmit_success() throws Exception {
         MockHttpSession session = new MockHttpSession();
         this.mockMvc.perform(post("/sign-up").with(csrf())
                         .param("nickname", KKTRKKT_NICKNAME)
@@ -76,6 +78,7 @@ class AccountControllerTest {
 
         Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
+        return session;
     }
 
     @DisplayName("회원가입 처리 - 이메일 형식 오류")
@@ -229,4 +232,53 @@ class AccountControllerTest {
                 .andExpect(cookie().exists("remember-me"))
                 .andDo(print());
     }
+
+    @DisplayName("이메일 검증 전송 페이지 조회 테스트")
+    @Test
+    public void checkEmailForm() throws Exception {
+        MockHttpSession session = singUpSubmit_success();
+        this.mockMvc.perform(get("/check-email").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("이메일 검증 전송 테스트")
+    @Test
+    public void sendValidationEmail() throws Exception {
+        MockHttpSession session = singUpSubmit_success();
+        this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+                        .param("email", KKTRKKT_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailForm"))
+                .andExpect(model().attributeExists("success"))
+                .andDo(print());
+        verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
+    }
+
+    @DisplayName("이메일 검증 전송 테스트 - 6회 전송")
+    @Test
+    public void sendValidationEmail_6times() throws Exception {
+        MockHttpSession session = singUpSubmit_success();
+
+        for(int i=0;i<5;i++){
+            this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+                            .param("email", KKTRKKT_EMAIL))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("checkEmailForm"))
+                    .andExpect(model().attributeExists("success"))
+                    .andDo(print());
+        }
+
+        this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+                        .param("email", KKTRKKT_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailForm"))
+                .andExpect(model().attributeExists("error"))
+                .andDo(print());
+
+        verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
+    }
+
+
 }
