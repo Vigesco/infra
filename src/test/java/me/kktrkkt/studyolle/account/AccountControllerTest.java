@@ -255,4 +255,30 @@ class AccountControllerTest {
                 .andDo(print());
         verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
     }
+
+    @DisplayName("이메일 검증 전송 테스트 - 6회 전송")
+    @Test
+    public void sendValidationEmail_6times() throws Exception {
+        MockHttpSession session = singUpSubmit_success();
+
+        for(int i=0;i<5;i++){
+            this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+                            .param("email", KKTRKKT_EMAIL))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("checkEmailForm"))
+                    .andExpect(model().attributeExists("success"))
+                    .andDo(print());
+        }
+
+        this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+                        .param("email", KKTRKKT_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(view().name("checkEmailForm"))
+                .andExpect(model().attributeExists("error"))
+                .andDo(print());
+
+        verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
+    }
+
+
 }
