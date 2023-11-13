@@ -8,11 +8,14 @@
     <div th:if="${success}" class="alert alert-success" role="alert" >
         인증 이메일을 성공적으로 보냈습니다!
     </div>
-    <div th:if="${success == null}">
+    <div th:if="${error}" class="alert alert-danger" role="alert" >
+        <span th:text="${error}">error!</span>
+    </div>
+    <div th:if="${success == null  && error == null}">
         <h2>
             스터디올레 서비스를 사용하려면 인증 이메일을 확인하세요.
         </h2>
-        <h4 sec:authentication="principal.account.email"></h4>
+        <h4 sec:authentication="principal.account.email">email@email.com</h4>
         <form method="post" th:action="@{/check-email}">
             <input type="hidden" name="email" th:value="${#authentication.principal.account.email}">
             <button class="btn btn-outline-primary" type="submit">인증 이메일 보내기</button>
