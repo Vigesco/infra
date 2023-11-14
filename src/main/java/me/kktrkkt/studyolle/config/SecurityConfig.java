@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated();
         http.formLogin()
                 .loginPage("/login")
+                .defaultSuccessUrl("/")
                 .usernameParameter("emailOrNickname")
                 .permitAll();
         http.rememberMe()
