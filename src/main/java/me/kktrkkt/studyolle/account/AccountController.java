@@ -60,6 +60,7 @@ public class AccountController {
         }
 
         account.completeSignUp();
+        accounts.save(account);
         accountService.login(account);
 
         int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
