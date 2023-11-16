@@ -59,9 +59,7 @@ public class AccountController {
             return CHECK_EMAIL_TOKEN_FORM;
         }
 
-        account.completeSignUp();
-        accounts.save(account);
-        accountService.login(account);
+        accountService.completeSignUp(account);
 
         int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
         model.addAttribute("orderByJoinedAt", orderByJoinedAt);

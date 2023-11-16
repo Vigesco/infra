@@ -5,11 +5,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService {
 
     private final PasswordEncoder encoder;
@@ -32,6 +34,11 @@ public class AccountService {
         return accounts.save(account.createNew());
     }
 
+    public void completeSignUp(Account account){
+        account.completeSignUp();
+        this.login(account);
+    }
+
     public void login(Account account) {
         SecurityContextHolder.getContext()
                 .setAuthentication(new UsernamePasswordAuthenticationToken(new AccountUserDetails(account), null, account.getAuthorities()));
@@ -41,6 +48,5 @@ public class AccountService {
         Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
         accountConfig.sendValidationEmail(account);
         account.plusNumberOfEmailsSentToday(1);
-        accounts.save(account);
     }
 }
