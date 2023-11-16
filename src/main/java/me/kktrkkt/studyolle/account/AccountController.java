@@ -83,7 +83,7 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmailForm(Model model) {
+    public String checkEmailForm() {
         return CHECK_EMAIL_FORM;
     }
 
