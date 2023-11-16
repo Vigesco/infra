@@ -56,7 +56,7 @@
                                 <span sec:authentication="principal.account.nickname">Nickname</span>
                             </h6>
                         </li>
-                        <li><a class="dropdown-item" href="#">프로필</a></li>
+                        <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.account.nickname}}">프로필</a></li>
                         <li><a class="dropdown-item" href="#">스터디</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">설정</a></li>

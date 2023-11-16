@@ -1,0 +1,70 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
+
+<body>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-2">
+            <img th:if="${account.profileImage != null}" th:src="@{account.profileImage}">
+            <svg th:if="${account.profileImage == null}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+                 width="128" height="128"></svg>
+        </div>
+        <div class="col-8">
+            <h1 class="display-4" th:text="${account.nickname}">닉네임</h1>
+            <p class="lead" th:if="${!#strings.isEmpty(account.bio)}" th:text="${account.bio}">한줄 소개</p>
+            <p class="lead" th:if="${#strings.isEmpty(account.bio) && isOwner}">한 줄 소개를 추가하세요!</p>
+        </div>
+    </div>
+    <div class="row mt-3 justify-content-center">
+        <div class="col-2">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active" id="v-pills-bio-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bio" type="button" role="tab" aria-controls="v-pills-bio" aria-selected="true">소개</button>
+                <button class="nav-link" id="v-pills-study-tab" data-bs-toggle="pill" data-bs-target="#v-pills-study" type="button" role="tab" aria-controls="v-pills-study" aria-selected="false">스터디</button>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-bio" role="tabpanel" aria-labelledby="v-pills-bio-tab" tabindex="0">
+                    <p>
+                        <span class="col-1">
+                            <i class="fa fa-envelope-o col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11" th:text="${account.email}">email</span>
+                    </p>
+                    <p th:if="${!#strings.isEmpty(account.url)}">
+                        <span class="col-1">
+                            <i class="fa fa-link col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11" th:text="${account.url}">url</span>
+                    </p>
+                    <p th:if="${!#strings.isEmpty(account.occupation)}">
+                        <span class="col-1">
+                            <i class="fa fa-building-o col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11" th:text="${account.occupation}">occupation</span>
+                    </p>
+                    <p th:if="${!#strings.isEmpty(account.location)}">
+                        <span class="col-1">
+                            <i class="fa fa-map-marker col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11" th:text="${account.location}">location</span>
+                    </p>
+                    <p th:if="${account.emailVerified}">
+                        <span class="col-1">
+                            <i class="fa fa-sign-in col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11" th:text="${#temporals.format(account.joinedAt, 'yyyy년 MM월 가입')}">joinedAt</span>
+                    </p>
+                    <p th:if="${!account.emailVerified}">
+                        <span class="col-1">
+                            <i class="fa fa-sign-in col-1" aria-hidden="true"></i>
+                        </span>
+                        <span class="col-11"><a th:href="@{/check-email}">가입을 완료하려면 클릭하세요!</a></span>
+                    </p>
+                    <button class="btn btn-outline-primary">프로필 수정</button>
+                </div>
+                <div class="tab-pane fade" id="v-pills-study" role="tabpanel" aria-labelledby="v-pills-study-tab" tabindex="0">스터디</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
