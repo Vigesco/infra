@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "font-awesome": "^4.7.0",
     "jdenticon": "^3.2.0",
