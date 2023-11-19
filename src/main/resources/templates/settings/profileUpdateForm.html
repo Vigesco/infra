@@ -4,25 +4,11 @@
 <body>
     <div class="row mt-5 justify-content-center">
         <div class="col-2">
-            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link navbar-light active" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="true">프로필</button>
-                <button class="nav-link navbar-light" id="v-pills-password-tab" data-bs-toggle="pill" data-bs-target="#v-pills-password" type="button" role="tab" aria-controls="v-pills-password" aria-selected="false">패스워드</button>
-                <button class="nav-link navbar-light" id="v-pills-notification-tab" data-bs-toggle="pill" data-bs-target="#v-pills-notification" type="button" role="tab" aria-controls="v-pills-notification" aria-selected="false">알림</button>
-                <button class="nav-link navbar-light" id="v-pills-topic-tab" data-bs-toggle="pill" data-bs-target="#v-pills-topic" type="button" role="tab" aria-controls="v-pills-topic" aria-selected="false">관심주제</button>
-                <button class="nav-link navbar-light" id="v-pills-location-tab" data-bs-toggle="pill" data-bs-target="#v-pills-location" type="button" role="tab" aria-controls="v-pills-location" aria-selected="false">활동지역</button>
-                <button class="nav-link navbar-light" id="v-pills-account-tab" data-bs-toggle="pill" data-bs-target="#v-pills-account" type="button" role="tab" aria-controls="v-pills-account" aria-selected="false">계정</button>
-            </div>
+            <div th:replace="~{ fragments/settingsMenu ::menu (${#httpServletRequest.requestURI})}"></div>
         </div>
         <div class="col-4">
             <h1 class="display-4" th:text="${account.nickname}">닉네임</h1>
-            <div class="tab-content" id="v-pills-tabContent">
-                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="0">프로필</div>
-                <div class="tab-pane fade" id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab" tabindex="0">패스워드</div>
-                <div class="tab-pane fade" id="v-pills-notification" role="tabpanel" aria-labelledby="v-pills-notification-tab" tabindex="0">알림</div>
-                <div class="tab-pane fade" id="v-pills-topic" role="tabpanel" aria-labelledby="v-pills-topic-tab" tabindex="0">관심주제</div>
-                <div class="tab-pane fade" id="v-pills-location" role="tabpanel" aria-labelledby="v-pills-location-tab" tabindex="0">활동지역</div>
-                <div class="tab-pane fade" id="v-pills-account" role="tabpanel" aria-labelledby="v-pills-account-tab" tabindex="0">계정</div>
-            </div>
+            프로필
         </div>
         <div class="col-3">
             <img th:if="${account.profileImage != null}" th:src="@{account.profileImage}">
