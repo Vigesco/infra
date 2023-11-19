@@ -47,7 +47,7 @@ public class ProfileControllerTest {
 
     @DisplayName("프로필 조회 테스트 - 주인")
     @Test
-    @WithUserDetails(value = "user1", userDetailsServiceBeanName = "accountUserDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUser1
     public void profileView_with_owner() throws Exception {
         this.mockMvc.perform(get("/profile/user1"))
                 .andExpect(status().isOk())
@@ -59,7 +59,7 @@ public class ProfileControllerTest {
 
     @DisplayName("프로필 조회 테스트 - 인증유저")
     @Test
-    @WithUserDetails(value = "user2@email.com", userDetailsServiceBeanName = "accountUserDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @WithUser2
     public void profileView_with_authenticationUser() throws Exception {
         this.mockMvc.perform(get("/profile/user1"))
                 .andExpect(status().isOk())
