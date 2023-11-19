@@ -60,7 +60,7 @@
                         </span>
                         <span class="col-11"><a th:href="@{/check-email}">가입을 완료하려면 클릭하세요!</a></span>
                     </p>
-                    <button class="btn btn-outline-primary">프로필 수정</button>
+                    <a th:if="${account.emailVerified}" class="btn btn-outline-primary" th:href="@{/settings/profile}">프로필 수정</a>
                 </div>
                 <div class="tab-pane fade" id="v-pills-study" role="tabpanel" aria-labelledby="v-pills-study-tab" tabindex="0">스터디</div>
             </div>

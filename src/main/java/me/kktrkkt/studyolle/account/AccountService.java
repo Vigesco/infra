@@ -49,4 +49,12 @@ public class AccountService {
         accountConfig.sendValidationEmail(account);
         account.plusNumberOfEmailsSentToday(1);
     }
+
+    public void updateProfile(Account account, ProfileUpdateForm profileUpdateForm) {
+        account.setBio(profileUpdateForm.getBio());
+        account.setUrl(profileUpdateForm.getUrl());
+        account.setOccupation(profileUpdateForm.getOccupation());
+        account.setLocation(profileUpdateForm.getLocation());
+        accounts.save(account);
+    }
 }

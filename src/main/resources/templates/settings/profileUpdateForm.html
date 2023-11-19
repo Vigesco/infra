@@ -7,12 +7,49 @@
             <div th:replace="~{ fragments/settingsMenu ::menu (${#httpServletRequest.requestURI})}"></div>
         </div>
         <div class="col-4">
-            <h1 class="display-4" th:text="${account.nickname}">닉네임</h1>
-            프로필
+            <h1 class="display-4" th:text="${#authentication.principal.account.nickname}">닉네임</h1>
+
+            <form class="needs-validation" th:action="@{/settings/profile}" th:object="${profileUpdateForm}" method="post" novalidate>
+                <div class="form-group mb-3">
+                    <label for="inputBio" class="form-label">한줄 자기소개</label>
+                    <input type="text" id="inputBio" class="form-control" maxlength="35"
+                           aria-describedby="bioHelpBlock" th:field="*{bio}" placeholder="간략하게 자신을 소개하세요">
+                    <div id="bioHelpBlock" class="form-text">35자 이내로 입력하세요.</div>
+                    <small class="invalid-feedback">자기소개를 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">Bio Error</small>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="inputUrl" class="form-label">링크</label>
+                    <input type="text" id="inputUrl" class="form-control" maxlength="50"
+                           aria-describedby="urlHelpBlock" th:field="*{url}" placeholder="깃헙, 블로그등 자신을 표현할 수 있는 링크를 입력하세요.">
+                    <div id="urlHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                    <small class="invalid-feedback">링크를 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Url Error</small>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="inputOccupation" class="form-label">직업</label>
+                    <input type="text" id="inputOccupation" class="form-control" maxlength="50"
+                           aria-describedby="occupationHelpBlock" th:field="*{occupation}" placeholder="본인의 직업(개발자, 요리사, 취준생 등)을 입력하세요.">
+                    <div id="occupationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                    <small class="invalid-feedback">직업을 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('occupation')}" th:errors="*{occupation}">Occupation Error</small>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="inputLocation" class="form-label">활동 지역</label>
+                    <input type="text" id="inputLocation" class="form-control" maxlength="50"
+                           aria-describedby="locationHelpBlock" th:field="*{location}" placeholder="주요 활동 지역의 도시를 알려주세요.">
+                    <div id="locationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                    <small class="invalid-feedback">활동 지역을 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</small>
+                </div>
+                <div class="form-group d-grid gap-2">
+                    <button type="submit" class="btn btn-primary ">수정하기</button>
+                </div>
+            </form>
         </div>
         <div class="col-3">
-            <img th:if="${account.profileImage != null}" th:src="@{account.profileImage}">
-            <svg th:if="${account.profileImage == null}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+            <img th:if="${profileUpdateForm.profileImage != null}" th:src="@{profileUpdateForm.profileImage}">
+            <svg th:if="${profileUpdateForm.profileImage == null}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
                  width="128" height="128"></svg>
         </div>
     </div>
