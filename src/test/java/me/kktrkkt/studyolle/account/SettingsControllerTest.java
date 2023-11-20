@@ -59,7 +59,7 @@ public class SettingsControllerTest {
     @DisplayName("프로필 설정 처리 테스트 - 성공")
     @Test
     @WithUser1
-    void profileUpdateProcess() throws Exception {
+    void profileUpdateProcess_success() throws Exception {
         String bio = "간략 자기소개";
         String url = "https://github.com/kktrkkt";
         String occupation = "백엔드";
@@ -83,5 +83,33 @@ public class SettingsControllerTest {
         Assertions.assertEquals(url, user1.getUrl());
         Assertions.assertEquals(occupation, user1.getOccupation());
         Assertions.assertEquals(location, user1.getLocation());
+    }
+
+    @DisplayName("프로필 설정 처리 테스트 - 실패")
+    @Test
+    @WithUser1
+    void profileUpdateProcess_failure() throws Exception {
+        String over35CharBio = "1234567890123456789012345678901234567890";
+        String url = "https://github.com/kktrkkt";
+        String occupation = "백엔드";
+        String location = "대전";
+
+        this.mockMvc.perform(post("/settings/profile")
+                        .with(csrf())
+                        .param("bio", over35CharBio)
+                        .param("url", url)
+                        .param("occupation", occupation)
+                        .param("location", location)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/profileUpdateForm"))
+                .andExpect(model().attributeExists("profileUpdateForm"))
+                .andDo(print());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertNotEquals(over35CharBio, user1.getBio());
+        Assertions.assertNotEquals(url, user1.getUrl());
+        Assertions.assertNotEquals(occupation, user1.getOccupation());
+        Assertions.assertNotEquals(location, user1.getLocation());
     }
 }

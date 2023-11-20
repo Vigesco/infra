@@ -1,5 +1,11 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
+
+<alert>
+    <div th:if="${success}" class="alert alert-success" role="alert" >
+        프로필을 성공적으로 수정했습니다!
+    </div>
+</alert>
 
 <body>
     <div class="row mt-5 justify-content-center">
