@@ -1,14 +1,20 @@
 package me.kktrkkt.studyolle.account;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -24,12 +30,10 @@ public class SettingsControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        if(accounts.findByNickname("user1").isEmpty()){
-            createUser("user1@email.com", "user1", "password1");
-        }
-        if(accounts.findByNickname("user2").isEmpty()) {
-            createUser("user2@email.com", "user2", "password2");
-        }
+        accounts.findByNickname("user1").ifPresent(a->accounts.delete(a));
+        accounts.findByNickname("user2").ifPresent(a->accounts.delete(a));
+        createUser("user1@email.com", "user1", "password1");
+        createUser("user2@email.com", "user2", "password2");
     }
 
     private void createUser(String email, String nickname, String password) {
@@ -50,5 +54,34 @@ public class SettingsControllerTest {
                 .andExpect(view().name("settings/profileUpdateForm"))
                 .andExpect(model().attributeExists("profileUpdateForm"))
                 .andDo(print());
+    }
+
+    @DisplayName("프로필 설정 처리 테스트 - 성공")
+    @Test
+    @WithUser1
+    void profileUpdateProcess() throws Exception {
+        String bio = "간략 자기소개";
+        String url = "https://github.com/kktrkkt";
+        String occupation = "백엔드";
+        String location = "대전";
+
+        this.mockMvc.perform(post("/settings/profile")
+                        .with(csrf())
+                        .param("bio", bio)
+                        .param("url", url)
+                        .param("occupation", occupation)
+                        .param("location", location)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(view().name("settings/profileUpdateForm"))
+                .andExpect(model().attributeExists("profileUpdateForm"))
+                .andExpect(model().attributeExists("success"))
+                .andDo(print());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertEquals(bio, user1.getBio());
+        Assertions.assertEquals(url, user1.getUrl());
+        Assertions.assertEquals(occupation, user1.getOccupation());
+        Assertions.assertEquals(location, user1.getLocation());
     }
 }
