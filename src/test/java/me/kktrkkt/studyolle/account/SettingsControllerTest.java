@@ -41,7 +41,7 @@ public class SettingsControllerTest {
         accounts.save(user1);
     }
 
-    @DisplayName("프로필 설정 화면 조회")
+    @DisplayName("프로필 설정 화면 조회 테스트")
     @Test
     @WithUser1
     void profileUpdateForm() throws Exception {
