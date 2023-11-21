@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,8 @@ public class AccountService {
     private final AccountRepository accounts;
 
     private final AccountConfig accountConfig;
+
+    private final ModelMapper modelMapper;
 
     public Account processSignUp(SignUpForm signUpForm) {
         String encodePassword = encoder.encode(signUpForm.getPassword());
@@ -51,10 +54,7 @@ public class AccountService {
     }
 
     public void updateProfile(Account account, ProfileUpdateForm profileUpdateForm) {
-        account.setBio(profileUpdateForm.getBio());
-        account.setUrl(profileUpdateForm.getUrl());
-        account.setOccupation(profileUpdateForm.getOccupation());
-        account.setLocation(profileUpdateForm.getLocation());
+        modelMapper.map(profileUpdateForm, account);
         accounts.save(account);
     }
 }
