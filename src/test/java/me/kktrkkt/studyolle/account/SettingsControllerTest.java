@@ -72,10 +72,9 @@ public class SettingsControllerTest {
                         .param("occupation", occupation)
                         .param("location", location)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name("settings/profileUpdateForm"))
-                .andExpect(model().attributeExists("profileUpdateForm"))
-                .andExpect(model().attributeExists("success"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/settings/profile"))
+                .andExpect(flash().attributeExists("success"))
                 .andDo(print());
 
         Account user1 = accounts.findByNickname("user1").get();
