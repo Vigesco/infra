@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,13 @@ public class ProfileControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        if(accounts.findByNickname("user1").isEmpty()){
-            createUser("user1@email.com", "user1", "password1");
-        }
-        if(accounts.findByNickname("user2").isEmpty()) {
-            createUser("user2@email.com", "user2", "password2");
-        }
+        createUser("user1@email.com", "user1", "password1");
+        createUser("user2@email.com", "user2", "password2");
+    }
+
+    @AfterEach
+    public void afterEach() {
+        accounts.deleteAll();
     }
 
     private void createUser(String email, String nickname, String password) {
