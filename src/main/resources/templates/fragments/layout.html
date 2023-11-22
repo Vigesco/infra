@@ -74,9 +74,17 @@
 
 <th:block th:insert="${alert}" />
 
-<div class="container">
+<div class="container min-vh-100">
     <th:block th:insert="${content}" />
 </div>
+<footer class="flex-wrap align-items-center py-3 my-4 border-top">
+    <div class="text-center">
+        <a th:href="@{/}" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+            <img th:src="@{/resources/images/logo_sm_b.png}" alt="Logo" width="30" height="30">
+        </a>
+        <span class="mb-3 mb-md-0 text-body-secondary">© 2023</span>
+    </div>
+</footer>
 <script type="application/javascript">
     $(function (){
         const forms = $(".needs-validation");
