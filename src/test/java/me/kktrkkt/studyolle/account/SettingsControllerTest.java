@@ -101,6 +101,7 @@ public class SettingsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("settings/profileUpdateForm"))
                 .andExpect(model().attributeExists("profileUpdateForm"))
+                .andExpect(model().hasErrors())
                 .andDo(print());
 
         Account user1 = accounts.findByNickname("user1").get();
