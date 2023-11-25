@@ -2,17 +2,13 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +34,8 @@ public class AccountController {
     }
 
     @PostMapping("/sign-up")
-    @ResponseStatus(HttpStatus.CREATED)
-    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors, HttpServletResponse response) {
+    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors) {
         if(errors.hasErrors()){
-            response.setStatus(200);
             return SIGN_UP_FORM;
         }
         else{
@@ -65,8 +59,7 @@ public class AccountController {
             return CHECK_EMAIL_TOKEN_FORM;
         }
 
-        account.completeSignUp();
-        accountService.login(account);
+        accountService.completeSignUp(account);
 
         int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
         model.addAttribute("orderByJoinedAt", orderByJoinedAt);
@@ -88,7 +81,7 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmailForm(Model model) {
+    public String checkEmailForm() {
         return CHECK_EMAIL_FORM;
     }
 

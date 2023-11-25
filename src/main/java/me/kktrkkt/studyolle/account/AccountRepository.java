@@ -18,4 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query("update Account a set a.numberOfEmailsSentToday = 0 where a.numberOfEmailsSentToday <> 0")
     void resetNumberOfEmailsSent();
+
+    Optional<Account> findByNickname(String nickname);
 }

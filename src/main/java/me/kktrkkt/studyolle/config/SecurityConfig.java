@@ -39,6 +39,9 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .usernameParameter("emailOrNickname")
                 .permitAll();
+        http.logout()
+                .logoutSuccessUrl("/")
+                .permitAll();
         http.rememberMe()
                 .userDetailsService(userDetailsService)
                 .tokenRepository(tokenRepository());

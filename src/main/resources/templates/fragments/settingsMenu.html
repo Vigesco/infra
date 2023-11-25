@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+<div class="list-group" th:fragment="menu (currentUrl)">
+    <a th:href="@{/settings/profile}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/profile')} ? 'active'" th:aria-current="${#strings.contains(currentUrl, '/profile')} ? true : false">프로필</a>
+    <a th:href="@{/settings/password}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/password')} ? 'active'" th:aria-current="${currentUrl.contains('/password')} ? true : false">패스워드</a>
+    <a th:href="@{/settings/notification}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/notification')} ? 'active'" th:aria-current="${currentUrl.contains('/notification')} ? true : false">알림</a>
+    <a th:href="@{/settings/topic}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/topic')} ? 'active'" th:aria-current="${currentUrl.contains('/topic')} ? true : false">관심주제</a>
+    <a th:href="@{/settings/location}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/location')} ? 'active'" th:aria-current="${currentUrl.contains('/location')} ? true : false">활동지역</a>
+    <a th:href="@{/settings/account}" class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${#strings.contains(currentUrl, '/account')} ? 'active'" th:aria-current="${currentUrl.contains('/account')} ? true : false">계정</a>
+</div>
+</body>
+</html>

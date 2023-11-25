@@ -71,7 +71,7 @@ class AccountControllerTest {
                         .param("password", KKTRKKT_PASSWORD)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .session(session))
-                .andExpect(status().isCreated())
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
                 .andExpect(authenticated().withAuthorities(List.of(notVerifiedUser())))
                 .andDo(print());
