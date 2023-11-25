@@ -2,8 +2,9 @@
       th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
 
 <alert>
-    <div th:if="${success}" class="alert alert-success" role="alert" >
-        프로필을 성공적으로 수정했습니다!
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" >
+        <span>프로필을 성공적으로 수정했습니다!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </alert>
 
