@@ -4,9 +4,10 @@
 <body>
     <div class="row mt-5 justify-content-center">
         <div class="col-2">
-            <img th:if="${account.profileImage != null}" th:src="@{account.profileImage}">
-            <svg th:if="${account.profileImage == null}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
-                 width="128" height="128"></svg>
+            <img th:if="${!#strings.isEmpty(account.profileImage)}" th:src="@{${account.profileImage}}"
+                 width="128" height="128" class="rounded">
+            <svg th:if="${#strings.isEmpty(account.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+                 width="128" height="128" class="rounded"></svg>
         </div>
         <div class="col-8">
             <h1 class="display-4" th:text="${account.nickname}">닉네임</h1>
@@ -60,7 +61,7 @@
                         </span>
                         <span class="col-11"><a th:href="@{/check-email}">가입을 완료하려면 클릭하세요!</a></span>
                     </p>
-                    <a th:if="${account.emailVerified}" class="btn btn-outline-primary" th:href="@{/settings/profile}">프로필 수정</a>
+                    <a th:if="${#authentication.name == account.email && account.emailVerified}" class="btn btn-outline-primary" th:href="@{/settings/profile}">프로필 수정</a>
                 </div>
                 <div class="tab-pane fade" id="v-pills-study" role="tabpanel" aria-labelledby="v-pills-study-tab" tabindex="0">스터디</div>
             </div>
