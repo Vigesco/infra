@@ -47,9 +47,9 @@ public class SettingsControllerTest {
     @Test
     @WithUser1
     void profileUpdateForm() throws Exception {
-        this.mockMvc.perform(get("/settings/profile"))
+        this.mockMvc.perform(get(SettingsController.SETTINGS_PROFILE_URL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("settings/profileUpdateForm"))
+                .andExpect(view().name(SettingsController.PROFILE_UPDATE_VIEW))
                 .andExpect(model().attributeExists("profileUpdateForm"))
                 .andDo(print());
     }
@@ -63,7 +63,7 @@ public class SettingsControllerTest {
         String occupation = "백엔드";
         String location = "대전";
 
-        this.mockMvc.perform(post("/settings/profile")
+        this.mockMvc.perform(post(SettingsController.SETTINGS_PROFILE_URL)
                         .with(csrf())
                         .param("bio", bio)
                         .param("url", url)
@@ -71,7 +71,7 @@ public class SettingsControllerTest {
                         .param("location", location)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/settings/profile"))
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_PROFILE_URL))
                 .andExpect(flash().attributeExists("success"))
                 .andDo(print());
 
@@ -91,7 +91,7 @@ public class SettingsControllerTest {
         String occupation = "백엔드";
         String location = "대전";
 
-        this.mockMvc.perform(post("/settings/profile")
+        this.mockMvc.perform(post(SettingsController.SETTINGS_PROFILE_URL)
                         .with(csrf())
                         .param("bio", over35CharBio)
                         .param("url", url)
@@ -99,7 +99,7 @@ public class SettingsControllerTest {
                         .param("location", location)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
-                .andExpect(view().name("settings/profileUpdateForm"))
+                .andExpect(view().name(SettingsController.PROFILE_UPDATE_VIEW))
                 .andExpect(model().attributeExists("profileUpdateForm"))
                 .andExpect(model().hasErrors())
                 .andDo(print());

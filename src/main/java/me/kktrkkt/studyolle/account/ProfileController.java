@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    private static final String PROFILE_VIEW = "profile/view";
+    static final String PROFILE_VIEW = "profile/view";
+    static final String PROFILE_URL = "/profile";
 
     private final AccountRepository accounts;
 
-    @GetMapping("/profile/{nickname}")
+    @GetMapping(PROFILE_URL + "/{nickname}")
     public String viewProfile(@PathVariable String nickname, Model model, @CurrentUser Account currentUser) {
         Account account = accounts.findByNickname(nickname)
                 .orElseThrow(() -> new NicknameNotFoundException(nickname));

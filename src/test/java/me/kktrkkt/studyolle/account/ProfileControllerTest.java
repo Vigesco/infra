@@ -49,9 +49,9 @@ public class ProfileControllerTest {
     @Test
     @WithUser1
     public void profileView_with_owner() throws Exception {
-        this.mockMvc.perform(get("/profile/user1"))
+        this.mockMvc.perform(get(ProfileController.PROFILE_URL+"/user1"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("profile/view"))
+                .andExpect(view().name(ProfileController.PROFILE_VIEW))
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attribute("isOwner", true))
                 .andDo(print());
@@ -61,9 +61,9 @@ public class ProfileControllerTest {
     @Test
     @WithUser2
     public void profileView_with_authenticationUser() throws Exception {
-        this.mockMvc.perform(get("/profile/user1"))
+        this.mockMvc.perform(get(ProfileController.PROFILE_URL+"/user1"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("profile/view"))
+                .andExpect(view().name(ProfileController.PROFILE_VIEW))
                 .andExpect(model().attributeExists("account"))
                 .andExpect(model().attribute("isOwner", false))
                 .andDo(print());

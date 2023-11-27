@@ -54,9 +54,9 @@ class AccountControllerTest {
     @DisplayName("회원가입 페이지 조회 테스트")
     @Test
     void signUpForm() throws Exception {
-        this.mockMvc.perform(get("/sign-up"))
+        this.mockMvc.perform(get(AccountController.SIGN_UP_URL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("signUpForm"))
+                .andExpect(view().name(AccountController.SIGN_UP_VIEW))
                 .andExpect(model().attributeExists("signUpForm"))
                 .andDo(print());
     }
@@ -65,7 +65,7 @@ class AccountControllerTest {
     @Test
     MockHttpSession singUpSubmit_success() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        this.mockMvc.perform(post("/sign-up").with(csrf())
+        this.mockMvc.perform(post(AccountController.SIGN_UP_URL).with(csrf())
                         .param("nickname", KKTRKKT_NICKNAME)
                         .param("email", KKTRKKT_EMAIL)
                         .param("password", KKTRKKT_PASSWORD)
@@ -88,13 +88,13 @@ class AccountControllerTest {
         String email = "kktrkkt";
         String password = "password!@#$";
 
-        this.mockMvc.perform(post("/sign-up").with(csrf())
+        this.mockMvc.perform(post(AccountController.SIGN_UP_URL).with(csrf())
                         .param("nickname", nickname)
                         .param("email", email)
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("signUpForm"))
+                .andExpect(view().name(AccountController.SIGN_UP_VIEW))
                 .andExpect(content().string(containsString("Please provide a valid email address")))
                 .andExpect(unauthenticated())
                 .andDo(print());
@@ -112,13 +112,13 @@ class AccountControllerTest {
 
         accounts.save(kktrkkt);
 
-        this.mockMvc.perform(post("/sign-up").with(csrf())
+        this.mockMvc.perform(post(AccountController.SIGN_UP_URL).with(csrf())
                         .param("nickname", KKTRKKT_NICKNAME)
                         .param("email", KKTRKKT_EMAIL)
                         .param("password", KKTRKKT_PASSWORD)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("signUpForm"))
+                .andExpect(view().name(AccountController.SIGN_UP_VIEW))
                 .andExpect(content().string(containsString("Nickname is already Existed")))
                 .andExpect(unauthenticated())
                 .andDo(print());
@@ -131,11 +131,11 @@ class AccountControllerTest {
         Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
         assertNotNull(kktrkkt);
 
-        this.mockMvc.perform(get("/check-email-token")
+        this.mockMvc.perform(get(AccountController.CHECK_EMAIL_TOKEN_URL)
                         .param("token", kktrkkt.getEmailCheckToken())
                         .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("checkEmailToken"))
+                .andExpect(view().name(AccountController.CHECK_EMAIL_TOKEN_VIEW))
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("orderByJoinedAt"))
                 .andExpect(model().attributeExists("nickname"))
@@ -150,11 +150,11 @@ class AccountControllerTest {
         Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
         assertNotNull(kktrkkt);
 
-        this.mockMvc.perform(get("/check-email-token")
+        this.mockMvc.perform(get(AccountController.CHECK_EMAIL_TOKEN_URL)
                         .param("token", String.valueOf(UUID.randomUUID()))
                         .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("checkEmailToken"))
+                .andExpect(view().name(AccountController.CHECK_EMAIL_TOKEN_VIEW))
                 .andExpect(model().attributeExists("error"))
                 .andExpect(unauthenticated())
                 .andDo(print());
@@ -173,7 +173,7 @@ class AccountControllerTest {
         Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
         assertNotNull(kktrkkt);
 
-        this.mockMvc.perform(get("/check-email-token")
+        this.mockMvc.perform(get(AccountController.CHECK_EMAIL_TOKEN_URL)
                         .param("token", kktrkkt.getEmailCheckToken())
                         .param("email", kktrkkt.getEmail()))
                 .andExpect(status().isOk())
@@ -184,9 +184,9 @@ class AccountControllerTest {
     @DisplayName("로그인 페이지 조회 테스트")
     @Test
     public void loginForm() throws Exception {
-        this.mockMvc.perform(get("/login"))
+        this.mockMvc.perform(get(AccountController.LOGIN_URL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("loginForm"))
+                .andExpect(view().name(AccountController.LOGIN_VIEW))
                 .andDo(print());
     }
 
@@ -194,7 +194,7 @@ class AccountControllerTest {
     @Test
     public void loginSubmit_success() throws Exception {
         verifyEmailToken_success();
-        this.mockMvc.perform(post("/login")
+        this.mockMvc.perform(post(AccountController.LOGIN_URL)
                         .param("emailOrNickname", KKTRKKT_NICKNAME)
                         .param("password", KKTRKKT_PASSWORD)
                         .param("remember-me", "false")
@@ -208,7 +208,7 @@ class AccountControllerTest {
     @Test
     public void loginSubmit_failure() throws Exception {
         verifyEmailToken_success();
-        this.mockMvc.perform(post("/login")
+        this.mockMvc.perform(post(AccountController.LOGIN_URL)
                         .param("emailOrNickname", KKTRKKT_NICKNAME)
                         .param("password", "badPassword")
                         .param("remember-me", "false")
@@ -222,7 +222,7 @@ class AccountControllerTest {
     @Test
     public void loginRememberMe() throws Exception {
         verifyEmailToken_success();
-        this.mockMvc.perform(post("/login")
+        this.mockMvc.perform(post(AccountController.LOGIN_URL)
                         .param("emailOrNickname", KKTRKKT_NICKNAME)
                         .param("password", KKTRKKT_PASSWORD)
                         .param("remember-me", "true")
@@ -237,9 +237,9 @@ class AccountControllerTest {
     @Test
     public void checkEmailForm() throws Exception {
         MockHttpSession session = singUpSubmit_success();
-        this.mockMvc.perform(get("/check-email").session(session))
+        this.mockMvc.perform(get(AccountController.CHECK_EMAIL_URL).session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("checkEmailForm"))
+                .andExpect(view().name(AccountController.CHECK_EMAIL_VIEW))
                 .andDo(print());
     }
 
@@ -247,10 +247,10 @@ class AccountControllerTest {
     @Test
     public void sendValidationEmail() throws Exception {
         MockHttpSession session = singUpSubmit_success();
-        this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+        this.mockMvc.perform(post(AccountController.CHECK_EMAIL_URL).session(session).with(csrf())
                         .param("email", KKTRKKT_EMAIL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("checkEmailForm"))
+                .andExpect(view().name(AccountController.CHECK_EMAIL_VIEW))
                 .andExpect(model().attributeExists("success"))
                 .andDo(print());
         verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
@@ -262,18 +262,18 @@ class AccountControllerTest {
         MockHttpSession session = singUpSubmit_success();
 
         for(int i=0;i<5;i++){
-            this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+            this.mockMvc.perform(post(AccountController.CHECK_EMAIL_URL).session(session).with(csrf())
                             .param("email", KKTRKKT_EMAIL))
                     .andExpect(status().isOk())
-                    .andExpect(view().name("checkEmailForm"))
+                    .andExpect(view().name(AccountController.CHECK_EMAIL_VIEW))
                     .andExpect(model().attributeExists("success"))
                     .andDo(print());
         }
 
-        this.mockMvc.perform(post("/check-email").session(session).with(csrf())
+        this.mockMvc.perform(post(AccountController.CHECK_EMAIL_URL).session(session).with(csrf())
                         .param("email", KKTRKKT_EMAIL))
                 .andExpect(status().isOk())
-                .andExpect(view().name("checkEmailForm"))
+                .andExpect(view().name(AccountController.CHECK_EMAIL_VIEW))
                 .andExpect(model().attributeExists("error"))
                 .andDo(print());
 

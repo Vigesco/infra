@@ -15,26 +15,27 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class SettingsController {
 
-    private static final String PROFILE_UPDATE_FORM = "settings/profileUpdateForm";
+    static final String PROFILE_UPDATE_VIEW = "settings/profileUpdateForm";
+    static final String SETTINGS_PROFILE_URL = "/settings/profile";
 
     private final AccountService accountService;
 
     private final ModelMapper modelMapper;
 
-    @GetMapping("/settings/profile")
+    @GetMapping(SETTINGS_PROFILE_URL)
     public String profileUpdateForm(@CurrentUser Account account, Model model) {
         ProfileUpdateForm profileUpdateForm = modelMapper.map(account, ProfileUpdateForm.class);
         model.addAttribute(profileUpdateForm);
-        return PROFILE_UPDATE_FORM;
+        return PROFILE_UPDATE_VIEW;
     }
 
-    @PostMapping("/settings/profile")
+    @PostMapping(SETTINGS_PROFILE_URL)
     public String updateProfile(@CurrentUser Account account, @Valid ProfileUpdateForm profileUpdateForm, Errors errors, RedirectAttributes ra) {
         if(errors.hasErrors()){
-            return PROFILE_UPDATE_FORM;
+            return PROFILE_UPDATE_VIEW;
         }
         accountService.updateProfile(account, profileUpdateForm);
         ra.addFlashAttribute("success", "success");
-        return "redirect:/settings/profile";
+        return "redirect:" + SETTINGS_PROFILE_URL;
     }
 }
