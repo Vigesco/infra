@@ -18,25 +18,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private static final String SIGN_UP_FORM = "signUpForm";
-    private static final String CHECK_EMAIL_TOKEN_FORM = "checkEmailToken";
-    private static final String LOGIN_FORM = "loginForm";
-    private static final String CHECK_EMAIL_FORM = "checkEmailForm";
+    static final String SIGN_UP_VIEW = "signUpForm";
+    static final String CHECK_EMAIL_TOKEN_VIEW = "checkEmailToken";
+    static final String LOGIN_VIEW = "loginForm";
+    static final String CHECK_EMAIL_VIEW = "checkEmailForm";
+    static final String SIGN_UP_URL = "/sign-up";
+    static final String CHECK_EMAIL_URL = "/check-email";
+    static final String CHECK_EMAIL_TOKEN_URL = "/check-email-token";
+    static final String LOGIN_URL = "/login";
 
     private final AccountService accountService;
 
     private final AccountRepository accounts;
 
-    @GetMapping("/sign-up")
+    @GetMapping(SIGN_UP_URL)
     public String signUpForm(Model model) {
         model.addAttribute(new SignUpForm());
-        return SIGN_UP_FORM;
+        return SIGN_UP_VIEW;
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping(SIGN_UP_URL)
     public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors) {
         if(errors.hasErrors()){
-            return SIGN_UP_FORM;
+            return SIGN_UP_VIEW;
         }
         else{
             Account account = accountService.processSignUp(signUpForm);
@@ -45,18 +49,22 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/check-email-token")
+    @GetMapping(CHECK_EMAIL_TOKEN_URL)
     public String checkEmailToken(@RequestParam String token, @RequestParam String email, Model model){
         Optional<Account> optionalAccount = accounts.findByEmail(email);
+        String error = "error";
+        String wrongEmail = "wrong.email";
+        String wrongToken = "wrong.token";
+
         if(optionalAccount.isEmpty()){
-            model.addAttribute("error", "wrong.email");
-            return CHECK_EMAIL_TOKEN_FORM;
+            model.addAttribute(error, wrongEmail);
+            return CHECK_EMAIL_TOKEN_VIEW;
         }
 
         Account account = optionalAccount.get();
         if(!account.isValidToken(token)){
-            model.addAttribute("error", "wrong.token");
-            return CHECK_EMAIL_TOKEN_FORM;
+            model.addAttribute(error, wrongToken);
+            return CHECK_EMAIL_TOKEN_VIEW;
         }
 
         accountService.completeSignUp(account);
@@ -65,7 +73,7 @@ public class AccountController {
         model.addAttribute("orderByJoinedAt", orderByJoinedAt);
         model.addAttribute("nickname", account.getNickname());
 
-        return CHECK_EMAIL_TOKEN_FORM;
+        return CHECK_EMAIL_TOKEN_VIEW;
     }
 
     private int getOrderByJoinedAtWithOutNull(Account save) {
@@ -75,28 +83,28 @@ public class AccountController {
         return findAllOrderByJoinedAt.indexOf(save) + 1;
     }
 
-    @GetMapping("/login")
+    @GetMapping(LOGIN_URL)
     public String loginForm() {
-        return LOGIN_FORM;
+        return LOGIN_VIEW;
     }
 
-    @GetMapping("/check-email")
+    @GetMapping(CHECK_EMAIL_URL)
     public String checkEmailForm() {
-        return CHECK_EMAIL_FORM;
+        return CHECK_EMAIL_VIEW;
     }
 
-    @PostMapping("/check-email")
+    @PostMapping(CHECK_EMAIL_URL)
     public String sendValidationEmail(String email, Model model) {
         Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
         if(!account.canSendValidationEmail()) {
             model.addAttribute("error", "인증 이메일은 하루에 최대 5건만 보낼 수 있습니다!");
-            return CHECK_EMAIL_FORM;
+            return CHECK_EMAIL_VIEW;
         }
 
         accountService.sendValidationEmail(email);
         model.addAttribute("success", "success");
         model.addAttribute(account);
-        return CHECK_EMAIL_FORM;
+        return CHECK_EMAIL_VIEW;
     }
 
 }

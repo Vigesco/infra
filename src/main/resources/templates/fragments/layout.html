@@ -61,7 +61,7 @@
                         <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.account.nickname}}">프로필</a></li>
                         <li><a class="dropdown-item" href="#">스터디</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">설정</a></li>
+                        <li><a class="dropdown-item" th:href="@{/settings/profile}">설정</a></li>
                         <li>
                             <form class="form-check-inline my-2 my-lg-0 w-100" th:action="@{/logout}" method="post">
                                 <button class="dropdown-item" type="submit">로그아웃</button>

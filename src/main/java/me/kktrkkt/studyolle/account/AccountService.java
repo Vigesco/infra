@@ -31,6 +31,9 @@ public class AccountService {
                 .email(signUpForm.getEmail())
                 .password(encodePassword)
                 .emailCheckToken(emailCheckToken)
+                .studyCreatedByWeb(true)
+                .studyEnrollmentResultByWeb(true)
+                .studyUpdatedByWeb(true)
                 .build();
         account.addAuthority(Authority.notVerifiedUser());
 
@@ -53,8 +56,8 @@ public class AccountService {
         account.plusNumberOfEmailsSentToday(1);
     }
 
-    public void updateProfile(Account account, ProfileUpdateForm profileUpdateForm) {
-        modelMapper.map(profileUpdateForm, account);
+    public void save(Account account, Object update) {
+        modelMapper.map(update, account);
         accounts.save(account);
     }
 }
