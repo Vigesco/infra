@@ -44,15 +44,15 @@ public class Account extends BaseEntity<Account> {
 
     private boolean studyCreatedByEmail;
 
-    private boolean studyCreatedByWeb = true;
+    private boolean studyCreatedByWeb;
 
     private boolean studyEnrollmentResultByEmail;
 
-    private boolean studyEnrollmentResultByWeb = true;
+    private boolean studyEnrollmentResultByWeb;
 
     private boolean studyUpdatedByEmail;
 
-    private boolean studyUpdatedByWeb = true;
+    private boolean studyUpdatedByWeb;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Authority> authorities;

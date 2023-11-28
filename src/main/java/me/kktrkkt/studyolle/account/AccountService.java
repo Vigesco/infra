@@ -31,6 +31,9 @@ public class AccountService {
                 .email(signUpForm.getEmail())
                 .password(encodePassword)
                 .emailCheckToken(emailCheckToken)
+                .studyCreatedByWeb(true)
+                .studyEnrollmentResultByWeb(true)
+                .studyCreatedByWeb(true)
                 .build();
         account.addAuthority(Authority.notVerifiedUser());
 
