@@ -33,7 +33,7 @@ public class AccountService {
                 .emailCheckToken(emailCheckToken)
                 .studyCreatedByWeb(true)
                 .studyEnrollmentResultByWeb(true)
-                .studyCreatedByWeb(true)
+                .studyUpdatedByWeb(true)
                 .build();
         account.addAuthority(Authority.notVerifiedUser());
 
