@@ -1,0 +1,102 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
+
+<alert>
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" >
+        <span>알림 설정을 성공적으로 저장했습니다!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</alert>
+
+<body>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-2">
+            <div th:replace="~{ fragments/settingsMenu ::menu (${#httpServletRequest.requestURI})}"></div>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                <h2 class="col-sm-12">알림설정</h2>
+                <div class="border-top"></div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm-12">
+                    <form th:action="@{/settings/notification}" th:object="${notificationUpdateForm}" method="post">
+                        <div class="row">
+                            <div class="alert alert-light" role="alert">
+                                <strong class="text-info">주요 활동 지역</strong>에서 <strong class="text-info">관심있는 주제</strong>의
+                                스터디가 만들어졌을 때 알림을 받을 방법을 설정하세요.
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyCreatedByEmail}"
+                                           role="switch" id="studyCreatedByEmailCheckBox" checked>
+                                    <label class="form-check-label" for="studyCreatedByEmailCheckBox">이메일로 받기</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyCreatedByWeb}"
+                                           role="switch" id="studyCreatedByWebCheckBox" checked>
+                                    <label class="form-check-label" for="studyCreatedByWebCheckBox">웹으로 받기</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="alert alert-light" role="alert">
+                                <strong class="text-info">스터디 참여 신청 결과</strong>를
+                                알림을 받을 방법을 설정하세요.
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyEnrollmentResultByEmail}"
+                                           role="switch" id="studyEnrollmentResultByEmailCheckBox" checked>
+                                    <label class="form-check-label" for="studyEnrollmentResultByEmailCheckBox">이메일로 받기</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyEnrollmentResultByWeb}"
+                                           role="switch" id="studyEnrollmentResultByWebCheckBox" checked>
+                                    <label class="form-check-label" for="studyEnrollmentResultByWebCheckBox">웹으로 받기</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="alert alert-light" role="alert">
+                                <strong class="text-info">관심 있는 스터디</strong>에 대한
+                                알림을 받을 방법을 설정하세요.
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyUpdatedByEmail}"
+                                           role="switch" id="studyUpdatedByEmailCheckBox" checked>
+                                    <label class="form-check-label" for="studyUpdatedByEmailCheckBox">이메일로 받기</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:field="*{studyUpdatedByWeb}"
+                                           role="switch" id="studyUpdatedByWebCheckBox" checked>
+                                    <label class="form-check-label" for="studyUpdatedByWebCheckBox">웹으로 받기</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <button type="submit" class="btn btn-outline-primary">저장하기</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

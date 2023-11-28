@@ -17,6 +17,8 @@ public class SettingsController {
 
     static final String PROFILE_UPDATE_VIEW = "settings/profileUpdateForm";
     static final String SETTINGS_PROFILE_URL = "/settings/profile";
+    static final String NOTIFICATION_UPDATE_VIEW = "settings/notificationUpdateForm";
+    static final String SETTINGS_NOTIFICATION_URL = "/settings/notification";
 
     private final AccountService accountService;
 
@@ -34,8 +36,25 @@ public class SettingsController {
         if(errors.hasErrors()){
             return PROFILE_UPDATE_VIEW;
         }
-        accountService.updateProfile(account, profileUpdateForm);
+        accountService.save(account, profileUpdateForm);
         ra.addFlashAttribute("success", "success");
         return "redirect:" + SETTINGS_PROFILE_URL;
+    }
+
+    @GetMapping(SETTINGS_NOTIFICATION_URL)
+    public String notificationUpdateForm(@CurrentUser Account account, Model model) {
+        NotificationUpdateForm notificationUpdateForm = modelMapper.map(account, NotificationUpdateForm.class);
+        model.addAttribute(notificationUpdateForm);
+        return NOTIFICATION_UPDATE_VIEW;
+    }
+
+    @PostMapping(SETTINGS_NOTIFICATION_URL)
+    public String saveNotification(@CurrentUser Account account, NotificationUpdateForm notificationUpdateForm, Errors errors, RedirectAttributes ra) {
+        if(errors.hasErrors()){
+            return NOTIFICATION_UPDATE_VIEW;
+        }
+        accountService.save(account, notificationUpdateForm);
+        ra.addFlashAttribute("success", "success");
+        return "redirect:" + SETTINGS_NOTIFICATION_URL;
     }
 }

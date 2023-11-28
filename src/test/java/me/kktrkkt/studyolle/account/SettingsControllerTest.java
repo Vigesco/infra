@@ -110,4 +110,49 @@ public class SettingsControllerTest {
         Assertions.assertNotEquals(occupation, user1.getOccupation());
         Assertions.assertNotEquals(location, user1.getLocation());
     }
+
+    @DisplayName("알림 설정 화면 조회 테스트")
+    @Test
+    @WithUser1
+    void notificationUpdateForm() throws Exception {
+        this.mockMvc.perform(get(SettingsController.SETTINGS_NOTIFICATION_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.NOTIFICATION_UPDATE_VIEW))
+                .andExpect(model().attributeExists("notificationUpdateForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("알림 설정 저장 테스트")
+    @Test
+    @WithUser1
+    void notificationSave_success() throws Exception {
+        String studyCreatedByEmail = "true";
+        String studyCreatedByWeb = "true";
+        String studyEnrollmentResultByEmail = "false";
+        String studyEnrollmentResultByWeb = "true";
+        String studyUpdatedByEmail = "false";
+        String studyUpdatedByWeb = "false";
+
+        this.mockMvc.perform(post(SettingsController.SETTINGS_NOTIFICATION_URL)
+                        .with(csrf())
+                        .param("studyCreatedByEmail", studyCreatedByEmail)
+                        .param("studyCreatedByWeb", studyCreatedByWeb)
+                        .param("studyEnrollmentResultByEmail", studyEnrollmentResultByEmail)
+                        .param("studyEnrollmentResultByWeb", studyEnrollmentResultByWeb)
+                        .param("studyUpdatedByEmail", studyUpdatedByEmail)
+                        .param("studyUpdatedByWeb", studyUpdatedByWeb)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_NOTIFICATION_URL))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertEquals(Boolean.valueOf(studyCreatedByEmail), user1.isStudyCreatedByEmail());
+        Assertions.assertEquals(Boolean.valueOf(studyCreatedByWeb), user1.isStudyCreatedByWeb());
+        Assertions.assertEquals(Boolean.valueOf(studyEnrollmentResultByEmail), user1.isStudyEnrollmentResultByEmail());
+        Assertions.assertEquals(Boolean.valueOf(studyEnrollmentResultByWeb), user1.isStudyEnrollmentResultByWeb());
+        Assertions.assertEquals(Boolean.valueOf(studyUpdatedByEmail), user1.isStudyUpdatedByEmail());
+        Assertions.assertEquals(Boolean.valueOf(studyUpdatedByWeb), user1.isStudyUpdatedByWeb());
+    }
 }

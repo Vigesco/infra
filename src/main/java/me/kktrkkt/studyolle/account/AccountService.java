@@ -53,8 +53,8 @@ public class AccountService {
         account.plusNumberOfEmailsSentToday(1);
     }
 
-    public void updateProfile(Account account, ProfileUpdateForm profileUpdateForm) {
-        modelMapper.map(profileUpdateForm, account);
+    public void save(Account account, Object update) {
+        modelMapper.map(update, account);
         accounts.save(account);
     }
 }
