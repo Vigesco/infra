@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
+      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{::alert}, ~{::scripts})}">
 
 <alert>
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" >
@@ -9,89 +9,85 @@
 </alert>
 
 <body>
-    <div class="row mt-5 justify-content-center">
-        <div class="col-2">
-            <div th:replace="~{ fragments/settingsMenu ::menu (${#httpServletRequest.requestURI})}"></div>
-        </div>
-        <div class="col-8">
-            <div class="row">
-                <h2 class="col-sm-12" th:text="${#authentication.principal.account.nickname}">닉네임</h2>
-                <div class="border-top"></div>
+<div class="row">
+    <h2 class="col-sm-12" th:text="${#authentication.principal.account.nickname}">닉네임</h2>
+    <div class="border-top"></div>
+</div>
+<div class="row mt-3">
+    <div class="col-sm-6">
+        <form class="needs-validation" th:action="@{/settings/profile}" th:object="${profileUpdateForm}" method="post" novalidate>
+            <div class="form-group">
+                <label for="inputBio" class="form-label">한줄 자기소개</label>
+                <input type="text" id="inputBio" class="form-control" maxlength="35"
+                       aria-describedby="bioHelpBlock" th:field="*{bio}" placeholder="간략하게 자신을 소개하세요">
+                <div id="bioHelpBlock" class="form-text">35자 이내로 입력하세요.</div>
+                <small class="invalid-feedback">자기소개를 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">Bio Error</small>
             </div>
-            <div class="row mt-3">
-                <div class="col-sm-6">
-                    <form class="needs-validation" th:action="@{/settings/profile}" th:object="${profileUpdateForm}" method="post" novalidate>
-                        <div class="form-group">
-                            <label for="inputBio" class="form-label">한줄 자기소개</label>
-                            <input type="text" id="inputBio" class="form-control" maxlength="35"
-                                   aria-describedby="bioHelpBlock" th:field="*{bio}" placeholder="간략하게 자신을 소개하세요">
-                            <div id="bioHelpBlock" class="form-text">35자 이내로 입력하세요.</div>
-                            <small class="invalid-feedback">자기소개를 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}">Bio Error</small>
-                        </div>
-                        <div class="form-group mt-3">
-                            <label for="inputUrl" class="form-label">링크</label>
-                            <input type="text" id="inputUrl" class="form-control" maxlength="50"
-                                   aria-describedby="urlHelpBlock" th:field="*{url}" placeholder="깃헙, 블로그등 자신을 표현할 수 있는 링크를 입력하세요.">
-                            <div id="urlHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
-                            <small class="invalid-feedback">링크를 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Url Error</small>
-                        </div>
-                        <div class="form-group mt-3">
-                            <label for="inputOccupation" class="form-label">직업</label>
-                            <input type="text" id="inputOccupation" class="form-control" maxlength="50"
-                                   aria-describedby="occupationHelpBlock" th:field="*{occupation}" placeholder="본인의 직업(개발자, 요리사, 취준생 등)을 입력하세요.">
-                            <div id="occupationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
-                            <small class="invalid-feedback">직업을 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('occupation')}" th:errors="*{occupation}">Occupation Error</small>
-                        </div>
-                        <div class="form-group mt-3">
-                            <label for="inputLocation" class="form-label">활동 지역</label>
-                            <input type="text" id="inputLocation" class="form-control" maxlength="50"
-                                   aria-describedby="locationHelpBlock" th:field="*{location}" placeholder="주요 활동 지역의 도시를 알려주세요.">
-                            <div id="locationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
-                            <small class="invalid-feedback">활동 지역을 입력하세요.</small>
-                            <small class="form-text text-danger" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</small>
-                        </div>
+            <div class="form-group mt-3">
+                <label for="inputUrl" class="form-label">링크</label>
+                <input type="text" id="inputUrl" class="form-control" maxlength="50"
+                       aria-describedby="urlHelpBlock" th:field="*{url}" placeholder="깃헙, 블로그등 자신을 표현할 수 있는 링크를 입력하세요.">
+                <div id="urlHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                <small class="invalid-feedback">링크를 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Url Error</small>
+            </div>
+            <div class="form-group mt-3">
+                <label for="inputOccupation" class="form-label">직업</label>
+                <input type="text" id="inputOccupation" class="form-control" maxlength="50"
+                       aria-describedby="occupationHelpBlock" th:field="*{occupation}" placeholder="본인의 직업(개발자, 요리사, 취준생 등)을 입력하세요.">
+                <div id="occupationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                <small class="invalid-feedback">직업을 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${#fields.hasErrors('occupation')}" th:errors="*{occupation}">Occupation Error</small>
+            </div>
+            <div class="form-group mt-3">
+                <label for="inputLocation" class="form-label">활동 지역</label>
+                <input type="text" id="inputLocation" class="form-control" maxlength="50"
+                       aria-describedby="locationHelpBlock" th:field="*{location}" placeholder="주요 활동 지역의 도시를 알려주세요.">
+                <div id="locationHelpBlock" class="form-text">50자 이내로 입력하세요.</div>
+                <small class="invalid-feedback">활동 지역을 입력하세요.</small>
+                <small class="form-text text-danger" th:if="${#fields.hasErrors('location')}" th:errors="*{location}">Location Error</small>
+            </div>
 
-                        <div class="form-group">
-                            <input type="hidden" id="inputProfileImage" class="form-control" th:field="*{profileImage}">
-                        </div>
+            <div class="form-group">
+                <input type="hidden" id="inputProfileImage" class="form-control" th:field="*{profileImage}">
+            </div>
 
-                        <div class="form-group d-grid gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary ">수정하기</button>
-                        </div>
-                    </form>
+            <div class="form-group d-grid gap-2 mt-3">
+                <button type="submit" class="btn btn-primary ">수정하기</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <div class="card text-center">
+            <div class="card-header">
+                프로필 이미지
+            </div>
+            <div id="current-profile-image" class="mt-3">
+                <img th:if="${!#strings.isEmpty(profileUpdateForm.profileImage)}" th:src="@{${profileUpdateForm.profileImage}}"
+                     width="128" height="128" class="rounded"/>
+                <svg th:if="${#strings.isEmpty(profileUpdateForm.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+                     width="128" height="128" class="rounded"></svg>
+            </div>
+            <div id="new-profile-image" class="mt-3"></div>
+            <div class="card-body">
+                <div>
+                    <label class="form-label" for="profile-image-file">프로필 이미지 변경</label>
+                    <input type="file" class="form-control" id="profile-image-file">
                 </div>
-                <div class="col-sm-6">
-                    <div class="card text-center">
-                        <div class="card-header">
-                            프로필 이미지
-                        </div>
-                        <div id="current-profile-image" class="mt-3">
-                            <img th:if="${!#strings.isEmpty(profileUpdateForm.profileImage)}" th:src="@{${profileUpdateForm.profileImage}}"
-                                 width="128" height="128" class="rounded"/>
-                            <svg th:if="${#strings.isEmpty(profileUpdateForm.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
-                                 width="128" height="128" class="rounded"></svg>
-                        </div>
-                        <div id="new-profile-image" class="mt-3"></div>
-                        <div class="card-body">
-                            <div>
-                                <label class="form-label" for="profile-image-file">프로필 이미지 변경</label>
-                                <input type="file" class="form-control" id="profile-image-file">
-                            </div>
-                            <div id="new-profile-image-control" class="d-grid gap-2 mt-3">
-                                <button class="btn btn-outline-primary btn-block" id="cut-button">자르기</button>
-                                <button class="btn btn-outline-success btn-block" id="confirm-button">확인</button>
-                                <button class="btn btn-outline-warning btn-block" id="reset-button">취소</button>
-                            </div>
-                            <div id="cropped-new-profile-image" class="mt-3"></div>
-                        </div>
-                    </div>
+                <div id="new-profile-image-control" class="d-grid gap-2 mt-3">
+                    <button class="btn btn-outline-primary btn-block" id="cut-button">자르기</button>
+                    <button class="btn btn-outline-success btn-block" id="confirm-button">확인</button>
+                    <button class="btn btn-outline-warning btn-block" id="reset-button">취소</button>
                 </div>
+                <div id="cropped-new-profile-image" class="mt-3"></div>
             </div>
         </div>
     </div>
+</div>
+</body>
+
+<scripts>
     <link href="/static/resources/node_modules/cropper/dist/cropper.min.css" th:href="@{/resources/node_modules/cropper/dist/cropper.min.css}" rel="stylesheet">
     <script src="/static/resources/node_modules/cropper/dist/cropper.min.js" th:src="@{/resources/node_modules/cropper/dist/cropper.min.js}"></script>
     <script src="/static/resources/node_modules/jquery-cropper/dist/jquery-cropper.min.js" th:src="@{/resources/node_modules/jquery-cropper/dist/jquery-cropper.min.js}"></script>
@@ -166,5 +162,5 @@
             });
         })
     </script>
-</body>
+</scripts>
 </html>
