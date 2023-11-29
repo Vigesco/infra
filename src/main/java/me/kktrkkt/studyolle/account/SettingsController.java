@@ -19,6 +19,8 @@ public class SettingsController {
     static final String SETTINGS_PROFILE_URL = "/settings/profile";
     static final String NOTIFICATION_UPDATE_VIEW = "settings/notificationUpdateForm";
     static final String SETTINGS_NOTIFICATION_URL = "/settings/notification";
+    static final String PASSWORD_UPDATE_VIEW = "settings/passwordUpdateForm";
+    static final String SETTINGS_PASSWORD_URL = "/settings/password";
 
     private final AccountService accountService;
 
@@ -39,6 +41,22 @@ public class SettingsController {
         accountService.save(account, profileUpdateForm);
         ra.addFlashAttribute("success", "success");
         return "redirect:" + SETTINGS_PROFILE_URL;
+    }
+
+    @GetMapping(SETTINGS_PASSWORD_URL)
+    public String passwordUpdateForm(Model model) {
+        model.addAttribute(new PasswordUpdateForm());
+        return PASSWORD_UPDATE_VIEW;
+    }
+
+    @PostMapping(SETTINGS_PASSWORD_URL)
+    public String updatePassword(@CurrentUser Account account, @Valid PasswordUpdateForm passwordUpdateForm, Errors errors, RedirectAttributes ra) {
+        if(errors.hasErrors()){
+            return PASSWORD_UPDATE_VIEW;
+        }
+        accountService.updatePassword(account, passwordUpdateForm);
+        ra.addFlashAttribute("success", "success");
+        return "redirect:" + SETTINGS_PASSWORD_URL;
     }
 
     @GetMapping(SETTINGS_NOTIFICATION_URL)
