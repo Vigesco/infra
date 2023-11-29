@@ -60,4 +60,11 @@ public class AccountService {
         modelMapper.map(update, account);
         accounts.save(account);
     }
+
+    public void updatePassword(Account account, PasswordUpdateForm passwordUpdateForm) {
+        String encode = encoder.encode(passwordUpdateForm.getPassword());
+        account.setPassword(encode);
+        accounts.save(account);
+    }
+
 }

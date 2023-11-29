@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -22,6 +23,9 @@ public class SettingsControllerTest {
 
     @Autowired
     private AccountRepository accounts;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void beforeEach() {
@@ -109,6 +113,56 @@ public class SettingsControllerTest {
         Assertions.assertNotEquals(url, user1.getUrl());
         Assertions.assertNotEquals(occupation, user1.getOccupation());
         Assertions.assertNotEquals(location, user1.getLocation());
+    }
+
+    @DisplayName("패스워드 설정 화면 조회 테스트")
+    @Test
+    @WithUser1
+    void passwordUpdateForm() throws Exception {
+        this.mockMvc.perform(get(SettingsController.SETTINGS_PASSWORD_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.PASSWORD_UPDATE_VIEW))
+                .andExpect(model().attributeExists("passwordUpdateForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("패스워드 설정 처리 테스트 - 성공")
+    @Test
+    @WithUser1
+    void passwordUpdateProcess_success() throws Exception {
+        String password = "asdF!@#$";
+
+        this.mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                        .with(csrf())
+                        .param("password", password)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_PASSWORD_URL))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(passwordEncoder.matches(password, user1.getPassword()));
+    }
+
+    @DisplayName("패스워드 설정 처리 테스트 - 실패")
+    @Test
+    @WithUser1
+    void passwordUpdateProcess_failure() throws Exception {
+        String password = "1234567";
+
+        this.mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
+                        .with(csrf())
+                        .param("password", password)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.PASSWORD_UPDATE_VIEW))
+                .andExpect(model().attributeExists("passwordUpdateForm"))
+                .andExpect(model().hasErrors())
+                .andDo(print());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertEquals("password1", user1.getPassword());
     }
 
     @DisplayName("알림 설정 화면 조회 테스트")
