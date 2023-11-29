@@ -29,7 +29,7 @@ public class AccountController {
     static final String LOGIN_WITHOUT_PASSWORD_URL = "/login-without-password";
     static final String LOGIN_WITHOUT_PASSWORD_VIEW = "loginWithoutPasswordForm";
     static final String LOGIN_BY_EMAIL_URL = "/login-by-email";
-    static final String LOGIN_BY_EMAIL_VIEW = "LoginByEmail";
+    static final String LOGIN_BY_EMAIL_VIEW = "loginByEmail";
 
     private final AccountService accountService;
 
