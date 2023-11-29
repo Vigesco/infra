@@ -280,5 +280,89 @@ class AccountControllerTest {
         verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
     }
 
+    @DisplayName("패스워드 없이 로그인하기 페이지 조회 테스트")
+    @Test
+    public void loginWithoutPasswordForm() throws Exception {
+        this.mockMvc.perform(get(AccountController.LOGIN_WITHOUT_PASSWORD_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_WITHOUT_PASSWORD_VIEW))
+                .andDo(print());
+    }
 
+    @DisplayName("로그인 링크 이메일 전송 테스트 - 성공")
+    @Test
+    public void sendLoginLinkEmail_success() throws Exception {
+        singUpSubmit_success();
+        this.mockMvc.perform(post(AccountController.LOGIN_WITHOUT_PASSWORD_URL)
+                        .with(csrf())
+                        .param("email", KKTRKKT_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_WITHOUT_PASSWORD_VIEW))
+                .andExpect(model().attributeExists("success"))
+                .andDo(print());
+        verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
+    }
+
+    @DisplayName("로그인 링크 이메일 전송 테스트 - 6회 전송")
+    @Test
+    public void sendLoginLinkEmail_6times() throws Exception {
+        singUpSubmit_success();
+        for (int i = 0; i < 5; i++) {
+            this.mockMvc.perform(post(AccountController.LOGIN_WITHOUT_PASSWORD_URL)
+                            .with(csrf())
+                            .param("email", KKTRKKT_EMAIL))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name(AccountController.LOGIN_WITHOUT_PASSWORD_VIEW))
+                    .andExpect(model().attributeExists("success"))
+                    .andDo(print());
+        }
+
+        this.mockMvc.perform(post(AccountController.LOGIN_WITHOUT_PASSWORD_URL)
+                        .with(csrf())
+                        .param("email", KKTRKKT_EMAIL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_WITHOUT_PASSWORD_VIEW))
+                .andExpect(model().attributeExists("error"))
+                .andDo(print());
+
+        verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
+    }
+
+    @DisplayName("이메일 로그인 - 성공")
+    @Test
+    public void loginByEmail_success() throws Exception {
+        singUpSubmit_success();
+        Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).get();
+
+        this.mockMvc.perform(get(AccountController.LOGIN_BY_EMAIL_URL)
+                        .param("email", KKTRKKT_EMAIL)
+                        .param("token", kktrkkt.getEmailCheckToken()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_BY_EMAIL_VIEW))
+                .andExpect(model().attributeDoesNotExist("error"))
+                .andDo(print());
+    }
+
+    @DisplayName("이메일 로그인 - 실패")
+    @Test
+    public void loginByEmail_failure() throws Exception {
+        singUpSubmit_success();
+        Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).get();
+
+        this.mockMvc.perform(get(AccountController.LOGIN_BY_EMAIL_URL)
+                        .param("email", "wrongEmail")
+                        .param("token", kktrkkt.getEmailCheckToken()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_BY_EMAIL_VIEW))
+                .andExpect(model().attributeExists("error"))
+                .andDo(print());
+
+        this.mockMvc.perform(get(AccountController.LOGIN_BY_EMAIL_URL)
+                        .param("email", KKTRKKT_EMAIL)
+                        .param("token", "wrongToken"))
+                .andExpect(status().isOk())
+                .andExpect(view().name(AccountController.LOGIN_BY_EMAIL_VIEW))
+                .andExpect(model().attributeExists("error"))
+                .andDo(print());
+    }
 }

@@ -27,6 +27,8 @@ public class Account extends BaseEntity<Account> {
 
     private int numberOfEmailsSentToday = 0;
 
+    private int numberOfLoginEmailsSentToday = 0;
+
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     private LocalDateTime joinedAt;
@@ -83,7 +85,15 @@ public class Account extends BaseEntity<Account> {
         return this.numberOfEmailsSentToday < 5;
     }
 
+    public boolean canSendLoginEmail() {
+        return this.numberOfLoginEmailsSentToday < 5;
+    }
+
     public void plusNumberOfEmailsSentToday(int num){
         this.numberOfEmailsSentToday += num;
+    }
+
+    public void plusNumberOfLoginEmailsSentToday(int num){
+        this.numberOfLoginEmailsSentToday += num;
     }
 }

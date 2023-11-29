@@ -50,10 +50,14 @@ public class AccountService {
                 .setAuthentication(new UsernamePasswordAuthenticationToken(new AccountUserDetails(account), null, account.getAuthorities()));
     }
 
-    public void sendValidationEmail(String email) {
-        Account account = accounts.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
+    public void sendValidationEmail(Account account) {
         accountConfig.sendValidationEmail(account);
         account.plusNumberOfEmailsSentToday(1);
+    }
+
+    public void sendLoginEmail(Account account) {
+        accountConfig.sendLoginEmail(account);
+        account.plusNumberOfLoginEmailsSentToday(1);
     }
 
     public void save(Account account, Object update) {

@@ -17,10 +17,21 @@ public class AccountConfig {
 
     @EventListener
     public void sendValidationEmail(Account account) {
+        sendEmail(account, "스터디 올래, 회원가입  인증",
+                "/check-email-token?token=" + account.getEmailCheckToken()
+                        + "&email=" + account.getEmail());
+    }
+
+    public void sendLoginEmail(Account account) {
+        sendEmail(account, "스터디 올래, 로그인 링크",
+                "/login-by-email?token=" + account.getEmailCheckToken()
+                        + "&email=" + account.getEmail());
+    }
+
+    private void sendEmail(Account account, String subject, String text) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject("스터디 올래, 회원가입  인증");
-        simpleMailMessage.setText("/check-email-token?token=" + account.getEmailCheckToken() +
-                "&email=" + account.getEmail());
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(text);
         javaMailSender.send(simpleMailMessage);
     }
 
