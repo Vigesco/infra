@@ -1,6 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
-import com.mysema.commons.lang.Assert;
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

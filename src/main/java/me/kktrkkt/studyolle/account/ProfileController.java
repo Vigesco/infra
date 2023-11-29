@@ -1,6 +1,8 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.account.exception.NicknameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.config;
+package me.kktrkkt.studyolle.infra.config;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.util.validator;
+package me.kktrkkt.studyolle.infra.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

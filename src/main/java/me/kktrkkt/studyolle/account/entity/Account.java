@@ -1,7 +1,7 @@
-package me.kktrkkt.studyolle.account;
+package me.kktrkkt.studyolle.account.entity;
 
 import lombok.*;
-import me.kktrkkt.studyolle.model.BaseEntity;
+import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

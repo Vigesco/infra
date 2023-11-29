@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

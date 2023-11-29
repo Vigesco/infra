@@ -2,6 +2,7 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.springframework.security.core.userdetails.User;
 
 @Getter @Setter

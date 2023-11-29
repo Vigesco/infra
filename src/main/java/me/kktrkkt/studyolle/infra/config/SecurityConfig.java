@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.config;
+package me.kktrkkt.studyolle.infra.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

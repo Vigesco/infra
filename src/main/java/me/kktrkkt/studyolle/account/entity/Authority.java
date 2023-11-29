@@ -1,10 +1,10 @@
-package me.kktrkkt.studyolle.account;
+package me.kktrkkt.studyolle.account.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import me.kktrkkt.studyolle.model.BaseEntity;
+import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

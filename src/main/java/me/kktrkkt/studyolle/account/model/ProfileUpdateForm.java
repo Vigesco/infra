@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.account;
+package me.kktrkkt.studyolle.account.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
