@@ -1,7 +1,7 @@
-package me.kktrkkt.studyolle.account;
+package me.kktrkkt.studyolle.account.model;
 
 import lombok.Data;
-import me.kktrkkt.studyolle.util.validator.Unique;
+import me.kktrkkt.studyolle.infra.validator.Unique;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;

@@ -1,6 +1,10 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.account.entity.Authority;
+import me.kktrkkt.studyolle.account.model.PasswordUpdateForm;
+import me.kktrkkt.studyolle.account.model.SignUpForm;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

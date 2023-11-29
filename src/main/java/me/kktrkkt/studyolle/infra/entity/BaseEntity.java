@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.model;
+package me.kktrkkt.studyolle.infra.entity;
 
 import lombok.Getter;
 import lombok.Setter;

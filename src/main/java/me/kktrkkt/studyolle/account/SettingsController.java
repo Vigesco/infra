@@ -1,6 +1,11 @@
 package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.account.model.NicknameUpdateForm;
+import me.kktrkkt.studyolle.account.model.NotificationUpdateForm;
+import me.kktrkkt.studyolle.account.model.PasswordUpdateForm;
+import me.kktrkkt.studyolle.account.model.ProfileUpdateForm;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

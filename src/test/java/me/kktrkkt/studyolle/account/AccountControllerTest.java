@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-import static me.kktrkkt.studyolle.account.Authority.notVerifiedUser;
-import static me.kktrkkt.studyolle.account.Authority.user;
+import static me.kktrkkt.studyolle.account.entity.Authority.notVerifiedUser;
+import static me.kktrkkt.studyolle.account.entity.Authority.user;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;

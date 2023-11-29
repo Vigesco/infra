@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.util.mail;
+package me.kktrkkt.studyolle.infra.mail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;

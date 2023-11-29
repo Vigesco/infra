@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.account;
+package me.kktrkkt.studyolle.account.entity;
 
 import lombok.Getter;
 import lombok.Setter;
