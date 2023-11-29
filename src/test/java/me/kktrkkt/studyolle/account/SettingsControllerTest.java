@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.account;
 
+import com.mysema.commons.lang.Assert;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -7,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -208,5 +211,59 @@ public class SettingsControllerTest {
         Assertions.assertEquals(Boolean.valueOf(studyEnrollmentResultByWeb), user1.isStudyEnrollmentResultByWeb());
         Assertions.assertEquals(Boolean.valueOf(studyUpdatedByEmail), user1.isStudyUpdatedByEmail());
         Assertions.assertEquals(Boolean.valueOf(studyUpdatedByWeb), user1.isStudyUpdatedByWeb());
+    }
+
+    @DisplayName("계정 설정 화면 조회 테스트")
+    @Test
+    @WithUser1
+    void accountUpdateForm() throws Exception {
+        this.mockMvc.perform(get(SettingsController.SETTINGS_ACCOUNT_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.ACCOUNT_UPDATE_VIEW))
+                .andExpect(model().attributeExists("nicknameUpdateForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("닉네임 변경 처리 테스트 - 성공")
+    @Test
+    @WithUser1
+    void nicknameUpdateProcess_success() throws Exception {
+        String nickname = "newUser";
+
+        this.mockMvc.perform(post(SettingsController.SETTINGS_NICKNAME_URL)
+                        .with(csrf())
+                        .param("nickname", nickname)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SettingsController.SETTINGS_ACCOUNT_URL))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+
+        Optional<Account> newUser = accounts.findByNickname("newUser");
+        Assertions.assertTrue(newUser.isPresent());
+    }
+
+    @DisplayName("닉네임 변경 처리 테스트 - 실패")
+    @Test
+    @WithUser1
+    void nicknameUpdateProcess_failure() throws Exception {
+        updateNickname("user2");
+        updateNickname("us");
+        updateNickname("");
+
+        Optional<Account> user1 = accounts.findByNickname("user1");
+        Assertions.assertTrue(user1.isPresent());
+    }
+
+    private void updateNickname(String nickname1) throws Exception {
+        this.mockMvc.perform(post(SettingsController.SETTINGS_NICKNAME_URL)
+                        .with(csrf())
+                        .param("nickname", nickname1)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.ACCOUNT_UPDATE_VIEW))
+                .andExpect(model().attributeExists("nicknameUpdateForm"))
+                .andExpect(model().hasErrors())
+                .andDo(print());
     }
 }
