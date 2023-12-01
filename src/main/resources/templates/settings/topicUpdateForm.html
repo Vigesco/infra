@@ -13,7 +13,7 @@
         </div>
         <div id="whitelist" th:text="${whitelist}" hidden></div>
         <small id="titleHelp" class="form-text text-muted">
-            공백없이 한글과 영어로만 2자 이상 20자 이내로 입력하세요.
+            <strong>공백없이 한글과 영어로만 2자 이상 20자 이내로 입력하세요.</strong>
         </small>
         <input id="title" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
     </div>
