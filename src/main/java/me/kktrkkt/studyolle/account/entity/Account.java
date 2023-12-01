@@ -58,10 +58,10 @@ public class Account extends BaseEntity<Account> {
     private boolean studyUpdatedByWeb;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Authority> authorities;
+    private List<Authority> authorities = new ArrayList<>();
 
     @OneToMany
-    private List<Topic> topics;
+    private List<Topic> topics = new ArrayList<>();;
 
     public Account createNew() {
         registerEvent(this);

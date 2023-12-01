@@ -1,6 +1,10 @@
 package me.kktrkkt.studyolle.account;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.account.model.TopicUpdateForm;
+import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.topic.TopicRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,7 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -28,7 +35,13 @@ public class SettingsControllerTest {
     private AccountRepository accounts;
 
     @Autowired
+    private TopicRepository topics;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void beforeEach() {
@@ -211,6 +224,77 @@ public class SettingsControllerTest {
         Assertions.assertEquals(Boolean.valueOf(studyEnrollmentResultByWeb), user1.isStudyEnrollmentResultByWeb());
         Assertions.assertEquals(Boolean.valueOf(studyUpdatedByEmail), user1.isStudyUpdatedByEmail());
         Assertions.assertEquals(Boolean.valueOf(studyUpdatedByWeb), user1.isStudyUpdatedByWeb());
+    }
+
+    @DisplayName("관심주제 설정 화면 조회 테스트")
+    @Test
+    @WithUser1
+    void topicUpdateForm() throws Exception {
+        this.mockMvc.perform(get(SettingsController.SETTINGS_TOPIC_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.TOPIC_UPDATE_VIEW))
+                .andExpect(model().attributeExists("topicList"))
+                .andExpect(model().attributeExists("whiteList"))
+                .andDo(print());
+    }
+
+    @DisplayName("관심주제 추가 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void addTopic_success() throws Exception {
+        String spring = "스프링";
+        addTopic(spring, "/add", status().isOk());
+
+        Optional<Topic> springTopic = topics.findByTitle(spring);
+        Assertions.assertTrue(springTopic.isPresent());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().contains(springTopic.get()));
+    }
+
+    private TopicUpdateForm topicUpdateForm(String title) {
+        TopicUpdateForm topicUpdateForm = new TopicUpdateForm();
+        topicUpdateForm.setTitle(title);
+        return topicUpdateForm;
+    }
+
+    @DisplayName("관심주제 중복 추가 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void addDuplicationTopic_success() throws Exception {
+        Topic topic = new Topic();
+        topic.setTitle("스프링");
+        topics.save(topic);
+
+        addTopic_success();
+
+        List<Topic> topicAll  = topics.findAll();;
+        Assertions.assertEquals(1, topicAll.stream().filter(x -> x.getTitle().equals("스프링")).count());
+    }
+
+    @DisplayName("관심주제 추가 - 실패")
+    @Test
+    @WithUser1
+    @Transactional
+    void addTopic_failure() throws Exception {
+        addTopic("스", "/remove", status().isBadRequest());
+        addTopic("1", "/remove", status().isBadRequest());
+        addTopic("스 프 링", "/remove", status().isBadRequest());
+        addTopic("가나다라마가나다라마가나다라마가나다라마가", "/remove", status().isBadRequest());
+        addTopic("ㄱ", "/remove", status().isBadRequest());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().isEmpty());
+    }
+
+    private void addTopic(String title, String url, ResultMatcher status) throws Exception {
+        this.mockMvc.perform(post(SettingsController.SETTINGS_TOPIC_URL + url)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(topicUpdateForm(title)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status)
+                .andDo(print());
     }
 
     @DisplayName("계정 설정 화면 조회 테스트")
