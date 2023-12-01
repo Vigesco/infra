@@ -111,7 +111,7 @@ public class SettingsController {
         List<String> whiteList = topics.findAll().stream()
                 .map(Topic::getTitle)
                 .collect(Collectors.toList());
-        model.addAttribute("whitelist", objectMapper.writeValueAsString(whiteList));
+        model.addAttribute("whiteList", objectMapper.writeValueAsString(whiteList));
 
         return TOPIC_UPDATE_VIEW;
     }
