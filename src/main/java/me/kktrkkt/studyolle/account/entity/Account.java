@@ -2,6 +2,7 @@ package me.kktrkkt.studyolle.account.entity;
 
 import lombok.*;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
+import me.kktrkkt.studyolle.topic.Topic;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -58,6 +59,9 @@ public class Account extends BaseEntity<Account> {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Authority> authorities;
+
+    @OneToMany
+    private List<Topic> topics;
 
     public Account createNew() {
         registerEvent(this);

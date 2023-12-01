@@ -1,20 +1,29 @@
 package me.kktrkkt.studyolle.account;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.account.model.NicknameUpdateForm;
 import me.kktrkkt.studyolle.account.model.NotificationUpdateForm;
 import me.kktrkkt.studyolle.account.model.PasswordUpdateForm;
 import me.kktrkkt.studyolle.account.model.ProfileUpdateForm;
+import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.topic.TopicRepository;
+import me.kktrkkt.studyolle.topic.TopicService;
+import me.kktrkkt.studyolle.account.model.TopicUpdateForm;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,10 +38,18 @@ public class SettingsController {
     static final String ACCOUNT_UPDATE_VIEW = "settings/accountUpdateForm";
     static final String SETTINGS_ACCOUNT_URL = "/settings/account";
     static final String SETTINGS_NICKNAME_URL = "/settings/nickname";
+    static final String SETTINGS_TOPIC_URL = "/settings/topic";
+    static final String TOPIC_UPDATE_VIEW = "settings/topicUpdateForm";
 
     private final AccountService accountService;
 
     private final ModelMapper modelMapper;
+
+    private final TopicRepository topics;
+
+    private final TopicService topicService;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping(SETTINGS_PROFILE_URL)
     public String profileUpdateForm(@CurrentUser Account account, Model model) {
@@ -82,6 +99,47 @@ public class SettingsController {
         accountService.save(account, notificationUpdateForm);
         ra.addFlashAttribute("success", "success");
         return "redirect:" + SETTINGS_NOTIFICATION_URL;
+    }
+
+    @GetMapping(SETTINGS_TOPIC_URL)
+    public String topicUpdateForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
+        model.addAttribute(account);
+
+        List<Topic> topicList = accountService.getTopics(account);
+        model.addAttribute("topicList", topicList.stream().map(Topic::getTitle).collect(Collectors.toList()));
+
+        List<String> whiteList = topics.findAll().stream()
+                .map(Topic::getTitle)
+                .collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(whiteList));
+
+        return TOPIC_UPDATE_VIEW;
+    }
+
+    @PostMapping(SETTINGS_TOPIC_URL + "/add")
+    @ResponseBody
+    public ResponseEntity<Void> addTopic(@CurrentUser Account account, @RequestBody @Valid TopicUpdateForm topicUpdateForm, Errors errors) {
+        if(errors.hasErrors()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Topic topic = topicService.findOrCreateNew(new Topic(), topicUpdateForm);
+        accountService.addTopic(account, topic);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(SETTINGS_TOPIC_URL + "/remove")
+    @ResponseBody
+    public ResponseEntity<Void> removeTopic(@CurrentUser Account account, @RequestBody TopicUpdateForm topicUpdateForm) {
+        Optional<Topic> byTitle = topics.findByTitle(topicUpdateForm.getTitle());
+
+        if(byTitle.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.removeTopic(account, byTitle.get());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(SETTINGS_ACCOUNT_URL)
