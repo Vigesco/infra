@@ -1,0 +1,83 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{}, ~{::scripts})}">
+
+<body>
+<div class="row">
+    <h2 class="col-12">관심있는 스터디 주제</h2>
+    <div class="border-top"></div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="alert alert-info mb-3" role="alert" >
+            <span>참여하고 싶은 스터디 주제를 입력해주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요</span>
+        </div>
+        <div id="whiteList" th:text="${whiteList}" hidden></div>
+        <small id="titleHelp" class="form-text text-muted">
+            <strong>공백없이 한글과 영어로만 2자 이상 20자 이내로 입력하세요.</strong>
+        </small>
+        <input id="title" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
+    </div>
+</div>
+</body>
+
+<scripts>
+    <script type="application/javascript">
+        $(function (){
+            const csrfToken = "[[${_csrf.token}]]";
+            const csrfHeader = "[[${_csrf.headerName}]]";
+            $(document).ajaxSend(function (e, xhr, options){
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            })
+        })
+    </script>
+    <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
+    <script type="application/javascript">
+        $(function (){
+            const input = document.getElementById('title');
+
+            const tagify = new Tagify(input, {
+                pattern: /^[가-힣A-Za-z]{2,20}$/,
+                whitelist: JSON.parse(document.querySelector("#whiteList").textContent),
+                dropdown: {
+                    enabled : 0
+                }
+            })
+
+            function tagRequest(url, title, tag) {
+                tagify.tagLoading(tag, true);
+                $.ajax({
+                    url: "/settings/topic" + url,
+                    data: JSON.stringify({"title" : title}),
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true
+                    },
+                    contentType: "application/json",
+                    method: "post",
+                }).done(function(data, status){
+                    console.log(`status is ${status}`);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log(`${errorThrown} and status is ${textStatus}`);
+                }).always(function (){
+                    tagify.tagLoading(tag, false);
+                })
+
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value, e.detail.tag);
+
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value, e.detail.tag);
+            }
+
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            tagify.DOM.input.classList.add('form-control');
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        })
+    </script>
+</scripts>
+</html>
