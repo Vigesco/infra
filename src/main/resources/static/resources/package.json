@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "@yaireo/tagify": "^4.17.9",
+    "@yaireo/tagify": "^3.5.1",
     "bootstrap": "^5.3.2",
     "cropper": "^4.1.0",
     "font-awesome": "^4.7.0",
