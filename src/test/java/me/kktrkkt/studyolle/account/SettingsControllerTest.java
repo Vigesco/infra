@@ -289,6 +289,36 @@ public class SettingsControllerTest {
         Assertions.assertTrue(user1.getTopics().isEmpty());
     }
 
+
+    @DisplayName("관심주제 삭제 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeTopic_success() throws Exception {
+        String spring = "스프링";
+        requestTopic(spring, "/add", status().isOk());
+        requestTopic(spring, "/remove", status().isOk());
+
+        Optional<Topic> springTopic = topics.findByTitle(spring);
+        Assertions.assertTrue(springTopic.isPresent());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().isEmpty());
+    }
+
+    @DisplayName("관심주제 삭제 - 실패")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeTopic_failure() throws Exception {
+        String spring = "스프링";
+        requestTopic(spring, "/remove", status().isBadRequest());
+
+        Optional<Topic> springTopic = topics.findByTitle(spring);
+        Assertions.assertTrue(springTopic.isEmpty());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().isEmpty());
+    }
+
     private void requestTopic(String title, String url, ResultMatcher status) throws Exception {
         this.mockMvc.perform(post(SettingsController.SETTINGS_TOPIC_URL + url)
                         .with(csrf())
