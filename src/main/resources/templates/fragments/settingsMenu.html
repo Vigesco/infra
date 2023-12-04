@@ -6,7 +6,7 @@
     <a th:href="@{/settings/password}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/password')} ? 'active'" th:aria-current="${currentUrl.contains('/password')} ? true : false">패스워드</a>
     <a th:href="@{/settings/notification}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/notification')} ? 'active'" th:aria-current="${currentUrl.contains('/notification')} ? true : false">알림</a>
     <a th:href="@{/settings/topic}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/topic')} ? 'active'" th:aria-current="${currentUrl.contains('/topic')} ? true : false">관심주제</a>
-    <a th:href="@{/settings/location}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/location')} ? 'active'" th:aria-current="${currentUrl.contains('/location')} ? true : false">활동지역</a>
+    <a th:href="@{/settings/zone}" class="list-group-item list-group-item-action" th:classappend="${#strings.contains(currentUrl, '/zone')} ? 'active'" th:aria-current="${currentUrl.contains('/zone')} ? true : false">활동지역</a>
     <a th:href="@{/settings/account}" class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${#strings.contains(currentUrl, '/account')} ? 'active'" th:aria-current="${currentUrl.contains('/account')} ? true : false">계정</a>
 </div>
 </body>

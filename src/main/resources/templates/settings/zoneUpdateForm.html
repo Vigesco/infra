@@ -1,0 +1,89 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{}, ~{::scripts})}">
+
+<body>
+<div class="row">
+    <h2 class="col-12">주요 활동 지역</h2>
+    <div class="border-top"></div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="alert alert-info mb-3" role="alert" >
+            <span>주로 스터디를 다닐 수 있는 지역을 입력하세요. 해당 지역에 스터디가 생기면 알림을 받을 수 있습니다. 시스템에 등록된 지역만 선택할 수 있습니다.</span>
+        </div>
+        <div id="whiteList" th:text="${whiteList}" hidden></div>
+        <input id="zone" type="text" th:value="${#strings.listJoin(zoneList, ',')}" class="tagify-outside">
+    </div>
+</div>
+</body>
+
+<scripts>
+    <script type="application/javascript">
+        $(function (){
+            const csrfToken = "[[${_csrf.token}]]";
+            const csrfHeader = "[[${_csrf.headerName}]]";
+            $(document).ajaxSend(function (e, xhr, options){
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            })
+        })
+    </script>
+    <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
+    <script type="application/javascript">
+        $(function (){
+            const input = document.getElementById('zone');
+
+            const tagify = new Tagify(input, {
+                whitelist: JSON.parse($("#whiteList").text()),
+                dropdown: {
+                    enabled : 0
+                },
+                enforceWhitelist: true
+            })
+
+            function tagRequest(url, city, province, tag) {
+                tagify.tagLoading(tag, true);
+                $.ajax({
+                    url: "/settings/zone" + url,
+                    data: JSON.stringify({"city" : city, "province" : province}),
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true
+                    },
+                    contentType: "application/json",
+                    method: "post",
+                }).done(function(data, status){
+                    console.log(`status is ${status}`);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log(`${errorThrown} and status is ${textStatus}`);
+                }).always(function (){
+                    tagify.tagLoading(tag, false);
+                })
+
+            }
+
+            function extractCity(zone) {
+                return zone.substring(0, zone.indexOf('('));
+            }
+
+            function extractProvince(zone) {
+                return zone.substring(zone.lastIndexOf('/')+1);
+            }
+
+            function onAdd(e) {
+                const zone = e.detail.data.value;
+                tagRequest("/add", extractCity(zone), extractProvince(zone), e.detail.tag);
+            }
+
+            function onRemove(e) {
+                const zone = e.detail.data.value;
+                tagRequest("/remove", extractCity(zone), extractProvince(zone), e.detail.tag);
+            }
+
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            tagify.DOM.input.classList.add('form-control');
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        })
+    </script>
+</scripts>
+</html>

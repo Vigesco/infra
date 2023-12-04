@@ -5,6 +5,7 @@ import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.account.model.PasswordUpdateForm;
 import me.kktrkkt.studyolle.account.model.SignUpForm;
 import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.zone.Zone;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -77,6 +78,18 @@ public class AccountService {
 
     public List<Topic> getTopics(Account account) {
         return persistAccount(account).getTopics();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        getZones(account).add(zone);
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        getZones(account).remove(zone);
+    }
+
+    public List<Zone> getZones(Account account) {
+        return persistAccount(account).getZones();
     }
 
     private Account persistAccount(Account account) {

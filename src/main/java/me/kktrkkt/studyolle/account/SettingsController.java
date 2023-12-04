@@ -12,6 +12,9 @@ import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.topic.TopicRepository;
 import me.kktrkkt.studyolle.topic.TopicService;
 import me.kktrkkt.studyolle.topic.TopicForm;
+import me.kktrkkt.studyolle.zone.Zone;
+import me.kktrkkt.studyolle.zone.ZoneForm;
+import me.kktrkkt.studyolle.zone.ZoneRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,6 +43,8 @@ public class SettingsController {
     static final String SETTINGS_NICKNAME_URL = "/settings/nickname";
     static final String SETTINGS_TOPIC_URL = "/settings/topic";
     static final String TOPIC_UPDATE_VIEW = "settings/topicUpdateForm";
+    static final String SETTINGS_ZONE_URL = "/settings/zone";
+    static final String ZONE_UPDATE_VIEW = "settings/zoneUpdateForm";
 
     private final AccountService accountService;
 
@@ -48,6 +53,8 @@ public class SettingsController {
     private final TopicRepository topics;
 
     private final TopicService topicService;
+
+    private final ZoneRepository zones;
 
     private final ObjectMapper objectMapper;
 
@@ -139,6 +146,45 @@ public class SettingsController {
         }
 
         accountService.removeTopic(account, byTitle.get());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(SETTINGS_ZONE_URL)
+    public String zoneUpdateForm(@CurrentUser Account account, Model model) throws JsonProcessingException {
+        model.addAttribute(account);
+
+        List<Zone> zoneList = accountService.getZones(account);
+        model.addAttribute("zoneList", zoneList);
+
+        List<String> whiteList = zones.findAll().stream().map(Zone::toString).collect(Collectors.toList());
+        model.addAttribute("whiteList", objectMapper.writeValueAsString(whiteList));
+
+        return ZONE_UPDATE_VIEW;
+    }
+
+    @PostMapping(SETTINGS_ZONE_URL + "/add")
+    @ResponseBody
+    public ResponseEntity<Void> addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+        if(byCityAndProvince.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.addZone(account, byCityAndProvince.get());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(SETTINGS_ZONE_URL + "/remove")
+    @ResponseBody
+    public ResponseEntity<Void> removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
+        Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
+
+        if(byCityAndProvince.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.removeZone(account, byCityAndProvince.get());
         return ResponseEntity.ok().build();
     }
 
