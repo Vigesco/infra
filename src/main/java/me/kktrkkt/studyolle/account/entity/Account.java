@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter @Setter
@@ -47,25 +48,39 @@ public class Account extends BaseEntity<Account> {
 
     private boolean studyCreatedByEmail;
 
-    private boolean studyCreatedByWeb;
+    private boolean studyCreatedByWeb = true;
 
     private boolean studyEnrollmentResultByEmail;
 
-    private boolean studyEnrollmentResultByWeb;
+    private boolean studyEnrollmentResultByWeb = true;
 
     private boolean studyUpdatedByEmail;
 
-    private boolean studyUpdatedByWeb;
+    private boolean studyUpdatedByWeb = true;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "account_account_group",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_group_id"))
     private List<Authority> authorities = new ArrayList<>();
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "account_topic",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "topic_id"))
     private List<Topic> topics = new ArrayList<>();;
+
+    {
+        addAuthority(Authority.notVerifiedUser());
+    }
 
     public Account createNew() {
         registerEvent(this);
         return this;
+    }
+
+    public void generateEmailToken() {
+        this.emailCheckToken = String.valueOf(UUID.randomUUID());
     }
 
     public void completeSignUp() {
@@ -75,9 +90,6 @@ public class Account extends BaseEntity<Account> {
     }
 
     public void addAuthority(Authority authority) {
-        if(this.authorities == null){
-            this.authorities = new ArrayList<>();
-        }
         this.authorities.add(authority);
     }
 

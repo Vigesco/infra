@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.account.model;
+package me.kktrkkt.studyolle.topic;
 
 import lombok.Data;
 
@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
-public class TopicUpdateForm {
+public class TopicForm {
 
     @NotEmpty
     @Size(min = 2, max = 20)

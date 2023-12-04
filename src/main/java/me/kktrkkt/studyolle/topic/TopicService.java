@@ -19,14 +19,10 @@ public class TopicService {
         return topics.findAllByTitleContains(title);
     }
 
-    public Topic findOrCreateNew(Topic topic, Object update) {
-        modelMapper.map(update, topic);
+    public Topic findOrCreateNew(Topic topic, TopicForm topicForm) {
+        modelMapper.map(topicForm, topic);
         Optional<Topic> byTitle = topics.findByTitle(topic.getTitle());
 
-        if(byTitle.isEmpty()){
-            return topics.save(topic);
-        }
-
-        return byTitle.get();
+        return byTitle.orElseGet(() -> topics.save(topic));
     }
 }

@@ -2,7 +2,6 @@ package me.kktrkkt.studyolle.account;
 
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.account.entity.Account;
-import me.kktrkkt.studyolle.account.entity.Authority;
 import me.kktrkkt.studyolle.account.model.PasswordUpdateForm;
 import me.kktrkkt.studyolle.account.model.SignUpForm;
 import me.kktrkkt.studyolle.topic.Topic;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,20 +29,11 @@ public class AccountService {
     private final ModelMapper modelMapper;
 
     public Account processSignUp(SignUpForm signUpForm) {
-        String encodePassword = encoder.encode(signUpForm.getPassword());
-        String emailCheckToken = String.valueOf(UUID.randomUUID());
-        Account account = Account.builder()
-                .nickname(signUpForm.getNickname())
-                .email(signUpForm.getEmail())
-                .password(encodePassword)
-                .emailCheckToken(emailCheckToken)
-                .studyCreatedByWeb(true)
-                .studyEnrollmentResultByWeb(true)
-                .studyUpdatedByWeb(true)
-                .build();
-        account.addAuthority(Authority.notVerifiedUser());
+        signUpForm.setPassword(encoder.encode(signUpForm.getPassword()));
+        Account newAccount = modelMapper.map(signUpForm, Account.class);
+        newAccount.generateEmailToken();
 
-        return accounts.save(account.createNew());
+        return accounts.save(newAccount.createNew());
     }
 
     public void completeSignUp(Account account){
