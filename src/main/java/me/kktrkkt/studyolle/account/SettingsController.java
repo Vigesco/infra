@@ -11,7 +11,7 @@ import me.kktrkkt.studyolle.account.model.ProfileUpdateForm;
 import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.topic.TopicRepository;
 import me.kktrkkt.studyolle.topic.TopicService;
-import me.kktrkkt.studyolle.account.model.TopicUpdateForm;
+import me.kktrkkt.studyolle.topic.TopicForm;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -118,12 +118,12 @@ public class SettingsController {
 
     @PostMapping(SETTINGS_TOPIC_URL + "/add")
     @ResponseBody
-    public ResponseEntity<Void> addTopic(@CurrentUser Account account, @RequestBody @Valid TopicUpdateForm topicUpdateForm, Errors errors) {
+    public ResponseEntity<Void> addTopic(@CurrentUser Account account, @RequestBody @Valid TopicForm topicForm, Errors errors) {
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
 
-        Topic topic = topicService.findOrCreateNew(new Topic(), topicUpdateForm);
+        Topic topic = topicService.findOrCreateNew(new Topic(), topicForm);
         accountService.addTopic(account, topic);
 
         return ResponseEntity.ok().build();
@@ -131,8 +131,8 @@ public class SettingsController {
 
     @PostMapping(SETTINGS_TOPIC_URL + "/remove")
     @ResponseBody
-    public ResponseEntity<Void> removeTopic(@CurrentUser Account account, @RequestBody TopicUpdateForm topicUpdateForm) {
-        Optional<Topic> byTitle = topics.findByTitle(topicUpdateForm.getTitle());
+    public ResponseEntity<Void> removeTopic(@CurrentUser Account account, @RequestBody TopicForm topicForm) {
+        Optional<Topic> byTitle = topics.findByTitle(topicForm.getTitle());
 
         if(byTitle.isEmpty()){
             return ResponseEntity.badRequest().build();

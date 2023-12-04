@@ -2,7 +2,7 @@ package me.kktrkkt.studyolle.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kktrkkt.studyolle.account.entity.Account;
-import me.kktrkkt.studyolle.account.model.TopicUpdateForm;
+import me.kktrkkt.studyolle.topic.TopicForm;
 import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.topic.TopicRepository;
 import org.junit.jupiter.api.*;
@@ -252,8 +252,8 @@ public class SettingsControllerTest {
         Assertions.assertTrue(user1.getTopics().contains(springTopic.get()));
     }
 
-    private TopicUpdateForm topicUpdateForm(String title) {
-        TopicUpdateForm topicUpdateForm = new TopicUpdateForm();
+    private TopicForm topicUpdateForm(String title) {
+        TopicForm topicUpdateForm = new TopicForm();
         topicUpdateForm.setTitle(title);
         return topicUpdateForm;
     }
@@ -264,13 +264,14 @@ public class SettingsControllerTest {
     @Transactional
     void addDuplicationTopic_success() throws Exception {
         Topic topic = new Topic();
-        topic.setTitle("스프링");
+        String title = "스프링";
+        topic.setTitle(title);
         topics.save(topic);
 
-        addTopic_success();
+        addTopic(title, "/add", status().isOk());
 
-        List<Topic> topicAll  = topics.findAll();;
-        Assertions.assertEquals(1, topicAll.stream().filter(x -> x.getTitle().equals("스프링")).count());
+        List<Topic> topicAll  = topics.findAll();
+        Assertions.assertEquals(1, topicAll.stream().filter(x -> x.getTitle().equals(title)).count());
     }
 
     @DisplayName("관심주제 추가 - 실패")
