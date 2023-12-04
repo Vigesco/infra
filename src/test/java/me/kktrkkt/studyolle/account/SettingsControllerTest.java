@@ -351,12 +351,10 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void addZone_success() throws Exception {
-        String city = "Seoul";
-        String province = "서울";
-        Optional<Zone> seoul = zones.findByCityAndProvince(city, province);
+        Optional<Zone> seoul = zones.findByCityAndProvince("Seoul", "서울");
 
         Assertions.assertTrue(seoul.isPresent());
-        requestZone(city, province, "/add", status().isOk());
+        requestZone(seoul.get().toString(), "/add", status().isOk());
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getZones().contains(seoul.get()));
     }
@@ -366,12 +364,10 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void addZone_failure() throws Exception {
-        String city = "wrongCity";
-        String province = "유토피아";
-        Zone wrongCity = zones.findByCityAndProvince(city, province).orElse(null);
+        Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
         Assertions.assertNull(wrongCity);
-        requestZone(city, province, "/add", status().isBadRequest());
+        requestZone("wrong(Zone)/Name", "/add", status().isBadRequest());
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getZones().isEmpty());
     }
@@ -381,13 +377,11 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void removeZone_success() throws Exception {
-        String city = "Seoul";
-        String province = "서울";
-        Optional<Zone> seoul = zones.findByCityAndProvince(city, province);
+        Optional<Zone> seoul = zones.findByCityAndProvince("Seoul", "서울");
 
         Assertions.assertTrue(seoul.isPresent());
-        requestZone(city, province, "/add", status().isOk());
-        requestZone(city, province, "/remove", status().isOk());
+        requestZone(seoul.get().toString(), "/add", status().isOk());
+        requestZone(seoul.get().toString(), "/remove", status().isOk());
 
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getZones().isEmpty());
@@ -398,30 +392,27 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void removeZone_failure() throws Exception {
-        String city = "wrongCity";
-        String province = "유토피아";
-        Zone wrongCity = zones.findByCityAndProvince(city, province).orElse(null);
+        Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
         Assertions.assertNull(wrongCity);
-        requestZone(city, province, "/remove", status().isBadRequest());
+        requestZone("wrong(Zone)/Name", "/remove", status().isBadRequest());
 
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getZones().isEmpty());
     }
 
-    private void requestZone(String city, String province, String url, ResultMatcher status) throws Exception {
+    private void requestZone(String zoneName, String url, ResultMatcher status) throws Exception {
         this.mockMvc.perform(post(SettingsController.SETTINGS_ZONE_URL + url)
                         .with(csrf())
-                        .content(objectMapper.writeValueAsString(zoneForm(city, province)))
+                        .content(objectMapper.writeValueAsString(zoneForm(zoneName)))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status)
                 .andDo(print());
     }
 
-    private ZoneForm zoneForm(String city, String province) {
+    private ZoneForm zoneForm(String zoneName) {
         ZoneForm zoneForm = new ZoneForm();
-        zoneForm.setCity(city);
-        zoneForm.setProvince(province);
+        zoneForm.setZoneName(zoneName);
         return zoneForm;
     }
 

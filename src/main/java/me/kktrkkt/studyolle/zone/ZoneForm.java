@@ -5,9 +5,13 @@ import lombok.Data;
 @Data
 public class ZoneForm {
 
-    private String city;
+    private String zoneName;
 
-    private String localNameOfCity;
+    public String getCity() {
+        return this.zoneName.substring(0, zoneName.indexOf("("));
+    }
 
-    private String province;
+    public String getProvince() {
+        return this.zoneName.substring(zoneName.indexOf("/")+1);
+    }
 }

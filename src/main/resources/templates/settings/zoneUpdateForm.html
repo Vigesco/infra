@@ -32,11 +32,11 @@
                 enforceWhitelist: true
             })
 
-            function tagRequest(url, city, province, tag) {
+            function tagRequest(url, zoneName, tag) {
                 tagify.tagLoading(tag, true);
                 $.ajax({
                     url: "/settings/zone" + url,
-                    data: JSON.stringify({"city" : city, "province" : province}),
+                    data: JSON.stringify({"zoneName" : zoneName}),
                     autocomplete: {
                         enabled: true,
                         rightKey: true
@@ -53,22 +53,12 @@
 
             }
 
-            function extractCity(zone) {
-                return zone.substring(0, zone.indexOf('('));
-            }
-
-            function extractProvince(zone) {
-                return zone.substring(zone.lastIndexOf('/')+1);
-            }
-
             function onAdd(e) {
-                const zone = e.detail.data.value;
-                tagRequest("/add", extractCity(zone), extractProvince(zone), e.detail.tag);
+                tagRequest("/add", e.detail.data.value, e.detail.tag);
             }
 
             function onRemove(e) {
-                const zone = e.detail.data.value;
-                tagRequest("/remove", extractCity(zone), extractProvince(zone), e.detail.tag);
+                tagRequest("/remove", e.detail.data.value, e.detail.tag);
             }
 
             tagify.on("add", onAdd);
