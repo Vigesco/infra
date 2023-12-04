@@ -21,15 +21,7 @@
 </body>
 
 <scripts>
-    <script type="application/javascript">
-        $(function (){
-            const csrfToken = "[[${_csrf.token}]]";
-            const csrfHeader = "[[${_csrf.headerName}]]";
-            $(document).ajaxSend(function (e, xhr, options){
-                xhr.setRequestHeader(csrfHeader, csrfToken);
-            })
-        })
-    </script>
+    <script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
     <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
     <script type="application/javascript">
         $(function (){
