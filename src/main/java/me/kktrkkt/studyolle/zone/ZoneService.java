@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.zone;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Profile({"!test"})
 @Service
 @RequiredArgsConstructor
 public class ZoneService {

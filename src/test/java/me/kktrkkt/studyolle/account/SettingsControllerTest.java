@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SettingsControllerTest {
@@ -351,12 +353,13 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void addZone_success() throws Exception {
-        Optional<Zone> seoul = zones.findByCityAndProvince("Seoul", "서울");
+        zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
+        Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
 
-        Assertions.assertTrue(seoul.isPresent());
-        requestZone(seoul.get().toString(), "/add", status().isOk());
+        Assertions.assertTrue(testZone.isPresent());
+        requestZone(testZone.get().toString(), "/add", status().isOk());
         Account user1 = accounts.findByNickname("user1").get();
-        Assertions.assertTrue(user1.getZones().contains(seoul.get()));
+        Assertions.assertTrue(user1.getZones().contains(testZone.get()));
     }
 
     @DisplayName("주요지역 추가 - 실패")
@@ -377,11 +380,12 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void removeZone_success() throws Exception {
-        Optional<Zone> seoul = zones.findByCityAndProvince("Seoul", "서울");
+        zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
+        Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
 
-        Assertions.assertTrue(seoul.isPresent());
-        requestZone(seoul.get().toString(), "/add", status().isOk());
-        requestZone(seoul.get().toString(), "/remove", status().isOk());
+        Assertions.assertTrue(testZone.isPresent());
+        requestZone(testZone.get().toString(), "/add", status().isOk());
+        requestZone(testZone.get().toString(), "/remove", status().isOk());
 
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getZones().isEmpty());
