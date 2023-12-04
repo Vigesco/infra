@@ -20,6 +20,6 @@ public class Zone extends BaseEntity<Zone> {
     private String province;
 
     public String toString(){
-        return this.city + "(" + this.localNameOfCity + ")" + "/" + this.province;
+        return String.format("%s(%s)/%s", this.city, this.localNameOfCity, this.province);
     }
 }
