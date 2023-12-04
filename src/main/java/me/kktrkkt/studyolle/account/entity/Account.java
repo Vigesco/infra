@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Getter @Setter
-@Builder @AllArgsConstructor
+@Builder @AllArgsConstructor @NoArgsConstructor
 public class Account extends BaseEntity<Account> {
 
     @Column(unique = true)
@@ -70,7 +70,7 @@ public class Account extends BaseEntity<Account> {
             inverseJoinColumns = @JoinColumn(name = "topic_id"))
     private List<Topic> topics = new ArrayList<>();;
 
-    public Account() {
+    {
         addAuthority(Authority.notVerifiedUser());
     }
 
