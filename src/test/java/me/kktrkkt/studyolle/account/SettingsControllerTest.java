@@ -5,6 +5,9 @@ import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.topic.TopicForm;
 import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.topic.TopicRepository;
+import me.kktrkkt.studyolle.zone.Zone;
+import me.kktrkkt.studyolle.zone.ZoneForm;
+import me.kktrkkt.studyolle.zone.ZoneRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +39,9 @@ public class SettingsControllerTest {
 
     @Autowired
     private TopicRepository topics;
+
+    @Autowired
+    private ZoneRepository zones;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -244,18 +250,12 @@ public class SettingsControllerTest {
     @Transactional
     void addTopic_success() throws Exception {
         String spring = "스프링";
-        addTopic(spring, "/add", status().isOk());
+        requestTopic(spring, "/add", status().isOk());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
         Assertions.assertTrue(springTopic.isPresent());
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getTopics().contains(springTopic.get()));
-    }
-
-    private TopicForm topicUpdateForm(String title) {
-        TopicForm topicUpdateForm = new TopicForm();
-        topicUpdateForm.setTitle(title);
-        return topicUpdateForm;
     }
 
     @DisplayName("관심주제 중복 추가 - 성공")
@@ -268,7 +268,7 @@ public class SettingsControllerTest {
         topic.setTitle(title);
         topics.save(topic);
 
-        addTopic(title, "/add", status().isOk());
+        requestTopic(title, "/add", status().isOk());
 
         List<Topic> topicAll  = topics.findAll();
         Assertions.assertEquals(1, topicAll.stream().filter(x -> x.getTitle().equals(title)).count());
@@ -279,23 +279,150 @@ public class SettingsControllerTest {
     @WithUser1
     @Transactional
     void addTopic_failure() throws Exception {
-        addTopic("스", "/remove", status().isBadRequest());
-        addTopic("1", "/remove", status().isBadRequest());
-        addTopic("스 프 링", "/remove", status().isBadRequest());
-        addTopic("가나다라마가나다라마가나다라마가나다라마가", "/remove", status().isBadRequest());
-        addTopic("ㄱ", "/remove", status().isBadRequest());
+        requestTopic("스", "/remove", status().isBadRequest());
+        requestTopic("1", "/remove", status().isBadRequest());
+        requestTopic("스 프 링", "/remove", status().isBadRequest());
+        requestTopic("가나다라마가나다라마가나다라마가나다라마가", "/remove", status().isBadRequest());
+        requestTopic("ㄱ", "/remove", status().isBadRequest());
 
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getTopics().isEmpty());
     }
 
-    private void addTopic(String title, String url, ResultMatcher status) throws Exception {
+
+    @DisplayName("관심주제 삭제 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeTopic_success() throws Exception {
+        String spring = "스프링";
+        requestTopic(spring, "/add", status().isOk());
+        requestTopic(spring, "/remove", status().isOk());
+
+        Optional<Topic> springTopic = topics.findByTitle(spring);
+        Assertions.assertTrue(springTopic.isPresent());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().isEmpty());
+    }
+
+    @DisplayName("관심주제 삭제 - 실패")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeTopic_failure() throws Exception {
+        String spring = "스프링";
+        requestTopic(spring, "/remove", status().isBadRequest());
+
+        Optional<Topic> springTopic = topics.findByTitle(spring);
+        Assertions.assertTrue(springTopic.isEmpty());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getTopics().isEmpty());
+    }
+
+    private void requestTopic(String title, String url, ResultMatcher status) throws Exception {
         this.mockMvc.perform(post(SettingsController.SETTINGS_TOPIC_URL + url)
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(topicUpdateForm(title)))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status)
                 .andDo(print());
+    }
+
+    private TopicForm topicUpdateForm(String title) {
+        TopicForm topicUpdateForm = new TopicForm();
+        topicUpdateForm.setTitle(title);
+        return topicUpdateForm;
+    }
+
+    @DisplayName("주요 지역 설정 화면 조회 테스트")
+    @Test
+    @WithUser1
+    void zoneUpdateForm() throws Exception {
+        this.mockMvc.perform(get(SettingsController.SETTINGS_ZONE_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.ZONE_UPDATE_VIEW))
+                .andExpect(model().attributeExists("zoneList"))
+                .andExpect(model().attributeExists("whiteList"))
+                .andDo(print());
+    }
+
+    @DisplayName("주요지역 추가 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void addZone_success() throws Exception {
+        String city = "Seoul";
+        String province = "서울";
+        Optional<Zone> seoul = zones.findByCityAndProvince(city, province);
+
+        Assertions.assertTrue(seoul.isPresent());
+        requestZone(city, province, "/add", status().isOk());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getZones().contains(seoul.get()));
+    }
+
+    @DisplayName("주요지역 추가 - 실패")
+    @Test
+    @WithUser1
+    @Transactional
+    void addZone_failure() throws Exception {
+        String city = "wrongCity";
+        String province = "유토피아";
+        Zone wrongCity = zones.findByCityAndProvince(city, province).orElse(null);
+
+        Assertions.assertNull(wrongCity);
+        requestZone(city, province, "/add", status().isBadRequest());
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getZones().isEmpty());
+    }
+
+    @DisplayName("주요지역 삭제 - 성공")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeZone_success() throws Exception {
+        String city = "Seoul";
+        String province = "서울";
+        Optional<Zone> seoul = zones.findByCityAndProvince(city, province);
+
+        Assertions.assertTrue(seoul.isPresent());
+        requestZone(city, province, "/add", status().isOk());
+        requestZone(city, province, "/remove", status().isOk());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getZones().isEmpty());
+    }
+
+    @DisplayName("주요지역 삭제 - 실패")
+    @Test
+    @WithUser1
+    @Transactional
+    void removeZone_failure() throws Exception {
+        String city = "wrongCity";
+        String province = "유토피아";
+        Zone wrongCity = zones.findByCityAndProvince(city, province).orElse(null);
+
+        Assertions.assertNull(wrongCity);
+        requestZone(city, province, "/remove", status().isBadRequest());
+
+        Account user1 = accounts.findByNickname("user1").get();
+        Assertions.assertTrue(user1.getZones().isEmpty());
+    }
+
+    private void requestZone(String city, String province, String url, ResultMatcher status) throws Exception {
+        this.mockMvc.perform(post(SettingsController.SETTINGS_ZONE_URL + url)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(zoneForm(city, province)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status)
+                .andDo(print());
+    }
+
+    private ZoneForm zoneForm(String city, String province) {
+        ZoneForm zoneForm = new ZoneForm();
+        zoneForm.setCity(city);
+        zoneForm.setProvince(province);
+        return zoneForm;
     }
 
     @DisplayName("계정 설정 화면 조회 테스트")

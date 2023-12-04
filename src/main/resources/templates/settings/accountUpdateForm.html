@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{::alert}, ~{::scripts})}">
+      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{::alert}, ~{})}">
 
 <alert>
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" >
@@ -48,22 +48,4 @@
     </div>
 </div>
 </body>
-
-<scripts>
-    <script type="application/javascript">
-
-        $(function(){
-            $("#passwordForm").submit((event) => {
-                const password = document.getElementById("password").value;
-                const confirmPassword = document.getElementById("confirmPassword").value;
-
-                if (password !== confirmPassword) {
-                    $("#passwordMismatch").removeClass("d-none");
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            })
-        })
-    </script>
-</scripts>
 </html>

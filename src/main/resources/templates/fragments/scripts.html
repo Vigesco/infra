@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<script type="application/javascript" th:fragment="ajax_csrf (token, headerName)">
+    $(function (){
+        const csrfToken = "[[${token}]]";
+        const csrfHeader = "[[${headerName}]]";
+        $(document).ajaxSend(function (e, xhr, options){
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        })
+    })
+</script>
+
+</html>

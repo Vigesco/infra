@@ -3,19 +3,16 @@
 
 <body>
 <div class="row">
-    <h2 class="col-12">관심있는 스터디 주제</h2>
+    <h2 class="col-12">주요 활동 지역</h2>
     <div class="border-top"></div>
 </div>
 <div class="row mt-3">
     <div class="col-12">
         <div class="alert alert-info mb-3" role="alert" >
-            <span>참여하고 싶은 스터디 주제를 입력해주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요</span>
+            <span>주로 스터디를 다닐 수 있는 지역을 입력하세요. 해당 지역에 스터디가 생기면 알림을 받을 수 있습니다. 시스템에 등록된 지역만 선택할 수 있습니다.</span>
         </div>
         <div id="whiteList" th:text="${whiteList}" hidden></div>
-        <small id="titleHelp" class="form-text text-muted">
-            <strong>공백없이 한글과 영어로만 2자 이상 20자 이내로 입력하세요.</strong>
-        </small>
-        <input id="title" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
+        <input id="zone" type="text" th:value="${#strings.listJoin(zoneList, ',')}" class="tagify-outside">
     </div>
 </div>
 </body>
@@ -25,21 +22,21 @@
     <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
     <script type="application/javascript">
         $(function (){
-            const input = document.getElementById('title');
+            const input = document.getElementById('zone');
 
             const tagify = new Tagify(input, {
-                pattern: /^[가-힣A-Za-z]{2,20}$/,
-                whitelist: JSON.parse(document.querySelector("#whiteList").textContent),
+                whitelist: JSON.parse($("#whiteList").text()),
                 dropdown: {
                     enabled : 0
-                }
+                },
+                enforceWhitelist: true
             })
 
-            function tagRequest(url, title, tag) {
+            function tagRequest(url, city, province, tag) {
                 tagify.tagLoading(tag, true);
                 $.ajax({
-                    url: "/settings/topic" + url,
-                    data: JSON.stringify({"title" : title}),
+                    url: "/settings/zone" + url,
+                    data: JSON.stringify({"city" : city, "province" : province}),
                     autocomplete: {
                         enabled: true,
                         rightKey: true
@@ -56,13 +53,22 @@
 
             }
 
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value, e.detail.tag);
+            function extractCity(zone) {
+                return zone.substring(0, zone.indexOf('('));
+            }
 
+            function extractProvince(zone) {
+                return zone.substring(zone.lastIndexOf('/')+1);
+            }
+
+            function onAdd(e) {
+                const zone = e.detail.data.value;
+                tagRequest("/add", extractCity(zone), extractProvince(zone), e.detail.tag);
             }
 
             function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value, e.detail.tag);
+                const zone = e.detail.data.value;
+                tagRequest("/remove", extractCity(zone), extractProvince(zone), e.detail.tag);
             }
 
             tagify.on("add", onAdd);

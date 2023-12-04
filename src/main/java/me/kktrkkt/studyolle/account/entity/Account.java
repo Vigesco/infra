@@ -3,6 +3,7 @@ package me.kktrkkt.studyolle.account.entity;
 import lombok.*;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.zone.Zone;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -68,7 +69,13 @@ public class Account extends BaseEntity<Account> {
     @JoinTable(name = "account_topic",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "topic_id"))
-    private List<Topic> topics = new ArrayList<>();;
+    private List<Topic> topics = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "account_zone",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "zone_id"))
+    private List<Zone> zones = new ArrayList<>();
 
     {
         addAuthority(Authority.notVerifiedUser());
