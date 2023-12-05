@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.account;
 
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.infra.mail.EmailService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ import static me.kktrkkt.studyolle.account.entity.Authority.notVerifiedUser;
 import static me.kktrkkt.studyolle.account.entity.Authority.user;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -50,7 +51,7 @@ class AccountControllerTest {
     private AccountRepository accounts;
 
     @MockBean
-    private JavaMailSender javaMailSender;
+    private EmailService emailService;
 
     @DisplayName("회원가입 페이지 조회 테스트")
     @Test
@@ -78,7 +79,7 @@ class AccountControllerTest {
                 .andDo(print());
 
         Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
-        then(javaMailSender).should().send(any(SimpleMailMessage.class));
+        then(emailService).should().send(anyString(), anyString(), anyString());
         return session;
     }
 
@@ -254,7 +255,7 @@ class AccountControllerTest {
                 .andExpect(view().name(AccountController.CHECK_EMAIL_VIEW))
                 .andExpect(model().attributeExists("success"))
                 .andDo(print());
-        verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
+        verify(emailService, times(2)).send(anyString(), anyString(), anyString());
     }
 
     @DisplayName("이메일 검증 전송 테스트 - 6회 전송")
@@ -278,7 +279,7 @@ class AccountControllerTest {
                 .andExpect(model().attributeExists("error"))
                 .andDo(print());
 
-        verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
+        verify(emailService, times(6)).send(anyString(), anyString(), anyString());
     }
 
     @DisplayName("패스워드 없이 로그인하기 페이지 조회 테스트")
@@ -301,7 +302,7 @@ class AccountControllerTest {
                 .andExpect(view().name(AccountController.LOGIN_WITHOUT_PASSWORD_VIEW))
                 .andExpect(model().attributeExists("success"))
                 .andDo(print());
-        verify(javaMailSender, times(2)).send(any(SimpleMailMessage.class));
+        verify(emailService, times(2)).send(anyString(), anyString(), anyString());
     }
 
     @DisplayName("로그인 링크 이메일 전송 테스트 - 6회 전송")
@@ -326,7 +327,7 @@ class AccountControllerTest {
                 .andExpect(model().attributeExists("error"))
                 .andDo(print());
 
-        verify(javaMailSender, times(6)).send(any(SimpleMailMessage.class));
+        verify(emailService, times(6)).send(anyString(), anyString(), anyString());
     }
 
     @DisplayName("이메일 로그인 - 성공")
