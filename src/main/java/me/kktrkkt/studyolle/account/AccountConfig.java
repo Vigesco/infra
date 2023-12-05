@@ -31,6 +31,7 @@ public class AccountConfig {
 
     private void sendEmail(Account account, String subject, String text) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(account.getEmail());
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(text);
         javaMailSender.send(simpleMailMessage);
