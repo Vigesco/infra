@@ -1,7 +1,7 @@
 server.port: 8081
 
 spring:
-  profiles.active: dev
+  profiles.active: local
   jpa:
     hibernate:
       ddl-auto: create-drop
