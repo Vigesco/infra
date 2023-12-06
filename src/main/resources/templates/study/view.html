@@ -1,0 +1,48 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studyLayout :: layout (_, ~{::body}, ~{})}">
+
+<body>
+    <div class="row">
+        <img th:if="${!#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}" class="img-fluid" alt="banner">
+        <img th:if="${#strings.isEmpty(study.banner)}" src="/static/resources/images/default_banner.png"
+             th:src="@{/resources/images/default_banner.png}" class="img-fluid" alt="banner">
+    </div>
+    <div class="row bg-body-tertiary justify-content-center">
+        <div class="col-8">
+            <div class="row justify-content-between mt-3">
+                <div class="w-auto">
+                    <h2 class="text-primary" th:text="${study.title}">title</h2>
+                </div>
+                <div class="w-auto">
+                    <button type="button" class="btn btn-primary disabled">DRAFT</button>
+                    <button type="button" class="btn btn-primary disabled">OFF</button>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <p class="lead" th:text="${study.bio}"></p>
+            </div>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i>소개</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-users" aria-hidden="true"></i>구성원</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fa fa-calendar-check-o" aria-hidden="true"></i>모임</a>
+                    </li>
+                    <li class="nav-item" th:if="${isManager}">
+                        <a class="nav-link" aria-disabled="true"><i class="fa fa-cog" aria-hidden="true"></i>설정</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row bg-white justify-content-center">
+        <div class="col-8">
+            <div id="explanation" th:utext="${study.explanation}">Summernote</div>
+        </div>
+    </div>
+</body>
+</html>

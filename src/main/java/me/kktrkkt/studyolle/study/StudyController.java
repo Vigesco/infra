@@ -1,10 +1,13 @@
 package me.kktrkkt.studyolle.study;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.CurrentUser;
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -16,8 +19,12 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class StudyController {
 
+    static final String STUDY_URL = "/study";
+    static final String STUDY_VIEW= "study/view";
     static final String NEW_STUDY_URL = "/new-study";
     static final String NEW_STUDY_VIEW = "study/newStudySubmitForm";
+
+    private final StudyRepository studys;
 
     private final StudyService studyService;
 
@@ -28,14 +35,25 @@ public class StudyController {
     }
 
     @PostMapping(NEW_STUDY_URL)
-    public String createStudy(@Valid StudyForm studySubmitForm, Errors errors, RedirectAttributes ra) {
+    public String createStudy(@CurrentUser Account account, @Valid StudyForm studySubmitForm, Errors errors, RedirectAttributes ra) {
         if(errors.hasErrors()){
             return NEW_STUDY_VIEW;
         }
         else{
-            Study study = studyService.create(studySubmitForm);
+            Study study = studyService.create(account, studySubmitForm);
             ra.addFlashAttribute(study);
             return "redirect:/study/" + URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
         }
+    }
+
+    @GetMapping(STUDY_URL + "/{path}")
+    public String studyView(@CurrentUser Account account, @PathVariable String path, Model model) {
+        Study byPath = studys.findByPath(path).orElseThrow(()->new IllegalArgumentException("study is not found"));
+        model.addAttribute(byPath);
+
+        boolean isManager = byPath.getManagers().stream().anyMatch(x -> x.equals(account));
+        model.addAttribute("isManager", isManager);
+
+        return STUDY_VIEW;
     }
 }

@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.study;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.account.entity.Account;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +15,9 @@ public class StudyService {
 
     private final ModelMapper modelMapper;
 
-    public Study create(StudyForm studySubmitForm) {
+    public Study create(Account account, StudyForm studySubmitForm) {
         Study newStudy = modelMapper.map(studySubmitForm, Study.class);
+        newStudy.getManagers().add(account);
         return studys.save(newStudy);
     }
 }
