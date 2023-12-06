@@ -15,8 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @MockMvcTest
+@Transactional
 public class SettingsControllerTest {
 
     @Autowired
@@ -46,11 +47,6 @@ public class SettingsControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @AfterEach
-    void afterEach() {
-        accounts.deleteAll();
-    }
 
     @DisplayName("프로필 설정 화면 조회 테스트")
     @Test
@@ -232,7 +228,6 @@ public class SettingsControllerTest {
     @DisplayName("관심주제 추가 - 성공")
     @Test
     @WithAccount("user1")
-    @Transactional
     void addTopic_success() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/add", status().isOk());
@@ -246,7 +241,6 @@ public class SettingsControllerTest {
     @DisplayName("관심주제 중복 추가 - 성공")
     @Test
     @WithAccount("user1")
-    @Transactional
     void addDuplicationTopic_success() throws Exception {
         Topic topic = new Topic();
         String title = "스프링";
@@ -262,7 +256,6 @@ public class SettingsControllerTest {
     @DisplayName("관심주제 추가 - 실패")
     @Test
     @WithAccount("user1")
-    @Transactional
     void addTopic_failure() throws Exception {
         requestTopic("스", "/remove", status().isBadRequest());
         requestTopic("1", "/remove", status().isBadRequest());
@@ -278,7 +271,6 @@ public class SettingsControllerTest {
     @DisplayName("관심주제 삭제 - 성공")
     @Test
     @WithAccount("user1")
-    @Transactional
     void removeTopic_success() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/add", status().isOk());
@@ -293,7 +285,6 @@ public class SettingsControllerTest {
     @DisplayName("관심주제 삭제 - 실패")
     @Test
     @WithAccount("user1")
-    @Transactional
     void removeTopic_failure() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/remove", status().isBadRequest());
@@ -334,7 +325,6 @@ public class SettingsControllerTest {
     @DisplayName("주요지역 추가 - 성공")
     @Test
     @WithAccount("user1")
-    @Transactional
     void addZone_success() throws Exception {
         zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
         Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
@@ -348,7 +338,6 @@ public class SettingsControllerTest {
     @DisplayName("주요지역 추가 - 실패")
     @Test
     @WithAccount("user1")
-    @Transactional
     void addZone_failure() throws Exception {
         Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
@@ -361,7 +350,6 @@ public class SettingsControllerTest {
     @DisplayName("주요지역 삭제 - 성공")
     @Test
     @WithAccount("user1")
-    @Transactional
     void removeZone_success() throws Exception {
         zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
         Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
@@ -377,7 +365,6 @@ public class SettingsControllerTest {
     @DisplayName("주요지역 삭제 - 실패")
     @Test
     @WithAccount("user1")
-    @Transactional
     void removeZone_failure() throws Exception {
         Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
