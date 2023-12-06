@@ -1,11 +1,8 @@
 package me.kktrkkt.studyolle.study;
 
-import lombok.*;
-import me.kktrkkt.studyolle.infra.entity.BaseEntity;
+import lombok.Data;
 import me.kktrkkt.studyolle.infra.validator.Unique;
 
-import javax.persistence.Entity;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -20,10 +17,10 @@ public class StudySubmitForm{
     private String url;
 
     @NotEmpty(message = "필수 입력 값입니다.")
-    @Max(value = 50, message = "50자 이내로 입력하세요")
+    @Size(max = 50, message = "50자 이내로 입력하세요")
     private String title;
 
-    @Max(value = 255, message = "255자 이내로 입력하세요")
+    @Size(max = 255, message = "255자 이내로 입력하세요")
     private String bio;
 
     private String explanation;
