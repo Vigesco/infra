@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${title}">Study Olle</title>
 
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500&display=swap" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="../../static/resources/images/favicon.ico" th:href="@{/resources/images/favicon.ico}">
     <link rel="stylesheet" href="../../static/resources/node_modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/resources/node_modules/bootstrap/dist/css/bootstrap.min.css}">
     <link rel="stylesheet" href="../../static/resources/node_modules/font-awesome/css/font-awesome.min.css" th:href="@{/resources/node_modules/font-awesome/css/font-awesome.min.css}">
@@ -27,6 +28,21 @@
 
         .tagify__input{
             min-height: 35px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        body,
+        input,
+        button,
+        select,
+        optgroup,
+        textarea,
+        .tooltip,
+        .popover {
+            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         }
     </style>
 </head>

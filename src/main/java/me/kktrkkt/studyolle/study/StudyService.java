@@ -14,7 +14,7 @@ public class StudyService {
 
     private final ModelMapper modelMapper;
 
-    public Study create(StudySubmitForm studySubmitForm) {
+    public Study create(StudyForm studySubmitForm) {
         Study newStudy = modelMapper.map(studySubmitForm, Study.class);
         return studys.save(newStudy);
     }

@@ -4,7 +4,6 @@ import me.kktrkkt.studyolle.account.AccountRepository;
 import me.kktrkkt.studyolle.account.WithAccount;
 import me.kktrkkt.studyolle.infra.MockMvcTest;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +39,10 @@ class StudyControllerTest {
     @DisplayName("스터디 생성 폼 조회")
     @Test
     @WithAccount("user1")
-    void StudyCreateForm() throws Exception {
+    void newStudySubmitForm() throws Exception {
         this.mockMvc.perform(get(StudyController.NEW_STUDY_URL))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("studySubmitForm"))
+                .andExpect(model().attributeExists("studyForm"))
                 .andExpect(view().name(StudyController.NEW_STUDY_VIEW))
                 .andDo(print());
     }
@@ -52,13 +51,13 @@ class StudyControllerTest {
     @Test
     @WithAccount("user1")
     void createStudy_success() throws Exception {
-        String url = "new-study";
+        String path = "new-study";
         String title = "new-study";
         String bio = "bio";
         String explanation = "explanation";
         this.mockMvc.perform(post(StudyController.NEW_STUDY_URL)
                         .with(csrf())
-                        .param("url", url)
+                        .param("path", path)
                         .param("title", title)
                         .param("bio", bio)
                         .param("explanation", explanation)
@@ -66,7 +65,7 @@ class StudyControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attributeExists("study"))
                 .andDo(print());
-        Optional<Study> byUrl = studys.findByUrl(url);
+        Optional<Study> byUrl = studys.findByPath(path);
         assertTrue(byUrl.isPresent());
     }
 
@@ -74,23 +73,23 @@ class StudyControllerTest {
     @Test
     @WithAccount("user1")
     void createStudy_failure() throws Exception {
-        String url = "new/study";
+        String path = "new/study";
         String title = "new-study";
         String bio = "bio";
         String explanation = "explanation";
         this.mockMvc.perform(post(StudyController.NEW_STUDY_URL)
                         .with(csrf())
-                        .param("url", url)
+                        .param("path", path)
                         .param("title", title)
                         .param("bio", bio)
                         .param("explanation", explanation)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
                 .andExpect(view().name(StudyController.NEW_STUDY_VIEW))
-                .andExpect(model().attributeExists("studySubmitForm"))
+                .andExpect(model().attributeExists("studyForm"))
                 .andExpect(model().hasErrors())
                 .andDo(print());
-        Optional<Study> byUrl = studys.findByUrl(url);
+        Optional<Study> byUrl = studys.findByPath(path);
         assertFalse(byUrl.isPresent());
     }
 }

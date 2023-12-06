@@ -7,17 +7,17 @@
 </div>
 <div class="row justify-content-center">
     <form class="needs-validation col-sm-12" action="#"
-          th:action="@{/new-study}" th:object="${studySubmitForm}" method="post" novalidate>
+          th:action="@{/new-study}" th:object="${studyForm}" method="post" novalidate>
         <div class="form-group mb-3">
-            <label for="url"><i class="fa fa-asterisk fs-6 text-danger" aria-hidden="true"></i> 스터디 URL</label>
-            <input id="url" type="text"  class="form-control" th:field="*{url}"
-                   placeholder="예) study-path" aria-describedby="urlHelp" required minlength="3" maxlength="20">
-            <small id="nicknameHelp" class="form-text text-muted">
+            <label for="path"><i class="fa fa-asterisk fs-6 text-danger" aria-hidden="true"></i> 스터디 URL</label>
+            <input id="path" type="text"  class="form-control" th:field="*{path}"
+                   placeholder="예) study-path" aria-describedby="pathHelp" required minlength="3" maxlength="20">
+            <small id="pathHelp" class="form-text text-muted">
                 공백없이 문자, 숫자, 대시(-)와 언더바(_)만 3자 이상 20자 이내로 입력하세요.
                 스터디 홈 주소에 사용합니다. 예) /study/<strong>study-path</strong>
             </small>
             <small class="invalid-feedback">스터디 URL을 입력하세요.</small>
-            <small class="form-text text-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Url Error</small>
+            <small class="form-text text-danger" th:if="${#fields.hasErrors('path')}" th:errors="*{path}">Path Error</small>
         </div>
 
         <div class="form-group mb-3">
@@ -63,10 +63,10 @@
 <script type="application/javascript">
     $(document).ready(function() {
         $('#explanation').summernote({
-            height: 300,   //set editable area's height
-            codemirror: { // codemirror options
-                theme: 'monokai'
-            }
+            fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
+            placeholder: "스터디 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어주세요.",
+            tabSize: 2,
+            height: 300
         });
     });
 </script>

@@ -13,7 +13,7 @@ import javax.persistence.Lob;
 public class Study extends BaseEntity<Study> {
 
     @Column(unique = true)
-    private String url;
+    private String path;
 
     private String title;
 
