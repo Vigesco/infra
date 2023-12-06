@@ -1,27 +1,65 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/studyLayout :: layout (_, ~{::body}, ~{})}">
+      th:replace="~{fragments/studyLayout :: layout (_, ~{::body}, ~{::banner})}">
 
-<body>
-    <div class="row">
+<banner>
+    <div class="row" th:if="${study.useBanner}">
         <img th:if="${!#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}" class="img-fluid" alt="banner">
+
+    </div>
+    <div class="row" th:if="${!study.useBanner}">
         <img th:if="${#strings.isEmpty(study.banner)}" src="/static/resources/images/default_banner.png"
              th:src="@{/resources/images/default_banner.png}" class="img-fluid" alt="banner">
     </div>
-    <div class="row bg-body-tertiary justify-content-center">
-        <div class="col-8">
-            <div class="row justify-content-between mt-3">
-                <div class="w-auto">
-                    <h2 class="text-primary" th:text="${study.title}">title</h2>
-                </div>
-                <div class="w-auto">
-                    <button type="button" class="btn btn-primary disabled">DRAFT</button>
-                    <button type="button" class="btn btn-primary disabled">OFF</button>
-                </div>
+</banner>
+
+<body>
+    <div class="row pt-4 text-start justify-content-center bg-light">
+        <div class="row justify-content-between col-10">
+            <div class="col-6">
+                <a class="text-decoration-none" th:href="@{'/study/' + ${study.path}}">
+                    <span class="h2" th:text="${study.title}">스터디 이름</span>
+                </a>
             </div>
-            <div class="row mb-3">
+            <div class="col-4 text-end justify-content-end">
+                <span th:if="${!study.published}" class="d-inline-block" title="스터디 공개 준비중"
+                      tabindex="0" data-toggle="tooltip" data-placement="bottom">
+                    <button type="button" class="btn btn-primary btn-sm pe-none disabled">DRAFT</button>
+                </span>
+                <span th:if="${study.closed}" class="d-inline-block" title="스터디 종료함"
+                      tabindex="0" data-toggle="tooltip" data-placement="bottom">
+                    <button type="button" class="btn btn-primary btn-sm pe-none disabled">CLOSED</button>
+                </span>
+                <span th:if="${!study.recruiting}" class="d-inline-block m-lg-1" title="팀원 모집중 아님"
+                      tabindex="0" data-toggle="tooltip" data-placement="bottom">
+                    <button type="button" class="btn btn-primary btn-sm pe-none disabled">OFF</button>
+                </span>
+                <span sec:authorize="isAuthenticated()" th:if="${study.isJoinable(#authentication.principal)}"
+                      class="btn-group" role="group">
+                    <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/join'}">스터디 가입</a>
+                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
+                       th:text="${study.members.size()}">1</a>
+                </span>
+                <span sec:authorize="isAuthenticated()" th:if="${!study.closed && study.isMember(#authentication.principal)}"
+                      class="btn-group" role="group">
+                    <a class="btn btn-outline-warning" th:href="@{'/study/' + ${study.path} + '/leave'}">스터디 탈퇴</a>
+                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
+                       th:text="${study.members.size()}">1</a>
+                </span>
+                <span sec:authorize="isAuthenticated()"
+                      th:if="${study.published && !study.closed && study.isManager(#authentication.principal)}">
+                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/new-event'}">
+                        <i class="fa fa-plus"></i> 모임 만들기
+                    </a>
+                </span>
+            </div>
+        </div>
+        <div class="row bg-light justify-content-center">
+            <div class="col-10">
                 <p class="lead" th:text="${study.bio}"></p>
             </div>
-            <div class="row">
+        </div>
+        <div class="row bg-light justify-content-center">
+            <div class="col-10">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i>소개</a>
@@ -40,9 +78,14 @@
         </div>
     </div>
     <div class="row bg-white justify-content-center">
-        <div class="col-8">
+        <div class="col-10">
             <div id="explanation" th:utext="${study.explanation}">Summernote</div>
         </div>
     </div>
+    <script type="application/javascript">
+        $(function (){
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
 </body>
 </html>
