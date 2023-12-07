@@ -47,13 +47,16 @@ public class StudyController {
     }
 
     @GetMapping(STUDY_URL + "/{path}")
-    public String studyView(@CurrentUser Account account, @PathVariable String path, Model model) {
+    public String studyView(@PathVariable String path, Model model) {
         Study byPath = studys.findByPath(path).orElseThrow(()->new IllegalArgumentException("study is not found"));
         model.addAttribute(byPath);
-
-        boolean isManager = byPath.getManagers().stream().anyMatch(x -> x.equals(account));
-        model.addAttribute("isManager", isManager);
-
         return STUDY_VIEW;
+    }
+
+    @GetMapping(STUDY_URL + "/{path}/members")
+    public String studyMemebers(@PathVariable String path, Model model) {
+        Study byPath = studys.findByPath(path).orElseThrow(()->new IllegalArgumentException("study is not found"));
+        model.addAttribute(byPath);
+        return "study/members";
     }
 }
