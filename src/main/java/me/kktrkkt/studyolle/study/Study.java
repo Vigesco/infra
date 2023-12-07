@@ -83,6 +83,10 @@ public class Study extends BaseEntity<Study> {
     }
 
     public boolean isManager(AccountUserDetails details) {
-        return managers.contains(details.getAccount());
+        return isManager(details.getAccount());
+    }
+
+    public boolean isManager(Account account) {
+        return managers.contains(account);
     }
 }
