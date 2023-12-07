@@ -9,6 +9,13 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedEntityGraph(
+        name = "Study.withAll",
+        attributeNodes = {
+                @NamedAttributeNode("managers"),
+                @NamedAttributeNode("members"),
+        }
+)
 @Entity
 @Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor
@@ -31,6 +38,7 @@ public class Study extends BaseEntity<Study> {
     @JoinTable(name = "study_manager",
             joinColumns = @JoinColumn(name = "study_id"),
             inverseJoinColumns = @JoinColumn(name = "account_id"))
+    @OrderColumn
     private List<Account> managers = new ArrayList<>();
 
     @ManyToMany
