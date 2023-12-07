@@ -23,6 +23,8 @@ public class StudyController {
     static final String STUDY_VIEW= "study/view";
     static final String NEW_STUDY_URL = "/new-study";
     static final String NEW_STUDY_VIEW = "study/newStudySubmitForm";
+    static final String MEMBERS_URL = "/members";
+    static final String STUDY_MEMBERS_VIEW= "study/members";
 
     private final StudyRepository studys;
 
@@ -53,10 +55,10 @@ public class StudyController {
         return STUDY_VIEW;
     }
 
-    @GetMapping(STUDY_URL + "/{path}/members")
-    public String studyMemebers(@PathVariable String path, Model model) {
+    @GetMapping(STUDY_URL + "/{path}" + MEMBERS_URL)
+    public String studyMembers(@PathVariable String path, Model model) {
         Study byPath = studys.findByPath(path).orElseThrow(()->new IllegalArgumentException("study is not found"));
         model.addAttribute(byPath);
-        return "study/members";
+        return STUDY_MEMBERS_VIEW;
     }
 }

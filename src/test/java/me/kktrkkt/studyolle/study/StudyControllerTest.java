@@ -9,10 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+import static me.kktrkkt.studyolle.study.StudyController.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -35,10 +34,10 @@ class StudyControllerTest {
     @Test
     @WithAccount("user1")
     void newStudySubmitForm() throws Exception {
-        this.mockMvc.perform(get(StudyController.NEW_STUDY_URL))
+        this.mockMvc.perform(get(NEW_STUDY_URL))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("studyForm"))
-                .andExpect(view().name(StudyController.NEW_STUDY_VIEW))
+                .andExpect(view().name(NEW_STUDY_VIEW))
                 .andDo(print());
     }
 
@@ -50,7 +49,7 @@ class StudyControllerTest {
         String title = "new-study";
         String bio = "bio";
         String explanation = "explanation";
-        this.mockMvc.perform(post(StudyController.NEW_STUDY_URL)
+        this.mockMvc.perform(post(NEW_STUDY_URL)
                         .with(csrf())
                         .param("path", path)
                         .param("title", title)
@@ -58,7 +57,7 @@ class StudyControllerTest {
                         .param("explanation", explanation)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(StudyController.STUDY_URL+"/"+ URLEncoder.encode(path, StandardCharsets.UTF_8)))
+                .andExpect(redirectedUrl(STUDY_URL+"/"+path))
                 .andExpect(flash().attributeExists("study"))
                 .andDo(print());
         Optional<Study> byUrl = studys.findByPath(path);
@@ -73,7 +72,7 @@ class StudyControllerTest {
         String title = "new-study";
         String bio = "bio";
         String explanation = "explanation";
-        this.mockMvc.perform(post(StudyController.NEW_STUDY_URL)
+        this.mockMvc.perform(post(NEW_STUDY_URL)
                         .with(csrf())
                         .param("path", path)
                         .param("title", title)
@@ -81,11 +80,52 @@ class StudyControllerTest {
                         .param("explanation", explanation)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
-                .andExpect(view().name(StudyController.NEW_STUDY_VIEW))
+                .andExpect(view().name(NEW_STUDY_VIEW))
                 .andExpect(model().attributeExists("studyForm"))
                 .andExpect(model().hasErrors())
                 .andDo(print());
         Optional<Study> byUrl = studys.findByPath(path);
         assertFalse(byUrl.isPresent());
+    }
+
+    @DisplayName("스터디 소개 조회")
+    @Test
+    @WithAccount("user1")
+    void studyView() throws Exception {
+        Study study = createStudy();
+
+        this.mockMvc.perform(get(STUDY_URL + "/" + study.getPath()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(view().name(STUDY_VIEW))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 구성원 조회")
+    @Test
+    @WithAccount("user1")
+    void studyMembers() throws Exception {
+        Study study = createStudy();
+
+        this.mockMvc.perform(get(STUDY_URL + "/" + study.getPath() + MEMBERS_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(view().name(STUDY_MEMBERS_VIEW))
+                .andDo(print());
+    }
+
+    private Study createStudy() {
+        String path = "new-study";
+        String title = "new-study";
+        String bio = "bio";
+        String explanation = "explanation";
+
+        Study newStudy = new Study();
+        newStudy.setPath(path);
+        newStudy.setTitle(title);
+        newStudy.setBio(bio);
+        newStudy.setExplanation(explanation);
+
+        return studys.save(newStudy);
     }
 }
