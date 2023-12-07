@@ -4,6 +4,8 @@ import lombok.*;
 import me.kktrkkt.studyolle.account.AccountUserDetails;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
+import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.zone.Zone;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.List;
         attributeNodes = {
                 @NamedAttributeNode("managers"),
                 @NamedAttributeNode("members"),
+                @NamedAttributeNode("zones"),
+                @NamedAttributeNode("topics"),
         }
 )
 @Entity
@@ -45,7 +49,22 @@ public class Study extends BaseEntity<Study> {
     @JoinTable(name = "study_member",
             joinColumns = @JoinColumn(name = "study_id"),
             inverseJoinColumns = @JoinColumn(name = "account_id"))
+    @OrderColumn
     private List<Account> members = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "study_topic",
+            joinColumns = @JoinColumn(name = "study_id"),
+            inverseJoinColumns = @JoinColumn(name = "topic_id"))
+    @OrderColumn
+    private List<Topic> topics = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "study_zone",
+            joinColumns = @JoinColumn(name = "study_id"),
+            inverseJoinColumns = @JoinColumn(name = "zone_id"))
+    @OrderColumn
+    private List<Zone> zones = new ArrayList<>();
 
     private boolean recruiting;
 
