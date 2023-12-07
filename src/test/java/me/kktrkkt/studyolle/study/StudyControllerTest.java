@@ -10,10 +10,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static me.kktrkkt.studyolle.study.StudyController.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -112,6 +112,74 @@ class StudyControllerTest {
                 .andExpect(model().attributeExists("study"))
                 .andExpect(view().name(STUDY_MEMBERS_VIEW))
                 .andDo(print());
+    }
+
+    @DisplayName("스터디 설정 소개 조회")
+    @Test
+    @WithAccount("user1")
+    void studySettingsInfoForm() throws Exception {
+        Study study = createStudy();
+
+        this.mockMvc.perform(get(STUDY_URL + "/" + study.getPath() + SETTINGS_INFO_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("studyInfoForm"))
+                .andExpect(view().name(SETTINGS_INFO_VIEW))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 소개 설정 - 성공")
+    @Test
+    @WithAccount("user1")
+    void updateStudyInfo_success() throws Exception {
+        Study study = createStudy();
+        String studySettingsInfoUrl = STUDY_URL + "/" + study.getPath() + SETTINGS_INFO_URL;
+
+        String bio = "new-bio";
+        String explanation = "new-explanation";
+        this.mockMvc.perform(post(studySettingsInfoUrl)
+                        .with(csrf())
+                        .param("bio", bio)
+                        .param("explanation", explanation)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studySettingsInfoUrl))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+        Study byId = studys.findById(study.getId()).get();
+        assertEquals(bio, byId.getBio());
+        assertEquals(explanation, byId.getExplanation());
+    }
+
+    @DisplayName("스터디 소개 설정 - 실패")
+    @Test
+    @WithAccount("user1")
+    void updateStudyInfo_failure() throws Exception {
+        Study study = createStudy();
+        String studySettingsInfoUrl = STUDY_URL + "/" + study.getPath() + SETTINGS_INFO_URL;
+
+        String over256 = new Random().ints(0, 1)
+                .limit(256)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        String bio = over256;
+        String explanation = "new-explanation";
+        this.mockMvc.perform(post(studySettingsInfoUrl)
+                        .with(csrf())
+                        .param("bio", bio)
+                        .param("explanation", explanation)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_INFO_VIEW))
+                .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("studyInfoForm"))
+                .andExpect(model().hasErrors())
+                .andDo(print());
+
+        Study byId = studys.findById(study.getId()).get();
+        assertNotEquals(bio, byId.getBio());
+        assertNotEquals(explanation, byId.getExplanation());
     }
 
     private Study createStudy() {

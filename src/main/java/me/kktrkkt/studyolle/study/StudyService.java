@@ -20,4 +20,9 @@ public class StudyService {
         newStudy.getManagers().add(account);
         return studys.save(newStudy);
     }
+
+    public void updateInfo(Study study, StudyInfoForm infoForm) {
+        modelMapper.map(infoForm, study);
+        studys.save(study);
+    }
 }

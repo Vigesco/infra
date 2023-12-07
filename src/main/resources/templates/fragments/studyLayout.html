@@ -105,7 +105,7 @@
                         </a>
                     </li>
                     <li sec:authorize="isAuthenticated()" th:if="${study.isManager(#authentication.principal)}" class="nav-item" >
-                        <a class="nav-link" aria-disabled="true"
+                        <a class="nav-link" th:href="@{'/study/'+${study.path} + '/settings/info'}"
                            th:classappend="${#strings.equals(menu, 'settings')} ? 'active'"
                            th:aria-current="${#strings.equals(menu, 'settings')} ? true : false">
                             <i class="fa fa-cog" aria-hidden="true"></i>설정
