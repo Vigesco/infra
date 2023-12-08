@@ -60,28 +60,16 @@ public class StudySettingsController {
     }
 
     @PostMapping(SETTINGS_BANNER_URL)
-    public String updateStudyBanner(Study study, String banner,
-                                    Errors errors, RedirectAttributes ra) {
-        if(errors.hasErrors()){
-            return SETTINGS_BANNER_VIEW;
-        }
-        else {
-            studyService.updateBanner(study, banner);
-            ra.addFlashAttribute("success", "success.banner");
-            return "redirect:" + SETTINGS_BANNER_URL;
-        }
+    public String updateStudyBanner(Study study, String banner, RedirectAttributes ra) {
+        studyService.updateBanner(study, banner);
+        ra.addFlashAttribute("success", "success.banner");
+        return "redirect:" + SETTINGS_BANNER_URL;
     }
 
     @PostMapping(SETTINGS_BANNER_URL + "/{use}")
-    public String updateStudyBannerUse(Study study, @PathVariable boolean use,
-                                    Errors errors, RedirectAttributes ra) {
-        if(errors.hasErrors()){
-            return SETTINGS_BANNER_VIEW;
-        }
-        else {
-            studyService.updateBannerUse(study, use);
-            ra.addFlashAttribute("success", "success.useBanner");
-            return "redirect:" + SETTINGS_BANNER_URL;
-        }
+    public String updateStudyBannerUse(Study study, @PathVariable boolean use, RedirectAttributes ra) {
+        studyService.updateBannerUse(study, use);
+        ra.addFlashAttribute("success", "success.useBanner");
+        return "redirect:" + SETTINGS_BANNER_URL;
     }
 }

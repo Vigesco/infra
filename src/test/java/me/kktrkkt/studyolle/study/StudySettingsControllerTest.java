@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
 
-import static me.kktrkkt.studyolle.study.StudySettingsController.SETTINGS_INFO_URL;
-import static me.kktrkkt.studyolle.study.StudySettingsController.SETTINGS_INFO_VIEW;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static me.kktrkkt.studyolle.study.StudySettingsController.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -98,6 +96,62 @@ class StudySettingsControllerTest {
                 .andExpect(model().attributeExists("studyInfoForm"))
                 .andExpect(model().hasErrors())
                 .andDo(print());
+    }
+
+    @DisplayName("스터디 설정 배너 조회")
+    @Test
+    @WithAccount("user1")
+    void studySettingsBannerForm() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+
+        this.mockMvc.perform(get(SETTINGS_BANNER_URL.replace("{path}", study.getPath())))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(view().name(SETTINGS_BANNER_VIEW))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 배너 사용 설정")
+    @Test
+    @WithAccount("user1")
+    void updateStudyBannerUse_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String studySettingsBannerUrl = SETTINGS_BANNER_URL.replace("{path}", study.getPath());
+
+        this.mockMvc.perform(post(studySettingsBannerUrl+"/true").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studySettingsBannerUrl))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+        Study byId = studys.findById(study.getId()).get();
+        assertTrue(byId.isUseBanner());
+
+        this.mockMvc.perform(post(studySettingsBannerUrl+"/false").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studySettingsBannerUrl))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+        assertFalse(byId.isUseBanner());
+    }
+
+    @DisplayName("스터디 배너 설정")
+    @Test
+    @WithAccount("user1")
+    void updateStudyBanner_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String studySettingsBannerUrl = SETTINGS_BANNER_URL.replace("{path}", study.getPath());
+
+        String banner = "banner";
+        this.mockMvc.perform(post(studySettingsBannerUrl)
+                        .with(csrf())
+                        .param("banner", banner)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studySettingsBannerUrl))
+                .andExpect(flash().attributeExists("success"))
+                .andDo(print());
+        Study byId = studys.findById(study.getId()).get();
+        assertEquals(banner, byId.getBanner());
     }
 
     private Study createStudy(Account account) {
