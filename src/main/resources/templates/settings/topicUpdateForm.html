@@ -15,61 +15,13 @@
         <small id="titleHelp" class="form-text text-muted">
             <strong>공백없이 한글과 영어로만 2자 이상 20자 이내로 입력하세요.</strong>
         </small>
-        <input id="title" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
+        <input id="topic" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
     </div>
 </div>
 </body>
 
 <scripts>
     <script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
-    <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
-    <script type="application/javascript">
-        $(function (){
-            const input = document.getElementById('title');
-
-            const tagify = new Tagify(input, {
-                pattern: /^[가-힣A-Za-z]{2,20}$/,
-                whitelist: JSON.parse(document.querySelector("#whiteList").textContent),
-                dropdown: {
-                    enabled : 0
-                }
-            })
-
-            function tagRequest(url, title, tag) {
-                tagify.tagLoading(tag, true);
-                $.ajax({
-                    url: "/settings/topic" + url,
-                    data: JSON.stringify({"title" : title}),
-                    autocomplete: {
-                        enabled: true,
-                        rightKey: true
-                    },
-                    contentType: "application/json",
-                    method: "post",
-                }).done(function(data, status){
-                    console.log(`status is ${status}`);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    console.log(`${errorThrown} and status is ${textStatus}`);
-                }).always(function (){
-                    tagify.tagLoading(tag, false);
-                })
-
-            }
-
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value, e.detail.tag);
-
-            }
-
-            function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value, e.detail.tag);
-            }
-
-            tagify.on("add", onAdd);
-            tagify.on("remove", onRemove);
-            tagify.DOM.input.classList.add('form-control');
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        })
-    </script>
+    <script th:replace="~{fragments/scripts :: tagify_topic('/settings/topic')}"></script>
 </scripts>
 </html>

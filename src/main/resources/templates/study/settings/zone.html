@@ -16,53 +16,7 @@
     </div>
 </div>
 <script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
-<script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
-<script type="application/javascript">
-    $(function (){
-        const input = document.getElementById('zone');
+<script th:replace="~{fragments/scripts :: tagify_zone('/study/' + ${study.path} + '/settings/zone')}"></script>
 
-        const tagify = new Tagify(input, {
-            whitelist: JSON.parse($("#whiteList").text()),
-            dropdown: {
-                enabled : 0
-            },
-            enforceWhitelist: true
-        })
-
-        function tagRequest(url, zoneName, tag) {
-            tagify.tagLoading(tag, true);
-            $.ajax({
-                url: "/study/[[${study.path}]]/settings/zone" + url,
-                data: JSON.stringify({"zoneName" : zoneName}),
-                autocomplete: {
-                    enabled: true,
-                    rightKey: true
-                },
-                contentType: "application/json",
-                method: "post",
-            }).done(function(data, status){
-                console.log(`status is ${status}`);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                console.log(`${errorThrown} and status is ${textStatus}`);
-            }).always(function (){
-                tagify.tagLoading(tag, false);
-            })
-
-        }
-
-        function onAdd(e) {
-            tagRequest("/add", e.detail.data.value, e.detail.tag);
-        }
-
-        function onRemove(e) {
-            tagRequest("/remove", e.detail.data.value, e.detail.tag);
-        }
-
-        tagify.on("add", onAdd);
-        tagify.on("remove", onRemove);
-        tagify.DOM.input.classList.add('form-control');
-        tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-    })
-</script>
 </body>
 </html>

@@ -57,4 +57,102 @@
     <script src="/static/resources/node_modules/jquery-cropper/dist/jquery-cropper.min.js" th:src="@{/resources/node_modules/jquery-cropper/dist/jquery-cropper.min.js}"></script>
 </div>
 
+<div th:fragment="tagify_topic (url)">
+    <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
+    <script type="application/javascript">
+        $(function (){
+            const input = document.getElementById('topic');
+
+            const tagify = new Tagify(input, {
+                pattern: /^[가-힣A-Za-z]{2,20}$/,
+                whitelist: JSON.parse(document.querySelector("#whiteList").textContent),
+                dropdown: {
+                    enabled : 0
+                }
+            })
+
+            function tagRequest(url, title, tag) {
+                tagify.tagLoading(tag, true);
+                $.ajax({
+                    url: '[[${url}]]' + url,
+                    data: JSON.stringify({'title' : title}),
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true
+                    },
+                    contentType: "application/json",
+                    method: "post",
+                }).done(function(data, status){
+                    console.log(`status is ${status}`);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log(`${errorThrown} and status is ${textStatus}`);
+                }).always(function (){
+                    tagify.tagLoading(tag, false);
+                })
+
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value, e.detail.tag);
+
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value, e.detail.tag);
+            }
+
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            tagify.DOM.input.classList.add('form-control');
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        })
+    </script>
+</div>
+
+<div th:fragment="tagify_zone (url)">
+    <script src="/static/resources/node_modules/@yaireo/tagify/dist/tagify.min.js" th:src="@{/resources/node_modules/@yaireo/tagify/dist/tagify.min.js}"></script>
+    <script type="application/javascript">
+        $(function (){
+            const input = document.getElementById('zone');
+
+            const tagify = new Tagify(input, {
+                whitelist: JSON.parse($("#whiteList").text()),
+                dropdown: {
+                    enabled : 0
+                },
+                enforceWhitelist: true
+            })
+            function tagRequest(url, zoneName, tag) {
+                tagify.tagLoading(tag, true);
+                $.ajax({
+                    url: "[[${url}]]" + url,
+                    data: JSON.stringify({"zoneName" : zoneName}),
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true
+                    },
+                    contentType: "application/json",
+                    method: "post",
+                }).done(function(data, status){
+                    console.log(`status is ${status}`);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log(`${errorThrown} and status is ${textStatus}`);
+                }).always(function (){
+                    tagify.tagLoading(tag, false);
+                })
+            }
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value, e.detail.tag);
+            }
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value, e.detail.tag);
+            }
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            tagify.DOM.input.classList.add('form-control');
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        })
+    </script>
+</div>
+
 </html>
