@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @Service
@@ -36,5 +37,13 @@ public class StudyService {
             throw new AccessDeniedException(path + "에 해당하는 스터디를 수정할 권한이 없습니다!");
         }
         return study;
+    }
+
+    public void updateBanner(Study study, String banner) {
+        study.setBanner(banner);
+    }
+
+    public void updateBannerUse(Study study, boolean use) {
+        study.setUseBanner(use);
     }
 }

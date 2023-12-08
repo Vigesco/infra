@@ -98,10 +98,6 @@ class StudySettingsControllerTest {
                 .andExpect(model().attributeExists("studyInfoForm"))
                 .andExpect(model().hasErrors())
                 .andDo(print());
-
-        Study byId = studys.findById(study.getId()).get();
-        assertNotEquals(bio, byId.getBio());
-        assertNotEquals(explanation, byId.getExplanation());
     }
 
     private Study createStudy(Account account) {

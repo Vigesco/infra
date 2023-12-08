@@ -8,13 +8,14 @@
 <nav th:replace="~{fragments/header :: main-nav}"></nav>
 
 <div class="row" th:if="${study.useBanner}">
-    <img th:if="${!#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}" class="img-fluid" alt="banner">
-    <img th:if="${#strings.isEmpty(study.banner)}" src="/static/resources/images/default_banner.png"
-         th:src="@{/resources/images/default_banner.png}" class="img-fluid" alt="banner">
+    <img th:if="${!#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}"
+         class="img-fluid" style="height: 250px" alt="banner">
+    <img th:if="${#strings.isEmpty(study.banner)}" th:src="@{/resources/images/default_banner.png}"
+         class="img-fluid" style="height: 250px" alt="banner">
 </div>
 <div class="row" th:if="${!study.useBanner}">
-    <img src="/static/resources/images/default_banner.png"
-         th:src="@{/resources/images/default_banner.png}" class="img-fluid" alt="banner">
+    <img src="/static/resources/images/default_banner.png" th:src="@{/resources/images/default_banner.png}"
+         class="img-fluid" style="height: 250px" alt="banner">
 </div>
 
 <div>
