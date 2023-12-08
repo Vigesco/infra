@@ -1,4 +1,7 @@
-server.port: 8081
+server:
+  port: 8081
+  tomcat:
+    max-http-form-post-size: 5MB
 
 spring:
   profiles.active: local
