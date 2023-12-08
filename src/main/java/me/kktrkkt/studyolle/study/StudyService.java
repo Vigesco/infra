@@ -2,11 +2,15 @@ package me.kktrkkt.studyolle.study;
 
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.zone.Zone;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Transactional
 @Service
@@ -45,5 +49,21 @@ public class StudyService {
 
     public void updateBannerUse(Study study, boolean use) {
         study.setUseBanner(use);
+    }
+
+    public void addTopic(Study study, Topic topic) {
+        study.getTopics().add(topic);
+    }
+
+    public void removeTopic(Study study, Topic topic) {
+        study.getTopics().remove(topic);
+    }
+
+    public void addZone(Study study, Zone zone) {
+        study.getZones().add(zone);
+    }
+
+    public void removeZone(Study study, Zone zone) {
+        study.getZones().remove(zone);
     }
 }
