@@ -64,12 +64,12 @@
             <div class="col-10">
                 <p>
                 <span th:each="topic: ${study.topics}"
-                      class="fw-light text-monospace badge badge-pill badge-info me-3">
+                      class="fw-light text-monospace badge badge-pill text-bg-info me-3">
                     <a th:href="@{'/search/topic/' + ${topic.title}}" class="text-decoration-none text-white">
                         <i class="fa fa-tag"></i> <span th:text="${topic.title}">Topic</span>
                     </a>
                 </span>
-                    <span th:each="zone: ${study.zones}" class="fw-light text-monospace badge badge-primary me-3">
+                    <span th:each="zone: ${study.zones}" class="fw-light text-monospace badge text-bg-primary me-3">
                     <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
                         <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
                     </a>
