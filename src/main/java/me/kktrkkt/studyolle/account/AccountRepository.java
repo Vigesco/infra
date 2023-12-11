@@ -1,14 +1,14 @@
 package me.kktrkkt.studyolle.account;
 
 import me.kktrkkt.studyolle.account.entity.Account;
-import org.springframework.data.domain.Sort;
+import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.zone.Zone;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
