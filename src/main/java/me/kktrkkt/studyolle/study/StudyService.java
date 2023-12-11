@@ -60,6 +60,11 @@ public class StudyService {
         return getStudyToUpdate(account, path, byPath);
     }
 
+    public Study getStudyToUpdateStudy(Account account, String path) {
+        Optional<Study> byPath = studys.findWithManagerByPath(path);
+        return getStudyToUpdate(account, path, byPath);
+    }
+
     public void updateBanner(Study study, String banner) {
         study.setBanner(banner);
     }
@@ -84,6 +89,14 @@ public class StudyService {
         study.getZones().remove(zone);
     }
 
+    public void publish(Study study) {
+        study.publish();
+    }
+
+    public void close(Study study) {
+        study.close();
+        //TODO 스터디 공개 이후, 모임을 만들지 않고 종료한 스터디.
+    }
     private void ifManager(Account account, Study study) {
         if(!study.isManager(account)){
             throw new AccessDeniedException("해당 기능을 수정할 권한이 없습니다!");

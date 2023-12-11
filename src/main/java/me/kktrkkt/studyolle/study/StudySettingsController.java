@@ -197,4 +197,22 @@ public class StudySettingsController {
         model.addAttribute(modelMapper.map(study, StudyTitleForm.class));
         return SETTINGS_STUDY_VIEW;
     }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/publish")
+    public String updateStudyPublished(@PathVariable String path, @CurrentUser Account account,
+                                       RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        studyService.publish(study);
+        ra.addFlashAttribute("success", "success.published");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/close")
+    public String updateStudyClose(@PathVariable String path, @CurrentUser Account account,
+                                   Model model, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        studyService.close(study);
+        ra.addFlashAttribute("success", "success.closed");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
 }

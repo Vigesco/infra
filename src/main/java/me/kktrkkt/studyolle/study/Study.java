@@ -89,4 +89,12 @@ public class Study extends BaseEntity<Study> {
     public boolean isManager(Account account) {
         return managers.contains(account);
     }
+
+    public void publish() {
+        this.published = true;
+    }
+
+    public void close() {
+        this.closed = true;
+    }
 }
