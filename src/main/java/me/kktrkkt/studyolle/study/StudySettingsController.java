@@ -39,6 +39,8 @@ public class StudySettingsController {
     static final String SETTINGS_TOPIC_VIEW = "study/settings/topic";
     static final String SETTINGS_ZONE_URL = SETTINGS_BASE_URL + "/zone";
     static final String SETTINGS_ZONE_VIEW = "study/settings/zone";
+    static final String SETTINGS_STUDY_URL = SETTINGS_BASE_URL + "/study";
+    static final String SETTINGS_STUDY_VIEW = "study/settings/study";
 
     private final StudyService studyService;
 
@@ -187,5 +189,12 @@ public class StudySettingsController {
         studyService.removeZone(study, byCityAndProvince.get());
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(SETTINGS_STUDY_URL)
+    public String studySettingsStudy(Study study, Model model) {
+        model.addAttribute(modelMapper.map(study, StudyPathForm.class));
+        model.addAttribute(modelMapper.map(study, StudyTitleForm.class));
+        return SETTINGS_STUDY_VIEW;
     }
 }
