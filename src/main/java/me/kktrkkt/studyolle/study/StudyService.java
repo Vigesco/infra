@@ -97,6 +97,14 @@ public class StudyService {
         study.close();
         //TODO 스터디 공개 이후, 모임을 만들지 않고 종료한 스터디.
     }
+
+    public void updatePath(Study study, StudyPathForm studyPathForm) {
+        modelMapper.map(studyPathForm, study);
+    }
+
+    public void updateTitle(Study study, StudyTitleForm studyTitleForm) {
+        modelMapper.map(studyTitleForm, study);
+    }
     private void ifManager(Account account, Study study) {
         if(!study.isManager(account)){
             throw new AccessDeniedException("해당 기능을 수정할 권한이 없습니다!");

@@ -215,4 +215,22 @@ public class StudySettingsController {
         ra.addFlashAttribute("success", "success.closed");
         return "redirect:" + SETTINGS_STUDY_URL;
     }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/path")
+    public String updateStudyPath(@PathVariable String path, @CurrentUser Account account,
+                                  @Valid StudyPathForm studyPathForm, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        studyService.updatePath(study, studyPathForm);
+        ra.addFlashAttribute("success", "success.path");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/title")
+    public String updateStudyTitle(@PathVariable String path, @CurrentUser Account account,
+                                  @Valid StudyTitleForm studyTitleForm, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        studyService.updateTitle(study, studyTitleForm);
+        ra.addFlashAttribute("success", "success.title");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
 }
