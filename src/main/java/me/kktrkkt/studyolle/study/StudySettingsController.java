@@ -20,6 +20,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -52,8 +53,11 @@ public class StudySettingsController {
     private final ObjectMapper objectMapper;
 
     @ModelAttribute
-    public Study getStudyToUpdate(@PathVariable String path, @CurrentUser Account account){
-        return studyService.getStudyToUpdate(account, path);
+    public Study getStudyToUpdate(@PathVariable String path, @CurrentUser Account account, HttpServletRequest request){
+        if(request.getMethod().equalsIgnoreCase("get")){
+            return studyService.getStudyToUpdate(account, path);
+        }
+        return null;
     }
 
     @GetMapping(SETTINGS_INFO_URL)
@@ -63,9 +67,12 @@ public class StudySettingsController {
     }
 
     @PostMapping(SETTINGS_INFO_URL)
-    public String updateStudyInfo(Study study, @Valid StudyInfoForm infoForm, Errors errors,
-                                  RedirectAttributes ra) {
+    public String updateStudyInfo(@PathVariable String path, @CurrentUser Account account,
+                                  @Valid StudyInfoForm infoForm, Errors errors,
+                                  Model model, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateInfo(account, path);
         if(errors.hasErrors()){
+            model.addAttribute(study);
             return SETTINGS_INFO_VIEW;
         }
         else {
@@ -81,14 +88,18 @@ public class StudySettingsController {
     }
 
     @PostMapping(SETTINGS_BANNER_URL)
-    public String updateStudyBanner(Study study, String banner, RedirectAttributes ra) {
+    public String updateStudyBanner(@PathVariable String path, @CurrentUser Account account,
+                                    String banner, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateBanner(account, path);
         studyService.updateBanner(study, banner);
         ra.addFlashAttribute("success", "success.banner");
         return "redirect:" + SETTINGS_BANNER_URL;
     }
 
     @PostMapping(SETTINGS_BANNER_URL + "/{use}")
-    public String updateStudyBannerUse(Study study, @PathVariable boolean use, RedirectAttributes ra) {
+    public String updateStudyBannerUse(@PathVariable String path, @CurrentUser Account account,
+                                       @PathVariable boolean use, RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateBanner(account, path);
         studyService.updateBannerUse(study, use);
         ra.addFlashAttribute("success", "success.useBanner");
         return "redirect:" + SETTINGS_BANNER_URL;
@@ -108,7 +119,9 @@ public class StudySettingsController {
 
     @PostMapping(SETTINGS_TOPIC_URL + "/add")
     @ResponseBody
-    public ResponseEntity<Void> addTopic(Study study, @RequestBody @Valid TopicForm topicForm, Errors errors) {
+    public ResponseEntity<Void> addTopic(@PathVariable String path, @CurrentUser Account account,
+                                         @RequestBody @Valid TopicForm topicForm, Errors errors) {
+        Study study = studyService.getStudyToUpdateTopic(account, path);
         if(errors.hasErrors()){
             return ResponseEntity.badRequest().build();
         }
@@ -121,7 +134,9 @@ public class StudySettingsController {
 
     @PostMapping(SETTINGS_TOPIC_URL + "/remove")
     @ResponseBody
-    public ResponseEntity<Void> removeTopic(Study study, @RequestBody TopicForm topicForm) {
+    public ResponseEntity<Void> removeTopic(@PathVariable String path, @CurrentUser Account account,
+                                            @RequestBody TopicForm topicForm) {
+        Study study = studyService.getStudyToUpdateTopic(account, path);
         Optional<Topic> byTitle = topics.findByTitle(topicForm.getTitle());
 
         if(byTitle.isEmpty()){
@@ -145,7 +160,9 @@ public class StudySettingsController {
 
     @PostMapping(SETTINGS_ZONE_URL + "/add")
     @ResponseBody
-    public ResponseEntity<Void> addZone(Study study, @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity<Void> addZone(@PathVariable String path, @CurrentUser Account account,
+                                        @RequestBody ZoneForm zoneForm) {
+        Study study = studyService.getStudyToUpdateZone(account, path);
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
         if(byCityAndProvince.isEmpty()){
             return ResponseEntity.badRequest().build();
@@ -158,7 +175,9 @@ public class StudySettingsController {
 
     @PostMapping(SETTINGS_ZONE_URL + "/remove")
     @ResponseBody
-    public ResponseEntity<Void> removeZone(Study study, @RequestBody ZoneForm zoneForm) {
+    public ResponseEntity<Void> removeZone(@PathVariable String path, @CurrentUser Account account,
+                                           @RequestBody ZoneForm zoneForm) {
+        Study study = studyService.getStudyToUpdateZone(account, path);
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
 
         if(byCityAndProvince.isEmpty()){
