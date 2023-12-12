@@ -1,10 +1,7 @@
 package me.kktrkkt.studyolle.study;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysema.commons.lang.Assert;
 import me.kktrkkt.studyolle.account.AccountRepository;
-import me.kktrkkt.studyolle.account.AccountService;
-import me.kktrkkt.studyolle.account.SettingsController;
 import me.kktrkkt.studyolle.account.WithAccount;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.infra.MockMvcTest;
@@ -26,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static me.kktrkkt.studyolle.study.StudySettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -329,6 +327,222 @@ class StudySettingsControllerTest {
         requestZone("wrong(Zone)/Name", replacePath(study, SETTINGS_ZONE_URL) +"/remove", status().isBadRequest());
 
         Assertions.assertTrue(study.getZones().isEmpty());
+    }
+
+    @DisplayName("스터디 설정 스터디 조회")
+    @Test
+    @WithAccount("user1")
+    void studySettingsStudyForm() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        this.mockMvc.perform(get(replacePath(study, SETTINGS_STUDY_URL)))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_STUDY_VIEW))
+                .andExpect(model().attributeExists("studyPathForm"))
+                .andExpect(model().attributeExists("studyTitleForm"))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 공개 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3", "user4", "user5"})
+    void publishStudy_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        Zone city1 = Zone.builder().city("city1").localNameOfCity("name1").province("province1").build();
+        Topic spring = Topic.builder().title("spring").build();
+        Topic java = Topic.builder().title("java").build();
+        Zone city2 = Zone.builder().city("city2").localNameOfCity("name2").province("province2").build();
+        zones.save(city1);
+        topics.save(spring);
+        zones.save(city2);
+        topics.save(java);
+
+        study.getZones().add(city1);
+        study.getTopics().add(spring);
+        Account user2 = accounts.findByNickname("user2").get();
+        Account user3 = accounts.findByNickname("user3").get();
+        Account user4 = accounts.findByNickname("user4").get();
+
+        user2.getTopics().add(spring);
+        user3.getZones().add(city1);
+        user4.getTopics().add(java);
+        user4.getZones().add(city2);
+
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("success", "success.published"))
+                .andDo(print());
+
+        List<Account> accountList = accounts.findAll().stream()
+                .filter(a -> a.getTopics().contains(spring) || a.getZones().contains(city1))
+                .collect(Collectors.toList());
+        assertTrue(study.isPublished());
+        assertTrue(accountList.contains(user2));
+        assertTrue(accountList.contains(user3));
+    }
+
+    @DisplayName("공개된 스터디 공개 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3", "user4", "user5"})
+    void publishPublishedStudy_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("error", "error.published"))
+                .andDo(print());
+    }
+
+    @DisplayName("종료된 스터디 공개 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3", "user4", "user5"})
+    void publishClosedStudy_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        study.close();
+
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("error", "error.published"))
+                .andDo(print());
+    }
+
+    @DisplayName("공개된 스터디 종료 - 성공")
+    @Test
+    @WithAccount("user1")
+    void closePublishedStudy_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("success", "success.closed"))
+                .andDo(print());
+
+        assertTrue(study.isClosed());
+    }
+
+    @DisplayName("공개되지 않은 스터디 종료 - 실패")
+    @Test
+    @WithAccount("user1")
+    void closeNotPublishStudy_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("error", "error.closed"))
+                .andDo(print());
+    }
+
+    @DisplayName("종료된 스터디 종료 - 실패")
+    @Test
+    @WithAccount("user1")
+    void closeClosedStudy_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        study.close();
+        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
+                .andExpect(flash().attribute("error", "error.closed"))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 모집 시작 - 성공")
+    @Test
+    @WithAccount("user1")
+    void startRecruiting_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("success", "success.recruiting.start"))
+                .andDo(print());
+
+        assertTrue(study.isRecruiting());
+
+    }
+
+    @DisplayName("미공개 스터디 모집 시작 - 실패")
+    @Test
+    @WithAccount("user1")
+    void startNotPublicStudyRecruiting_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andDo(print());
+    }
+
+    @DisplayName("종료된 스터디 모집 시작 - 실패")
+    @Test
+    @WithAccount("user1")
+    void startClosedStudyRecruiting_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        study.close();
+        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andDo(print());
+    }
+
+    @DisplayName("1시간안에 스터디 모집 시작 두번 - 실패")
+    @Test
+    @WithAccount("user1")
+    void startStudyRecruitmentTwiceIn1Hour_failure() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        study.startRecruiting();
+        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andDo(print());
+    }
+
+    @DisplayName("스터디 모집 중단 - 성공")
+    @Test
+    @WithAccount("user1")
+    void stopRecruiting_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        study.publish();
+        study.setRecruiting(true);
+        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/stop").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("success", "success.recruiting.stop"))
+                .andDo(print());
+
+        assertFalse(study.isRecruiting());
     }
 
     private Study createStudy(Account account) {
