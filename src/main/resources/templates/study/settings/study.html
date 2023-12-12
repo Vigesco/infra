@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'zone', ~{})}">
+      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'study', ~{})}">
 
 <alert>
     <div th:if="${'success.published'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
@@ -45,13 +45,13 @@
 
 <body>
 <div th:replace="~{::study-published}"></div>
-<div class="border-top"></div>
+<div class="border-top mb-3"></div>
 <div th:if="${study.published}" th:replace="~{::study-recruiting}"></div>
-<div class="border-top"></div>
+<div class="border-top mb-3"></div>
 <div th:replace="~{::study-path}"></div>
-<div class="border-top"></div>
+<div class="border-top mb-3"></div>
 <div th:replace="~{::study-title}"></div>
-<div class="border-top"></div>
+<div class="border-to mb-3"></div>
 <div th:replace="~{::study-delete}"></div>
 </body>
 
@@ -66,23 +66,23 @@
                 <span>소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.</span>
                 <span>스터디를 공개하면 주요 활동 지역과 스터디 주제에 관심있는 다른 사용자에게 알림을 전송합니다.</span>
             </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/publish'}" th:method="post">
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/publish'}" th:method="post">
                 <label for="publish-btn" class="btn btn-outline-primary">스터디 공개</label>
                 <input id="publish-btn" type="submit" class="d-none">
             </form>
         </div>
-        <div th:if="${study.published && !study.close}" class="col-12">
+        <div th:if="${study.published && !study.closed}" class="col-12">
             <div class="alert alert-warning mb-3" role="alert" >
                 <span>스터디 활동을 마쳤다면 스터디를 종료하세요.</span>
                 <span>스터디를 종료하면 더 이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.</span>
                 <span>스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다</span>
             </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/close'}" th:method="post">
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/close'}" th:method="post">
                 <label for="close-btn" class="btn btn-outline-warning">스터디 종료</label>
                 <input id="close-btn" type="submit" class="d-none">
             </form>
         </div>
-        <div th:if="${study.published && study.close}" class="col-12">
+        <div th:if="${study.published && study.closed}" class="col-12">
             <div class="alert alert-danger mb-3" role="alert" >
                 <span>스터디가 종료되었습니다</span>
             </div>
