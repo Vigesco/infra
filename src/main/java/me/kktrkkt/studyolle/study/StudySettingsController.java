@@ -211,6 +211,32 @@ public class StudySettingsController {
         return "redirect:" + SETTINGS_STUDY_URL;
     }
 
+    @PostMapping(SETTINGS_STUDY_URL + "/recruiting/start")
+    public String startStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
+                                       RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        if(!study.canUpdateRecruiting()){
+            ra.addFlashAttribute("error", "error.recruiting");
+            return "redirect:" + SETTINGS_STUDY_URL;
+        }
+        studyService.startRecruiting(study);
+        ra.addFlashAttribute("success", "success.recruiting.start");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/recruiting/stop")
+    public String stopStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
+                                       RedirectAttributes ra) {
+        Study study = studyService.getStudyToUpdateStudy(account, path);
+        if(!study.canUpdateRecruiting()){
+            ra.addFlashAttribute("error", "error.recruiting");
+            return "redirect:" + SETTINGS_STUDY_URL;
+        }
+        studyService.stopRecruiting(study);
+        ra.addFlashAttribute("success", "success.recruiting.stop");
+        return "redirect:" + SETTINGS_STUDY_URL;
+    }
+
     @PostMapping(SETTINGS_STUDY_URL + "/close")
     public String updateStudyClose(@PathVariable String path, @CurrentUser Account account,
                                    RedirectAttributes ra) {

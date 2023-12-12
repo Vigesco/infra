@@ -1,49 +1,35 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'study', ~{})}">
+      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'study', ~{::alert})}">
 
 <alert>
     <div th:if="${'success.published'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
         <span>스터디를 성공적으로 공개했습니다!</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
     <div th:if="${'success.closed'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
         <span>스터디를 성공적으로 종료했습니다!</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
     <div th:if="${'error.published'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
         <span>스터디를 공개하는데 실패했습니다. 스터디가 이미 공개되어있거나 종료되었습니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
     <div th:if="${'error.closed'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
         <span>스터디를 종료하는데 실패했습니다. 스터디가 공개되어 있지 않거나 이미 종료되었습니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
-    <div th:if="${'success.recruiting.on'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
+    <div th:if="${'success.recruiting.start'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
         <span>인원 모집을 시작합니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
-    <div th:if="${'success.recruiting.off'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
+    <div th:if="${'success.recruiting.stop'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
         <span>인원 모집을 중단합니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
+    <div th:if="${'error.recruiting'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
+        <span>모집 정보를 변경하는데 실패했습니다. 스터디를 공개하거나 1시간 뒤에 다시 시도하세요.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div th:if="${'success.path'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
         <span>스터디 경로를 성공적으로 수정했습니다</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -76,9 +62,9 @@
     <div class="row mt-3">
         <div th:if="${!study.published}" class="col-12">
             <div class="alert alert-info mb-3" role="alert" >
-                <span>스터디를 다른 사용자에게 공개한 준비가 되었다면 버튼을 클릭하세요.</span>
-                <span>소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.</span>
-                <span>스터디를 공개하면 주요 활동 지역과 스터디 주제에 관심있는 다른 사용자에게 알림을 전송합니다.</span>
+                <span>스터디를 다른 사용자에게 공개한 준비가 되었다면 버튼을 클릭하세요.</span><br>
+                <span>소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.</span><br>
+                <span>스터디를 공개하면 주요 활동 지역과 스터디 주제에 관심있는 다른 사용자에게 알림을 전송합니다.</span><br>
             </div>
             <form th:action="@{'/study/' + ${study.path} + '/settings/study/publish'}" th:method="post">
                 <label for="publish-btn" class="btn btn-outline-primary">스터디 공개</label>
@@ -87,9 +73,9 @@
         </div>
         <div th:if="${study.published && !study.closed}" class="col-12">
             <div class="alert alert-warning mb-3" role="alert" >
-                <span>스터디 활동을 마쳤다면 스터디를 종료하세요.</span>
-                <span>스터디를 종료하면 더 이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.</span>
-                <span>스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다</span>
+                <span>스터디 활동을 마쳤다면 스터디를 종료하세요.</span><br>
+                <span>스터디를 종료하면 더 이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.</span><br>
+                <span>스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다</span><br>
             </div>
             <form th:action="@{'/study/' + ${study.path} + '/settings/study/close'}" th:method="post">
                 <label for="close-btn" class="btn btn-outline-warning">스터디 종료</label>
@@ -111,12 +97,12 @@
     <div th:if="${!study.recruiting}" class="row mt-3">
         <div class="col-12">
             <div class="alert alert-info mb-3" role="alert" >
-                <span>팀원을 모집합니다</span>
-                <span>충분한 스터디 팀원을 모집했다면 모집을 멈출 수 있습니다</span>
-                <span>팀원 모집 정보는 3시간에 한번만 바꿀 수 있습니다.</span>
+                <span>팀원을 모집합니다.</span><br>
+                <span>충분한 스터디 팀원을 모집했다면 모집을 중단할 수 있습니다.</span><br>
+                <span>팀원 모집 정보는 1시간에 한번만 변경할 수 있습니다.</span><br>
             </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/recruiting/true'}" th:method="post">
-                <label for="recruiting-btn" class="btn btn-outline-primary">팀원 모집 시작</label>
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/start'}" th:method="post">
+                <button type="button" class="btn btn-outline-primary" th:disabled="${!study.canUpdateRecruiting()}"><label for="recruiting-btn">팀원 모집 시작</label></button>
                 <input id="recruiting-btn" type="submit" class="d-none">
             </form>
         </div>
@@ -124,12 +110,12 @@
     <div th:if="${study.recruiting}" class="row mt-3">
         <div class="col-12">
             <div class="alert alert-warning mb-3" role="alert" >
-                <span>팀원 모집을 중단합니다.</span>
-                <span>팀원 충원이 필요할 때 다시 팀원 모집을 시작할 수 있습니다.</span>
-                <span>팀원 모집 정보는 3시간에 한번만 바꿀 수 있습니다.</span>
+                <span>팀원 모집을 중단합니다.</span><br>
+                <span>팀원 충원이 필요할 때 다시 팀원 모집을 시작할 수 있습니다.</span><br>
+                <span>팀원 모집 정보는 1시간에 한번만 변경할 수 있습니다.</span><br>
             </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/recruiting/false'}" th:method="post">
-                <label for="recruiting-btn" class="btn btn-outline-warning">팀원 모집 중단</label>
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/stop'}" th:method="post">
+                <button type="button" class="btn btn-outline-warning" th:disabled="${!study.canUpdateRecruiting()}"><label for="recruiting-btn">팀원 모집 중단</label></button>
                 <input id="recruiting-btn" type="submit" class="d-none">
             </form>
         </div>
@@ -145,7 +131,7 @@
             <div class="alert alert-warning mb-3" role="alert" >
                 <span>스터디 경로를 수정하면 이전에 사용하던 경로로 스터디에 접근할 수 없으니 주의하세요.</span>
             </div>
-            <form class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/path'}" th:object="${studyPathForm}" method="post" novalidate>
+            <form class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/study/path'}" th:object="${studyPathForm}" method="post" novalidate>
                 <div class="form-group mb-3">
                     <input id="path" type="text"  class="form-control" th:field="*{path}"
                            placeholder="예) study-path" aria-describedby="pathHelp" required minlength="3" maxlength="20">
@@ -174,7 +160,7 @@
             <div class="alert alert-warning mb-3" role="alert" >
                 <span>스터디 이름을 수정합니다.</span>
             </div>
-            <form class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/title'}" th:object="${studyTitleForm}" method="post" novalidate>
+            <form class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/study/title'}" th:object="${studyTitleForm}" method="post" novalidate>
                 <div class="form-group mb-3">
                     <input id="title" type="text" class="form-control" th:field="*{title}"
                            placeholder="스터디 이름" aria-describedby="titleHelp" required maxlength="50">
@@ -200,7 +186,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="alert alert-danger mb-3" role="alert" >
-                <span>스터디를 삭제하면 스터디 관련 모든 기록을 삭제하며 복구할 수 없습니다.</span>
+                <span>스터디를 삭제하면 스터디 관련 모든 기록을 삭제하며 복구할 수 없습니다.</span><br>
                 <span>
                     <strong>다음에 해당하는 스터디는 자동으로 삭제됩니다.</strong>
                     <ul>

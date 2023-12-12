@@ -120,4 +120,12 @@ public class StudyService {
         ifManager(account, study);
         return study;
     }
+
+    public void startRecruiting(Study study) {
+        study.startRecruiting();
+    }
+
+    public void stopRecruiting(Study study) {
+        study.stopRecruiting();
+    }
 }

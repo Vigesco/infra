@@ -9,6 +9,7 @@ import me.kktrkkt.studyolle.zone.Zone;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,9 +111,43 @@ public class Study extends BaseEntity<Study> {
         return this.published && !this.closed;
     }
 
+    public boolean canUpdateRecruiting() {
+        if(!this.published){
+            return false;
+        }
+
+        if(this.recruitingUpdateTime == null){
+            return true;
+        }
+
+        return LocalDateTime.now().isAfter(this.recruitingUpdateTime.plus(1, ChronoUnit.HOURS));
+    }
+
+    public void startRecruiting() {
+        if(canUpdateRecruiting()){
+            this.recruitingUpdateTime = LocalDateTime.now();
+            this.recruiting = true;
+        }
+        else {
+            throw new RuntimeException("Recruitment cannot start. Please make the study public or try again in 1 hour.");
+        }
+    }
+
+    public void stopRecruiting() {
+        if(canUpdateRecruiting()){
+            this.recruitingUpdateTime = LocalDateTime.now();
+            this.recruiting = false;
+        }
+        else {
+            throw new RuntimeException("Recruitment cannot be stop. Please make the study public or try again in 1 hour.");
+        }
+    }
+
     public void close() {
         if(canClose()) {
             this.closed = true;
+            this.published = false;
+            this.recruiting = false;
         }
         else {
             throw new RuntimeException("The study cannot be made close. The study is not public or has already closed.");
