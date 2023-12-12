@@ -16,6 +16,20 @@
 </alert>
 
 <alert>
+    <div th:if="${'error.published'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
+        <span>스터디를 공개하는데 실패했습니다. 스터디가 이미 공개되어있거나 종료되었습니다.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</alert>
+
+<alert>
+    <div th:if="${'error.closed'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
+        <span>스터디를 종료하는데 실패했습니다. 스터디가 공개되어 있지 않거나 이미 종료되었습니다.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</alert>
+
+<alert>
     <div th:if="${'success.recruiting.on'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
         <span>인원 모집을 시작합니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

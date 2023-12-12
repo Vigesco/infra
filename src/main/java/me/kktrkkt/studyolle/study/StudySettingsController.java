@@ -202,6 +202,10 @@ public class StudySettingsController {
     public String updateStudyPublished(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
+        if(!study.canPublish()){
+            ra.addFlashAttribute("error", "error.published");
+            return "redirect:" + SETTINGS_STUDY_URL;
+        }
         studyService.publish(study);
         ra.addFlashAttribute("success", "success.published");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -209,8 +213,12 @@ public class StudySettingsController {
 
     @PostMapping(SETTINGS_STUDY_URL + "/close")
     public String updateStudyClose(@PathVariable String path, @CurrentUser Account account,
-                                   Model model, RedirectAttributes ra) {
+                                   RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
+        if(!study.canClose()){
+            ra.addFlashAttribute("error", "error.closed");
+            return "redirect:" + SETTINGS_STUDY_URL;
+        }
         studyService.close(study);
         ra.addFlashAttribute("success", "success.closed");
         return "redirect:" + SETTINGS_STUDY_URL;

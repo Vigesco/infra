@@ -8,6 +8,7 @@ import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.zone.Zone;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,8 @@ public class Study extends BaseEntity<Study> {
     @OrderColumn
     private List<Zone> zones = new ArrayList<>();
 
+    private LocalDateTime recruitingUpdateTime;
+
     private boolean recruiting;
 
     private boolean published;
@@ -90,11 +93,29 @@ public class Study extends BaseEntity<Study> {
         return managers.contains(account);
     }
 
+    public boolean canPublish() {
+        return !this.published && !this.closed;
+    }
+
     public void publish() {
-        this.published = true;
+        if(canPublish()) {
+            this.published = true;
+        }
+        else {
+            throw new RuntimeException("The study cannot be made public. The study has already been published or ended.");
+        }
+    }
+
+    public boolean canClose() {
+        return this.published && !this.closed;
     }
 
     public void close() {
-        this.closed = true;
+        if(canClose()) {
+            this.closed = true;
+        }
+        else {
+            throw new RuntimeException("The study cannot be made close. The study is not public or has already closed.");
+        }
     }
 }
