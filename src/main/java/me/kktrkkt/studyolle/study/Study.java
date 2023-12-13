@@ -94,12 +94,8 @@ public class Study extends BaseEntity<Study> {
         return managers.contains(account);
     }
 
-    public boolean canPublish() {
-        return !this.published && !this.closed;
-    }
-
     public void publish() {
-        if(canPublish()) {
+        if(!this.published && !this.closed) {
             this.published = true;
         }
         else {
@@ -107,8 +103,15 @@ public class Study extends BaseEntity<Study> {
         }
     }
 
-    public boolean canClose() {
-        return this.published && !this.closed;
+    public void close() {
+        if(this.published && !this.closed) {
+            this.closed = true;
+            this.published = false;
+            this.recruiting = false;
+        }
+        else {
+            throw new RuntimeException("The study cannot be made close. The study is not public or has already closed.");
+        }
     }
 
     public boolean canUpdateRecruiting() {
@@ -140,17 +143,6 @@ public class Study extends BaseEntity<Study> {
         }
         else {
             throw new RuntimeException("Recruitment cannot be stop. Please make the study public or try again in 1 hour.");
-        }
-    }
-
-    public void close() {
-        if(canClose()) {
-            this.closed = true;
-            this.published = false;
-            this.recruiting = false;
-        }
-        else {
-            throw new RuntimeException("The study cannot be made close. The study is not public or has already closed.");
         }
     }
 }

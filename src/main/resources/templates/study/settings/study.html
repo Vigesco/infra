@@ -10,14 +10,6 @@
         <span>스터디를 성공적으로 종료했습니다!</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div th:if="${'error.published'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
-        <span>스터디를 공개하는데 실패했습니다. 스터디가 이미 공개되어있거나 종료되었습니다.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'error.closed'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
-        <span>스터디를 종료하는데 실패했습니다. 스터디가 공개되어 있지 않거나 이미 종료되었습니다.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
     <div th:if="${'success.recruiting.start'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
         <span>인원 모집을 시작합니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -26,17 +18,10 @@
         <span>인원 모집을 중단합니다.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div th:if="${'error.recruiting'.equals(error)}" class="alert alert-danger alert-dismissible fade show" role="alert" >
-        <span>모집 정보를 변경하는데 실패했습니다. 스터디를 공개하거나 1시간 뒤에 다시 시도하세요.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
     <div th:if="${'success.path'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
         <span>스터디 경로를 성공적으로 수정했습니다</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-</alert>
-
-<alert>
     <div th:if="${'success.title'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
         <span>스터디 이름을 성공적으로 수정했습니다</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -46,12 +31,12 @@
 <body>
 <div th:replace="~{::study-published}"></div>
 <div class="border-top mb-3"></div>
-<div th:if="${study.published}" th:replace="~{::study-recruiting}"></div>
-<div class="border-top mb-3"></div>
-<div th:replace="~{::study-path}"></div>
-<div class="border-top mb-3"></div>
-<div th:replace="~{::study-title}"></div>
-<div class="border-to mb-3"></div>
+<div th:if="${!study.closed && study.published}" th:replace="~{::study-recruiting}"></div>
+<div th:if="${!study.closed}" class="border-top mb-3"></div>
+<div th:if="${!study.closed}" th:replace="~{::study-path}"></div>
+<div th:if="${!study.closed}" class="border-top mb-3"></div>
+<div th:if="${!study.closed}" th:replace="~{::study-title}"></div>
+<div th:if="${!study.closed}" class="border-to mb-3"></div>
 <div th:replace="~{::study-delete}"></div>
 </body>
 

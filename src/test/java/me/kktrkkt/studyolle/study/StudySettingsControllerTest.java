@@ -393,9 +393,7 @@ class StudySettingsControllerTest {
         String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
-                .andExpect(flash().attribute("error", "error.published"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -410,9 +408,7 @@ class StudySettingsControllerTest {
         String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
-                .andExpect(flash().attribute("error", "error.published"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -441,9 +437,7 @@ class StudySettingsControllerTest {
         String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
-                .andExpect(flash().attribute("error", "error.closed"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -457,9 +451,7 @@ class StudySettingsControllerTest {
         String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyPublishedUrl))
-                .andExpect(flash().attribute("error", "error.closed"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -489,9 +481,7 @@ class StudySettingsControllerTest {
         String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyUrl))
-                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -505,9 +495,7 @@ class StudySettingsControllerTest {
         String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyUrl))
-                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
@@ -521,12 +509,10 @@ class StudySettingsControllerTest {
         String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(settingsStudyUrl))
-                .andExpect(flash().attribute("error", "error.recruiting"))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
-
+    
     @DisplayName("스터디 모집 중단 - 성공")
     @Test
     @WithAccount("user1")

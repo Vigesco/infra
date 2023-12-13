@@ -202,10 +202,6 @@ public class StudySettingsController {
     public String updateStudyPublished(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
-        if(!study.canPublish()){
-            ra.addFlashAttribute("error", "error.published");
-            return "redirect:" + SETTINGS_STUDY_URL;
-        }
         studyService.publish(study);
         ra.addFlashAttribute("success", "success.published");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -215,10 +211,6 @@ public class StudySettingsController {
     public String startStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
-        if(!study.canUpdateRecruiting()){
-            ra.addFlashAttribute("error", "error.recruiting");
-            return "redirect:" + SETTINGS_STUDY_URL;
-        }
         studyService.startRecruiting(study);
         ra.addFlashAttribute("success", "success.recruiting.start");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -228,10 +220,6 @@ public class StudySettingsController {
     public String stopStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
-        if(!study.canUpdateRecruiting()){
-            ra.addFlashAttribute("error", "error.recruiting");
-            return "redirect:" + SETTINGS_STUDY_URL;
-        }
         studyService.stopRecruiting(study);
         ra.addFlashAttribute("success", "success.recruiting.stop");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -241,10 +229,6 @@ public class StudySettingsController {
     public String updateStudyClose(@PathVariable String path, @CurrentUser Account account,
                                    RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStudy(account, path);
-        if(!study.canClose()){
-            ra.addFlashAttribute("error", "error.closed");
-            return "redirect:" + SETTINGS_STUDY_URL;
-        }
         studyService.close(study);
         ra.addFlashAttribute("success", "success.closed");
         return "redirect:" + SETTINGS_STUDY_URL;
