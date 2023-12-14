@@ -61,7 +61,7 @@ class StudySettingsControllerTest {
     void studySettingsInfoForm() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        this.mockMvc.perform(get(replacePath(study, SETTINGS_INFO_URL)))
+        this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_INFO_URL)))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("study"))
                 .andExpect(model().attributeExists("studyInfoForm"))
@@ -74,7 +74,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void updateStudyInfo_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String studySettingsInfoUrl = replacePath(study, SETTINGS_INFO_URL);
+        String studySettingsInfoUrl = replacePath(study.getPath(), SETTINGS_INFO_URL);
 
         String bio = "new-bio";
         String explanation = "new-explanation";
@@ -97,7 +97,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void updateStudyInfo_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String studySettingsInfoUrl = replacePath(study, SETTINGS_INFO_URL);
+        String studySettingsInfoUrl = replacePath(study.getPath(), SETTINGS_INFO_URL);
 
         String over256 = new Random().ints(0, 1)
                 .limit(256)
@@ -125,7 +125,7 @@ class StudySettingsControllerTest {
     void studySettingsBannerForm() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        this.mockMvc.perform(get(replacePath(study, SETTINGS_BANNER_URL)))
+        this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_BANNER_URL)))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("study"))
                 .andExpect(view().name(SETTINGS_BANNER_VIEW))
@@ -137,7 +137,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void updateStudyBannerUse_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String studySettingsBannerUrl = replacePath(study, SETTINGS_BANNER_URL);
+        String studySettingsBannerUrl = replacePath(study.getPath(), SETTINGS_BANNER_URL);
 
         this.mockMvc.perform(post(studySettingsBannerUrl+"/true").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -160,7 +160,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void updateStudyBanner_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String studySettingsBannerUrl = replacePath(study, SETTINGS_BANNER_URL);
+        String studySettingsBannerUrl = replacePath(study.getPath(), SETTINGS_BANNER_URL);
 
         String banner = "banner";
         this.mockMvc.perform(post(studySettingsBannerUrl)
@@ -181,7 +181,7 @@ class StudySettingsControllerTest {
     void studySettingsTopicForm() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        this.mockMvc.perform(get(replacePath(study, SETTINGS_TOPIC_URL)))
+        this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_TOPIC_URL)))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_TOPIC_VIEW))
                 .andExpect(model().attributeExists("topicList"))
@@ -195,7 +195,7 @@ class StudySettingsControllerTest {
     void addStudyTopic_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
         String spring = "스프링";
-        requestTopic(spring, replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isOk());
+        requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isOk());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
         Assertions.assertTrue(springTopic.isPresent());
@@ -212,7 +212,7 @@ class StudySettingsControllerTest {
         topic.setTitle(title);
         topics.save(topic);
 
-        requestTopic(title, replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isOk());
+        requestTopic(title, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isOk());
 
         List<Topic> topicAll  = topics.findAll();
         Assertions.assertEquals(1, topicAll.stream().filter(x -> x.getTitle().equals(title)).count());
@@ -224,11 +224,11 @@ class StudySettingsControllerTest {
     void addStudyTopic_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        requestTopic("스", replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
-        requestTopic("1", replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
-        requestTopic("스 프 링", replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
-        requestTopic("가나다라마가나다라마가나다라마가나다라마가", replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
-        requestTopic("ㄱ", replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
+        requestTopic("스", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
+        requestTopic("1", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
+        requestTopic("스 프 링", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
+        requestTopic("가나다라마가나다라마가나다라마가나다라마가", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
+        requestTopic("ㄱ", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
 
         Assertions.assertTrue(study.getTopics().isEmpty());
     }
@@ -241,8 +241,8 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
         String spring = "스프링";
-        requestTopic(spring, replacePath(study, SETTINGS_TOPIC_URL) + "/add", status().isOk());
-        requestTopic(spring, replacePath(study, SETTINGS_TOPIC_URL) + "/remove", status().isOk());
+        requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isOk());
+        requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/remove", status().isOk());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
         Assertions.assertTrue(springTopic.isPresent());
@@ -256,7 +256,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
         String spring = "스프링";
-        requestTopic(spring, replacePath(study, SETTINGS_TOPIC_URL) + "/remove", status().isBadRequest());
+        requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/remove", status().isBadRequest());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
         Assertions.assertTrue(springTopic.isEmpty());
@@ -269,7 +269,7 @@ class StudySettingsControllerTest {
     void studySettingsZoneForm() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        this.mockMvc.perform(get(replacePath(study, SETTINGS_ZONE_URL)))
+        this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_ZONE_URL)))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_ZONE_VIEW))
                 .andExpect(model().attributeExists("zoneList"))
@@ -285,7 +285,7 @@ class StudySettingsControllerTest {
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트").province("testp").build();
         zones.save(testZone);
 
-        requestZone(testZone.toString(), replacePath(study, SETTINGS_ZONE_URL) +"/add", status().isOk());
+        requestZone(testZone.toString(), replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/add", status().isOk());
 
         Assertions.assertTrue(study.getZones().contains(testZone));
     }
@@ -296,7 +296,7 @@ class StudySettingsControllerTest {
     void addStudyZone_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        requestZone("wrong(Zone)/Name", replacePath(study, SETTINGS_ZONE_URL) +"/add", status().isBadRequest());
+        requestZone("wrong(Zone)/Name", replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/add", status().isBadRequest());
 
         Assertions.assertTrue(study.getZones().isEmpty());
     }
@@ -311,8 +311,8 @@ class StudySettingsControllerTest {
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트").province("testp").build();
         zones.save(testZone);
 
-        requestZone(testZone.toString(), replacePath(study, SETTINGS_ZONE_URL) +"/add", status().isOk());
-        requestZone(testZone.toString(), replacePath(study, SETTINGS_ZONE_URL) +"/remove", status().isOk());
+        requestZone(testZone.toString(), replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/add", status().isOk());
+        requestZone(testZone.toString(), replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/remove", status().isOk());
 
         Assertions.assertTrue(zones.findById(testZone.getId()).isPresent());
         Assertions.assertTrue(study.getZones().isEmpty());
@@ -324,7 +324,7 @@ class StudySettingsControllerTest {
     void removeStudyZone_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
 
-        requestZone("wrong(Zone)/Name", replacePath(study, SETTINGS_ZONE_URL) +"/remove", status().isBadRequest());
+        requestZone("wrong(Zone)/Name", replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/remove", status().isBadRequest());
 
         Assertions.assertTrue(study.getZones().isEmpty());
     }
@@ -334,7 +334,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void studySettingsStudyForm() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        this.mockMvc.perform(get(replacePath(study, SETTINGS_STUDY_URL)))
+        this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_STUDY_URL)))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_STUDY_VIEW))
                 .andExpect(model().attributeExists("studyPathForm"))
@@ -367,7 +367,7 @@ class StudySettingsControllerTest {
         user4.getTopics().add(java);
         user4.getZones().add(city2);
 
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -390,7 +390,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
 
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -405,7 +405,7 @@ class StudySettingsControllerTest {
         study.publish();
         study.close();
 
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/publish").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -418,7 +418,7 @@ class StudySettingsControllerTest {
     void closePublishedStudy_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -434,7 +434,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void closeNotPublishStudy_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -448,7 +448,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
         study.close();
-        String settingsStudyPublishedUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -461,7 +461,7 @@ class StudySettingsControllerTest {
     void startRecruiting_success() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
-        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -478,7 +478,7 @@ class StudySettingsControllerTest {
     @WithAccount("user1")
     void startNotPublicStudyRecruiting_failure() throws Exception {
         Study study = createStudy(accounts.findByNickname("user1").get());
-        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -492,7 +492,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
         study.close();
-        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -506,7 +506,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
         study.startRecruiting();
-        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
                 .andExpect(status().isBadRequest())
@@ -520,7 +520,7 @@ class StudySettingsControllerTest {
         Study study = createStudy(accounts.findByNickname("user1").get());
         study.publish();
         study.setRecruiting(true);
-        String settingsStudyUrl = replacePath(study, SETTINGS_STUDY_URL);
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/stop").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -529,6 +529,44 @@ class StudySettingsControllerTest {
                 .andDo(print());
 
         assertFalse(study.isRecruiting());
+    }
+
+    @DisplayName("스터디 경로 수정 - 성공")
+    @Test
+    @WithAccount("user1")
+    void updateStudyPath_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
+        String path = "new-new-path";
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/path").with(csrf())
+                        .param("path", path)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(replacePath(path, SETTINGS_STUDY_URL)))
+                .andExpect(flash().attribute("success", "success.path"))
+                .andDo(print());
+
+        assertEquals(path, study.getPath());
+    }
+
+    @DisplayName("스터디 이름 수정 - 성공")
+    @Test
+    @WithAccount("user1")
+    void updateStudyTitle_success() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
+        String title = "new-new-title";
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/title").with(csrf())
+                        .param("title", title)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(settingsStudyUrl))
+                .andExpect(flash().attribute("success", "success.title"))
+                .andDo(print());
+
+        assertEquals(title, study.getTitle());
     }
 
     private Study createStudy(Account account) {
@@ -547,8 +585,8 @@ class StudySettingsControllerTest {
         return studys.save(newStudy);
     }
 
-    private String replacePath(Study study, String settingsZoneUrl) {
-        return settingsZoneUrl.replace("{path}", study.getPath());
+    private String replacePath(String path, String settingsZoneUrl) {
+        return settingsZoneUrl.replace("{path}", path);
     }
 
     private void requestTopic(String title, String url, ResultMatcher status) throws Exception {
