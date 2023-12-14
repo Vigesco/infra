@@ -79,11 +79,19 @@ public class Study extends BaseEntity<Study> {
     private boolean useBanner;
 
     public boolean isJoinable(AccountUserDetails details) {
-        return !closed && published && recruiting && !isMember(details) && !isManager(details);
+        return isJoinable(details.getAccount());
+    }
+
+    public boolean isJoinable(Account account) {
+        return !closed && published && recruiting && !isMember(account) && !isManager(account);
     }
 
     public boolean isMember(AccountUserDetails details) {
-        return members.contains(details.getAccount());
+        return isMember(details.getAccount());
+    }
+
+    public boolean isMember(Account account) {
+        return members.contains(account);
     }
 
     public boolean isManager(AccountUserDetails details) {
@@ -93,6 +101,7 @@ public class Study extends BaseEntity<Study> {
     public boolean isManager(Account account) {
         return managers.contains(account);
     }
+
 
     public void publish() {
         if(!this.published && !this.closed) {
@@ -145,5 +154,27 @@ public class Study extends BaseEntity<Study> {
 
     public boolean isRemovable() {
         return !this.published;
+    }
+
+    public void addMember(Account account) {
+        if(isJoinable(account)){
+            this.members.add(account);
+        }
+        else {
+            throw new RuntimeException("Study members cannot be added. You are already enrolled in the study, it has ended, or is not recruiting.");
+        }
+    }
+
+    private boolean isWithdraw(Account account) {
+        return !this.closed && isMember(account);
+    }
+
+    public void removeMember(Account account) {
+        if(isWithdraw(account)) {
+            this.members.remove(account);
+        }
+        else {
+            throw new RuntimeException("Study members cannot be removed. You are not a study member or the study has ended.");
+        }
     }
 }

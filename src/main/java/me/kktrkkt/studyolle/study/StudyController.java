@@ -59,4 +59,18 @@ public class StudyController {
         model.addAttribute(byPath);
         return STUDY_MEMBERS_VIEW;
     }
+
+    @PostMapping(STUDY_BASE_URL + "/join")
+    public String joinStudy(@PathVariable String path, @CurrentUser Account account) {
+        Study byPath = studyService.getStudyToUpdateMembers(path);
+        studyService.addMember(byPath, account);
+        return "redirect:" + STUDY_BASE_URL;
+    }
+
+    @PostMapping(STUDY_BASE_URL + "/leave")
+    public String leaveStudy(@PathVariable String path, @CurrentUser Account account) {
+        Study byPath = studyService.getStudyToUpdateMembers(path);
+        studyService.removeMember(byPath, account);
+        return "redirect:" + STUDY_BASE_URL;
+    }
 }

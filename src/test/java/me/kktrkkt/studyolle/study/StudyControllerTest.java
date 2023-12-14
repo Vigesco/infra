@@ -1,6 +1,8 @@
 package me.kktrkkt.studyolle.study;
 
+import me.kktrkkt.studyolle.account.AccountRepository;
 import me.kktrkkt.studyolle.account.WithAccount;
+import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.infra.MockMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,9 @@ class StudyControllerTest {
 
     @Autowired
     private StudyRepository studys;
+
+    @Autowired
+    private AccountRepository accounts;
 
     @DisplayName("스터디 생성 폼 조회")
     @Test
@@ -112,6 +117,43 @@ class StudyControllerTest {
                 .andExpect(model().attributeExists("study"))
                 .andExpect(view().name(STUDY_MEMBERS_VIEW))
                 .andDo(print());
+    }
+
+    @DisplayName("스터디 참여")
+    @Test
+    @WithAccount("user1")
+    void joinStudy() throws Exception {
+        Study study = createStudy();
+        study.publish();
+        study.startRecruiting();
+        String studyBaseUrl = STUDY_BASE_URL.replace("{path}", study.getPath());
+
+        this.mockMvc.perform(post(studyBaseUrl + "/join").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studyBaseUrl))
+                .andDo(print());
+
+        assertTrue(study.getMembers().contains(accounts.findByNickname("user1").get()));
+    }
+
+    @DisplayName("스터디 탈퇴")
+    @Test
+    @WithAccount("user1")
+    void leaveStudy() throws Exception {
+        Study study = createStudy();
+        study.publish();
+        study.startRecruiting();
+        Account user1 = accounts.findByNickname("user1").get();
+        study.addMember(user1);
+
+        String studyBaseUrl = STUDY_BASE_URL.replace("{path}", study.getPath());
+
+        this.mockMvc.perform(post(studyBaseUrl+"/leave").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(studyBaseUrl))
+                .andDo(print());
+
+        assertFalse(study.getMembers().contains(user1));
     }
 
     private Study createStudy() {

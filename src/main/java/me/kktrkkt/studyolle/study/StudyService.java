@@ -55,6 +55,11 @@ public class StudyService {
         return getStudyToUpdate(account, path, byPath);
     }
 
+    public Study getStudyToUpdateMembers(String path) {
+        Optional<Study> byPath = studys.findWithMemberByPath(path);
+        return ifStudy(byPath, path);
+    }
+
     public void updateBanner(Study study, String banner) {
         study.setBanner(banner);
     }
@@ -126,5 +131,13 @@ public class StudyService {
         else {
             throw new RuntimeException("Study deletion is not possible. Studies that are public or have created a meeting cannot be deleted.");
         }
+    }
+
+    public void addMember(Study study, Account account) {
+        study.addMember(account);
+    }
+
+    public void removeMember(Study study, Account account) {
+        study.removeMember(account);
     }
 }

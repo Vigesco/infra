@@ -37,15 +37,21 @@
                 </span>
                 <span sec:authorize="isAuthenticated()" th:if="${study.isJoinable(#authentication.principal)}"
                       class="btn-group" role="group">
-                    <a class="btn btn-primary" th:href="@{'/study/' + ${study.path} + '/join'}">스터디 가입</a>
+                    <a class="btn btn-primary"><label style="cursor: pointer;" for="join-btn">스터디 가입</label></a>
                     <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
                        th:text="${study.members.size()}">1</a>
+                    <form method="post" th:action="@{'/study/' + ${study.path} + '/join'}">
+                        <input id="join-btn" type="submit" class="d-none">
+                    </form>
                 </span>
                 <span sec:authorize="isAuthenticated()" th:if="${!study.closed && study.isMember(#authentication.principal)}"
                       class="btn-group" role="group">
-                    <a class="btn btn-outline-warning" th:href="@{'/study/' + ${study.path} + '/leave'}">스터디 탈퇴</a>
+                    <a class="btn btn-outline-warning"><label style="cursor: pointer;" for="leave-btn">스터디 탈퇴</label></a>
                     <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/members'}"
                        th:text="${study.members.size()}">1</a>
+                    <form method="post" th:action="@{'/study/' + ${study.path} + '/leave'}">
+                        <input id="leave-btn" type="submit" class="d-none">
+                    </form>
                 </span>
                 <span sec:authorize="isAuthenticated()"
                       th:if="${study.published && !study.closed && study.isManager(#authentication.principal)}">
