@@ -240,7 +240,7 @@ public class StudySettingsController {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.updatePath(study, studyPathForm);
         ra.addFlashAttribute("success", "success.path");
-        return "redirect:" + SETTINGS_STUDY_URL;
+        return "redirect:" + SETTINGS_STUDY_URL.replace("{path}", study.getPath());
     }
 
     @PostMapping(SETTINGS_STUDY_URL + "/title")
