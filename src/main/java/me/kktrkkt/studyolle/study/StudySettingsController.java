@@ -72,7 +72,7 @@ public class StudySettingsController {
     public String updateStudyInfo(@PathVariable String path, @CurrentUser Account account,
                                   @Valid StudyInfoForm infoForm, Errors errors,
                                   Model model, RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateInfo(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         if(errors.hasErrors()){
             model.addAttribute(study);
             return SETTINGS_INFO_VIEW;
@@ -92,7 +92,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_BANNER_URL)
     public String updateStudyBanner(@PathVariable String path, @CurrentUser Account account,
                                     String banner, RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateBanner(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.updateBanner(study, banner);
         ra.addFlashAttribute("success", "success.banner");
         return "redirect:" + SETTINGS_BANNER_URL;
@@ -101,7 +101,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_BANNER_URL + "/{use}")
     public String updateStudyBannerUse(@PathVariable String path, @CurrentUser Account account,
                                        @PathVariable boolean use, RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateBanner(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.updateBannerUse(study, use);
         ra.addFlashAttribute("success", "success.useBanner");
         return "redirect:" + SETTINGS_BANNER_URL;
@@ -201,7 +201,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/publish")
     public String updateStudyPublished(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.publish(study);
         ra.addFlashAttribute("success", "success.published");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -210,7 +210,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/recruiting/start")
     public String startStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.startRecruiting(study);
         ra.addFlashAttribute("success", "success.recruiting.start");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -219,7 +219,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/recruiting/stop")
     public String stopStudyRecruiting(@PathVariable String path, @CurrentUser Account account,
                                        RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.stopRecruiting(study);
         ra.addFlashAttribute("success", "success.recruiting.stop");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -228,7 +228,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/close")
     public String updateStudyClose(@PathVariable String path, @CurrentUser Account account,
                                    RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.close(study);
         ra.addFlashAttribute("success", "success.closed");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -237,7 +237,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/path")
     public String updateStudyPath(@PathVariable String path, @CurrentUser Account account,
                                   @Valid StudyPathForm studyPathForm, RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.updatePath(study, studyPathForm);
         ra.addFlashAttribute("success", "success.path");
         return "redirect:" + SETTINGS_STUDY_URL;
@@ -246,7 +246,7 @@ public class StudySettingsController {
     @PostMapping(SETTINGS_STUDY_URL + "/title")
     public String updateStudyTitle(@PathVariable String path, @CurrentUser Account account,
                                   @Valid StudyTitleForm studyTitleForm, RedirectAttributes ra) {
-        Study study = studyService.getStudyToUpdateStudy(account, path);
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         studyService.updateTitle(study, studyTitleForm);
         ra.addFlashAttribute("success", "success.title");
         return "redirect:" + SETTINGS_STUDY_URL;

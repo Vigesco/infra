@@ -40,12 +40,7 @@ public class StudyService {
         return getStudyToUpdate(account, path, byPath);
     }
 
-    public Study getStudyToUpdateInfo(Account account, String path) {
-        Optional<Study> byPath = studys.findWithManagerByPath(path);
-        return getStudyToUpdate(account, path, byPath);
-    }
-
-    public Study getStudyToUpdateBanner(Account account, String path) {
+    public Study getStudyToUpdateStatus(Account account, String path) {
         Optional<Study> byPath = studys.findWithManagerByPath(path);
         return getStudyToUpdate(account, path, byPath);
     }
@@ -57,11 +52,6 @@ public class StudyService {
 
     public Study getStudyToUpdateZone(Account account, String path) {
         Optional<Study> byPath = studys.findWithZoneByPath(path);
-        return getStudyToUpdate(account, path, byPath);
-    }
-
-    public Study getStudyToUpdateStudy(Account account, String path) {
-        Optional<Study> byPath = studys.findWithManagerByPath(path);
         return getStudyToUpdate(account, path, byPath);
     }
 
@@ -95,7 +85,14 @@ public class StudyService {
 
     public void close(Study study) {
         study.close();
-        //TODO 스터디 공개 이후, 모임을 만들지 않고 종료한 스터디.
+    }
+
+    public void stopRecruiting(Study study) {
+        study.stopRecruiting();
+    }
+
+    public void startRecruiting(Study study) {
+        study.startRecruiting();
     }
 
     public void updatePath(Study study, StudyPathForm studyPathForm) {
@@ -105,6 +102,7 @@ public class StudyService {
     public void updateTitle(Study study, StudyTitleForm studyTitleForm) {
         modelMapper.map(studyTitleForm, study);
     }
+
     private void ifManager(Account account, Study study) {
         if(!study.isManager(account)){
             throw new AccessDeniedException("해당 기능을 수정할 권한이 없습니다!");
@@ -119,13 +117,5 @@ public class StudyService {
         Study study = ifStudy(byPath, path);
         ifManager(account, study);
         return study;
-    }
-
-    public void startRecruiting(Study study) {
-        study.startRecruiting();
-    }
-
-    public void stopRecruiting(Study study) {
-        study.stopRecruiting();
     }
 }

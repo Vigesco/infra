@@ -115,15 +115,8 @@ public class Study extends BaseEntity<Study> {
     }
 
     public boolean canUpdateRecruiting() {
-        if(!this.published){
-            return false;
-        }
-
-        if(this.recruitingUpdateTime == null){
-            return true;
-        }
-
-        return LocalDateTime.now().isAfter(this.recruitingUpdateTime.plus(1, ChronoUnit.HOURS));
+        return this.published && (this.recruitingUpdateTime == null ||
+                LocalDateTime.now().isAfter(this.recruitingUpdateTime.plus(1, ChronoUnit.HOURS)));
     }
 
     public void startRecruiting() {
