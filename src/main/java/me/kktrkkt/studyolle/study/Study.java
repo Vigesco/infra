@@ -143,4 +143,7 @@ public class Study extends BaseEntity<Study> {
         return ChronoUnit.MINUTES.between(LocalDateTime.now(), this.recruitingUpdateTime.plus(1, ChronoUnit.HOURS));
     }
 
+    public boolean isRemovable() {
+        return !this.published;
+    }
 }

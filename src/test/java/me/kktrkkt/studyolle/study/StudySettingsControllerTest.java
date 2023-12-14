@@ -569,6 +569,21 @@ class StudySettingsControllerTest {
         assertEquals(title, study.getTitle());
     }
 
+    @DisplayName("스터디 삭제")
+    @Test
+    @WithAccount("user1")
+    void deleteStudy() throws Exception {
+        Study study = createStudy(accounts.findByNickname("user1").get());
+        String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
+
+        this.mockMvc.perform(post(settingsStudyUrl +"/delete").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andDo(print());
+
+        assertTrue(studys.findById(study.getId()).isEmpty());
+    }
+
     private Study createStudy(Account account) {
         String path = "new-study";
         String title = "new-study";

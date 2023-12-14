@@ -118,4 +118,13 @@ public class StudyService {
         ifManager(account, study);
         return study;
     }
+
+    public void delete(Study study) {
+        if(study.isRemovable()){
+            studys.delete(study);
+        }
+        else {
+            throw new RuntimeException("Study deletion is not possible. Studies that are public or have created a meeting cannot be deleted.");
+        }
+    }
 }

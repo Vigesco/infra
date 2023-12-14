@@ -261,4 +261,11 @@ public class StudySettingsController {
         ra.addFlashAttribute("success", "success.title");
         return "redirect:" + SETTINGS_STUDY_URL;
     }
+
+    @PostMapping(SETTINGS_STUDY_URL + "/delete")
+    public String deleteStudy(@PathVariable String path, @CurrentUser Account account) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        studyService.delete(study);
+        return "redirect:/";
+    }
 }
