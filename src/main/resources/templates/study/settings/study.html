@@ -2,40 +2,22 @@
       th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'study', ~{::alert})}">
 
 <alert>
-    <div th:if="${'success.published'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
-        <span>스터디를 성공적으로 공개했습니다!</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'success.closed'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
-        <span>스터디를 성공적으로 종료했습니다!</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'success.recruiting.start'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
-        <span>인원 모집을 시작합니다.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'success.recruiting.stop'.equals(success)}" class="alert alert-info alert-dismissible fade show" role="alert" >
-        <span>인원 모집을 중단합니다.</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'success.path'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
-        <span>스터디 경로를 성공적으로 수정했습니다</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${'success.title'.equals(success)}" class="alert alert-success alert-dismissible fade show" role="alert" >
-        <span>스터디 이름을 성공적으로 수정했습니다</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.published'.equals(success)}, 'alert-success', '스터디를 성공적으로 공개했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.closed'.equals(success)}, 'alert-success', '스터디를 성공적으로 종료했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.recruiting.start'.equals(success)}, 'alert-info', '인원 모집을 시작합니다.')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.recruiting.stop'.equals(success)}, 'alert-info', '인원 모집을 중단합니다.')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.path'.equals(success)}, 'alert-success', '스터디 경로를 성공적으로 수정했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.title'.equals(success)}, 'alert-success', '스터디 이름을 성공적으로 수정했습니다!')}"></div>
 </alert>
 
 <body>
 <div th:replace="~{::study-published}"></div>
 <div class="border-top mb-3"></div>
-<div th:if="${!study.closed && study.published}" th:replace="~{::study-recruiting}"></div>
+<div th:replace="~{::study-recruiting}"></div>
+<div th:if="${!study.closed && study.published}" class="border-top mb-3"></div>
+<div th:replace="~{::study-path}"></div>
 <div th:if="${!study.closed}" class="border-top mb-3"></div>
-<div th:if="${!study.closed}" th:replace="~{::study-path}"></div>
-<div th:if="${!study.closed}" class="border-top mb-3"></div>
-<div th:if="${!study.closed}" th:replace="~{::study-title}"></div>
+<div th:replace="~{::study-title}"></div>
 <div th:if="${!study.closed}" class="border-to mb-3"></div>
 <div th:replace="~{::study-delete}"></div>
 </body>
@@ -45,7 +27,7 @@
         <h2 class="col-12">스터디 공개 및 종료</h2>
     </div>
     <div class="row mt-3">
-        <div th:if="${!study.published}" class="col-12">
+        <div th:if="${!study.published && !study.closed}" class="col-12">
             <div class="alert alert-info mb-3" role="alert" >
                 <span>스터디를 다른 사용자에게 공개한 준비가 되었다면 버튼을 클릭하세요.</span><br>
                 <span>소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.</span><br>
@@ -67,47 +49,40 @@
                 <input id="close-btn" type="submit" class="d-none">
             </form>
         </div>
-        <div th:if="${study.published && study.closed}" class="col-12">
-            <div class="alert alert-danger mb-3" role="alert" >
+        <div th:if="${study.closed}" class="col-12">
+            <div class="alert alert-warning mb-3" role="alert" >
                 <span>스터디가 종료되었습니다</span>
             </div>
         </div>
     </div>
 </div>
 
-<div th:fragment="study-recruiting">
+<div th:if="${!study.closed && study.published}" th:fragment="study-recruiting">
     <div class="row">
         <h2 class="col-12">팀원 모집</h2>
     </div>
-    <div th:if="${!study.recruiting}" class="row mt-3">
+    <div class="row mt-3">
         <div class="col-12">
-            <div class="alert alert-info mb-3" role="alert" >
-                <span>팀원을 모집합니다.</span><br>
+            <div class="alert mb-3" th:classappend="${!study.recruiting} ? 'alert-info' : 'alert-warning'" role="alert" >
+                <span th:if="${!study.recruiting}">팀원을 모집합니다.</span>
+                <span th:if="${study.recruiting}">팀원 모집을 중단합니다.</span><br>
                 <span>충분한 스터디 팀원을 모집했다면 모집을 중단할 수 있습니다.</span><br>
                 <span>팀원 모집 정보는 1시간에 한번만 변경할 수 있습니다.</span><br>
+                <span th:if="${!study.canUpdateRecruiting()}">남은시간 : <span th:text="${study.recruitingUpdateRemainingMinuate() + '분'}"></span></span>
             </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/start'}" th:method="post">
-                <button type="button" class="btn btn-outline-primary" th:disabled="${!study.canUpdateRecruiting()}"><label for="recruiting-btn">팀원 모집 시작</label></button>
+            <form th:if="${!study.recruiting}" th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/start'}" th:method="post">
+                <button type="button" class="btn btn-outline-primary" th:disabled="${!study.canUpdateRecruiting()}"><label style="cursor:pointer;" class="pe-auto" for="recruiting-btn">팀원 모집 시작</label></button>
                 <input id="recruiting-btn" type="submit" class="d-none">
             </form>
-        </div>
-    </div>
-    <div th:if="${study.recruiting}" class="row mt-3">
-        <div class="col-12">
-            <div class="alert alert-warning mb-3" role="alert" >
-                <span>팀원 모집을 중단합니다.</span><br>
-                <span>팀원 충원이 필요할 때 다시 팀원 모집을 시작할 수 있습니다.</span><br>
-                <span>팀원 모집 정보는 1시간에 한번만 변경할 수 있습니다.</span><br>
-            </div>
-            <form th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/stop'}" th:method="post">
-                <button type="button" class="btn btn-outline-warning" th:disabled="${!study.canUpdateRecruiting()}"><label for="recruiting-btn">팀원 모집 중단</label></button>
+            <form th:if="${study.recruiting}" th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/stop'}" th:method="post">
+                <button type="button" class="btn btn-outline-warning" th:disabled="${!study.canUpdateRecruiting()}"><label style="cursor:pointer;" for="recruiting-btn">팀원 모집 중단</label></button>
                 <input id="recruiting-btn" type="submit" class="d-none">
             </form>
         </div>
     </div>
 </div>
 
-<div th:fragment="study-path">
+<div th:if="${!study.closed}" th:fragment="study-path">
     <div class="row">
         <h2 class="col-12">스터디 경로</h2>
     </div>
@@ -136,7 +111,7 @@
     </div>
 </div>
 
-<div th:fragment="study-title">
+<div th:if="${!study.closed}" th:fragment="study-title">
     <div class="row">
         <h2 class="col-12">스터디 이름</h2>
     </div>

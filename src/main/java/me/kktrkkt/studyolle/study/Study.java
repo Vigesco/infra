@@ -138,4 +138,9 @@ public class Study extends BaseEntity<Study> {
             throw new RuntimeException("Recruitment cannot be stop. Please make the study public or try again in 1 hour.");
         }
     }
+
+    public long recruitingUpdateRemainingMinuate(){
+        return ChronoUnit.MINUTES.between(LocalDateTime.now(), this.recruitingUpdateTime.plus(1, ChronoUnit.HOURS));
+    }
+
 }
