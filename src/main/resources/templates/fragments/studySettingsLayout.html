@@ -1,0 +1,42 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studyLayout :: layout (~{::body}, 'settings')}"
+      th:fragment="layout (body, settingsMenu, alerts)">
+
+<body>
+    <th:block th:insert="${alerts}" />
+    <div class="row justify-content-between">
+        <div class="col-2">
+            <div class="list-group">
+                <a th:href="@{'/study' + '/' + ${study.path} + '/settings/info'}" class="list-group-item list-group-item-action"
+                   th:classappend="${settingsMenu.contains('info')} ? 'active'"
+                   th:aria-current="${settingsMenu.contains('info')} ? true : false">
+                    소개
+                </a>
+                <a th:href="@{'/study' + '/' + ${study.path} + '/settings/banner'}" class="list-group-item list-group-item-action"
+                   th:classappend="${settingsMenu.contains('banner')} ? 'active'"
+                   th:aria-current="${settingsMenu.contains('banner')} ? true : false">
+                    배너 이미지
+                </a>
+                <a th:href="@{'/study' + '/' + ${study.path} + '/settings/topic'}" class="list-group-item list-group-item-action"
+                   th:classappend="${settingsMenu.contains('topic')} ? 'active'"
+                   th:aria-current="${settingsMenu.contains('topic')} ? true : false">
+                    스터디 주제
+                </a>
+                <a th:href="@{'/study' + '/' + ${study.path} + '/settings/zone'}" class="list-group-item list-group-item-action"
+                   th:classappend="${settingsMenu.contains('zone')} ? 'active'"
+                   th:aria-current="${settingsMenu.contains('zone')} ? true : false">
+                    활동지역
+                </a>
+                <a th:href="@{'/study' + '/' + ${study.path} + '/settings/study'}" class="list-group-item list-group-item-action list-group-item-danger"
+                   th:classappend="${settingsMenu.contains('study')} ? 'active'"
+                   th:aria-current="${settingsMenu.contains('study')} ? true : false">
+                    스터디
+                </a>
+            </div>
+        </div>
+        <div class="col-10">
+            <th:block th:insert="${body}" />
+        </div>
+    </div>
+</body>
+</html>

@@ -2,126 +2,17 @@
 <html xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         th:fragment="layout (title, content, alert)">
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${title}">Study Olle</title>
 
-    <link rel="shortcut icon" type="image/x-icon" href="../../static/resources/images/favicon.ico" th:href="@{/resources/images/favicon.ico}">
-    <link rel="stylesheet" href="../../static/resources/node_modules/bootstrap/dist/css/bootstrap.min.css" th:href="@{/resources/node_modules/bootstrap/dist/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="../../static/resources/node_modules/font-awesome/css/font-awesome.min.css" th:href="@{/resources/node_modules/font-awesome/css/font-awesome.min.css}">
-    <link rel="stylesheet" href="/static/resources/node_modules/@yaireo/tagify/dist/tagify.css" th:href="@{/resources/node_modules/@yaireo/tagify/dist/tagify.css}">
-    <script src="/static/resources/node_modules/jquery/dist/jquery.min.js" th:src="@{/resources/node_modules/jquery/dist/jquery.min.js}"></script>
-    <script src="/static/resources/node_modules/@popperjs/core/dist/umd/popper.js" th:src="@{/resources/node_modules/@popperjs/core/dist/umd/popper.js}"></script>
-    <script src="/static/resources/node_modules/bootstrap/dist/js/bootstrap.min.js" th:src="@{/resources/node_modules/bootstrap/dist/js/bootstrap.min.js}"></script>
-    <script src="/static/resources/node_modules/jdenticon/dist/jdenticon.min.js" th:src="@{/resources/node_modules/jdenticon/dist/jdenticon.min.js}"></script>
-    <style>
-        .tagify-outside{
-            border: 0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .tagify__input{
-            min-height: 35px;
-        }
-    </style>
-</head>
+<head th:replace="~{fragments/header :: header (${title})}"></head>
 <body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/" th:href="@{/}">
-            <img src="../../static/resources/images/logo_sm.png" th:src="@{/resources/images/logo_sm.png}" alt="Logo" width="30" height="30">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
-                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarToggler">
-            <form class="navbar-nav me-auto d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="스터디 찾기" aria-label="Search">
-                <button class="btn btn-outline-success text-nowrap" type="submit">검색</button>
-            </form>
-            <ul class="navbar-nav d-flex">
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" th:href="@{/login}">로그인</a>
-                </li>
-                <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="nav-link" th:href="@{/sign-up}">가입</a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
-                </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link btn btn-outline-primary"><i class="fa fa-plus" aria-hidden="true"></i> 스터디 개설</a>
-                </li>
-                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img th:if="${!#strings.isEmpty(#authentication.principal.account.profileImage)}" th:src="@{${#authentication.principal.account.profileImage}}"
-                             width="28" height="28" class="rounded-5 border bg-light">
-                        <svg th:if="${#strings.isEmpty(#authentication.principal.account.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.principal.account.profileImage}"
-                             width="28" height="28" class="rounded-5 border bg-light"></svg>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <h6 class="dropdown-item disabled" aria-disabled="true">
-                                <span sec:authentication="principal.account.nickname">Nickname</span>
-                            </h6>
-                        </li>
-                        <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.principal.account.nickname}}">프로필</a></li>
-                        <li><a class="dropdown-item" href="#">스터디</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/settings/profile}">설정</a></li>
-                        <li>
-                            <form class="form-check-inline my-2 my-lg-0 w-100" th:action="@{/logout}" method="post">
-                                <button class="dropdown-item" type="submit">로그아웃</button>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<nav th:replace="~{fragments/header :: main-nav}"></nav>
 
 <th:block th:insert="${alert}" />
 
 <div class="container min-vh-100">
     <th:block th:insert="${content}" />
 </div>
-<footer class="flex-wrap align-items-center py-3 my-4 border-top">
-    <div class="text-center">
-        <a th:href="@{/}" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-            <img th:src="@{/resources/images/logo_sm_b.png}" alt="Logo" width="30" height="30">
-        </a>
-        <span class="mb-3 mb-md-0 text-body-secondary">© 2023</span>
-    </div>
-</footer>
-<script type="application/javascript">
-    $(function (){
-        const forms = $(".needs-validation");
-
-        if(forms instanceof Array){
-            forms.map(form=>{
-                validation(form[0]);
-            })
-        }
-        else {
-            validation(forms[0])
-        }
-    })
-
-    function validation(form) {
-        $(form).submit((event) => {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            $(form).addClass("was-validated");
-        })
-    }
-</script>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script th:replace="~{fragments/scripts :: validate}"></script>
 </body>
 </html>

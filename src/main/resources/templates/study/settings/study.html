@@ -1,0 +1,188 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'study', ~{::alert})}">
+
+<alert>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.published'.equals(success)}, 'alert-success', '스터디를 성공적으로 공개했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.closed'.equals(success)}, 'alert-success', '스터디를 성공적으로 종료했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.recruiting.start'.equals(success)}, 'alert-info', '인원 모집을 시작합니다.')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.recruiting.stop'.equals(success)}, 'alert-info', '인원 모집을 중단합니다.')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.path'.equals(success)}, 'alert-success', '스터디 경로를 성공적으로 수정했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'success.title'.equals(success)}, 'alert-success', '스터디 이름을 성공적으로 수정했습니다!')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'error.path'.equals(error)}, 'alert-warning', '스터디 경로를 공백없이 문자, 숫자, 대시(-)와 언더바(_)만 3자 이상 20자 이내로 입력하세요.')}"></div>
+    <div th:replace="~{fragments/alerts :: closeAlert (${'error.title'.equals(error)}, 'alert-warning', '스터디 이름을 50자 이내로 입력하세요')}"></div>
+</alert>
+
+<body>
+<div th:replace="~{::study-published}"></div>
+<div class="border-top mb-3"></div>
+<div th:replace="~{::study-recruiting}"></div>
+<div th:if="${!study.closed && study.published}" class="border-top mb-3"></div>
+<div th:replace="~{::study-path}"></div>
+<div th:if="${!study.closed}" class="border-top mb-3"></div>
+<div th:replace="~{::study-title}"></div>
+<div th:if="${!study.closed}" class="border-to mb-3"></div>
+<div th:replace="~{::study-delete}"></div>
+</body>
+
+<div th:fragment="study-published">
+    <div class="row">
+        <h2 class="col-12">스터디 공개 및 종료</h2>
+    </div>
+    <div class="row mt-3">
+        <div th:if="${!study.published && !study.closed}" class="col-12">
+            <div class="alert alert-info mb-3" role="alert" >
+                <span>스터디를 다른 사용자에게 공개한 준비가 되었다면 버튼을 클릭하세요.</span><br>
+                <span>소개, 배너 이미지, 스터디 주제 및 활동 지역을 등록했는지 확인하세요.</span><br>
+                <span>스터디를 공개하면 주요 활동 지역과 스터디 주제에 관심있는 다른 사용자에게 알림을 전송합니다.</span><br>
+            </div>
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/publish'}" th:method="post">
+                <label for="publish-btn" class="btn btn-outline-primary">스터디 공개</label>
+                <input id="publish-btn" type="submit" class="d-none">
+            </form>
+        </div>
+        <div th:if="${study.published && !study.closed}" class="col-12">
+            <div class="alert alert-warning mb-3" role="alert" >
+                <span>스터디 활동을 마쳤다면 스터디를 종료하세요.</span><br>
+                <span>스터디를 종료하면 더 이상 팀원을 모집하거나 모임을 만들 수 없으며, 스터디 경로와 이름을 수정할 수 없습니다.</span><br>
+                <span>스터디 모임과 참여한 팀원의 기록은 그대로 보관합니다</span><br>
+            </div>
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/close'}" th:method="post">
+                <label for="close-btn" class="btn btn-outline-warning">스터디 종료</label>
+                <input id="close-btn" type="submit" class="d-none">
+            </form>
+        </div>
+        <div th:if="${study.closed}" class="col-12">
+            <div class="alert alert-warning mb-3" role="alert" >
+                <span>스터디가 종료되었습니다</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:if="${!study.closed && study.published}" th:fragment="study-recruiting">
+    <div class="row">
+        <h2 class="col-12">팀원 모집</h2>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert mb-3" th:classappend="${!study.recruiting} ? 'alert-info' : 'alert-warning'" role="alert" >
+                <span th:if="${!study.recruiting}">팀원을 모집합니다.</span>
+                <span th:if="${study.recruiting}">팀원 모집을 중단합니다.</span><br>
+                <span>충분한 스터디 팀원을 모집했다면 모집을 중단할 수 있습니다.</span><br>
+                <span>팀원 모집 정보는 1시간에 한번만 변경할 수 있습니다.</span><br>
+                <span th:if="${!study.canUpdateRecruiting()}">남은시간 : <span th:text="${study.recruitingUpdateRemainingMinuate() + '분'}"></span></span>
+            </div>
+            <form th:if="${!study.recruiting}" th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/start'}" th:method="post">
+                <button type="button" class="btn btn-outline-primary" th:disabled="${!study.canUpdateRecruiting()}"><label style="cursor:pointer;" class="pe-auto" for="recruiting-btn">팀원 모집 시작</label></button>
+                <input id="recruiting-btn" type="submit" class="d-none">
+            </form>
+            <form th:if="${study.recruiting}" th:action="@{'/study/' + ${study.path} + '/settings/study/recruiting/stop'}" th:method="post">
+                <button type="button" class="btn btn-outline-warning" th:disabled="${!study.canUpdateRecruiting()}"><label style="cursor:pointer;" for="recruiting-btn">팀원 모집 중단</label></button>
+                <input id="recruiting-btn" type="submit" class="d-none">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:if="${!study.closed}" th:fragment="study-path">
+    <div class="row">
+        <h2 class="col-12">스터디 경로</h2>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert alert-warning mb-3" role="alert" >
+                <span>스터디 경로를 수정하면 이전에 사용하던 경로로 스터디에 접근할 수 없으니 주의하세요.</span>
+            </div>
+            <form id="pathForm" class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/study/path'}" th:object="${studyPathForm}" method="post" novalidate>
+                <div class="form-group mb-3">
+                    <input id="path" type="text"  class="form-control" th:field="*{path}"
+                           placeholder="예) study-path" aria-describedby="pathHelp" required minlength="3" maxlength="20">
+                    <small id="pathHelp" class="form-text text-muted">
+                        공백없이 문자, 숫자, 대시(-)와 언더바(_)만 3자 이상 20자 이내로 입력하세요.
+                        스터디 홈 주소에 사용합니다. 예) /study/<strong>study-path</strong>
+                    </small>
+                    <small class="invalid-feedback">스터디 경로를 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('path')}" th:errors="*{path}">Path Error</small>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-warning">경로 수정</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="application/javascript">
+        $(function(){
+            var initialPathValue = document.getElementById('path').value;
+
+            function preventSubmit(event) {
+                var currentPathValue = document.getElementById('path').value;
+
+                if (currentPathValue === initialPathValue) {
+                    event.preventDefault();
+                    alert('변경된 내용이 없습니다.');
+                }
+            }
+
+            document.getElementById('pathForm').addEventListener('submit', preventSubmit);
+        })
+    </script>
+</div>
+
+<div th:if="${!study.closed}" th:fragment="study-title">
+    <div class="row">
+        <h2 class="col-12">스터디 이름</h2>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert alert-warning mb-3" role="alert" >
+                <span>스터디 이름을 수정합니다.</span>
+            </div>
+            <form class="needs-validation" th:action="@{'/study/' + ${study.path} + '/settings/study/title'}" th:object="${studyTitleForm}" method="post" novalidate>
+                <div class="form-group mb-3">
+                    <input id="title" type="text" class="form-control" th:field="*{title}"
+                           placeholder="스터디 이름" aria-describedby="titleHelp" required maxlength="50">
+                    <small id="titleHelp" class="form-text text-muted">
+                        스터디 이름을 50자 이내로 입력하세요
+                    </small>
+                    <small class="invalid-feedback">스터디 이름을 입력하세요.</small>
+                    <small class="form-text text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title Error</small>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-warning">스터디 이름 수정</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="study-delete">
+    <div class="row">
+        <h2 class="col-12 text-danger">스터디 삭제</h2>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert alert-danger mb-3" role="alert" >
+                <span th:if="${!study.isRemovable()}">공개 중이고 모임을 했던 스터디는 삭제할 수 없습니다.</span>
+                <span th:if="${study.isRemovable()}">스터디를 삭제하면 스터디 관련 모든 기록을 삭제하며 복구할 수 없습니다.</span><br th:if="${study.isRemovable()}">
+                <span th:if="${study.isRemovable()}">
+                    <strong>다음에 해당하는 스터디는 자동으로 삭제됩니다.</strong>
+                    <ul>
+                        <li>만든지 1주일이 지난 비공개 스터디</li>
+                        <li>스터디 공개 이후, 한달 동안 모임을 만들지 않은 스터디</li>
+                        <li>스터디 공개 이후, 모임을 만들지 않고 종료한 스터디</li>
+                    </ul>
+                </span>
+
+            </div>
+            <form th:action="@{'/study/' + ${study.path} + '/settings/study/delete'}" th:method="post">
+                <button type="button" class="btn btn-outline-danger" th:disabled="${!study.isRemovable()}">
+                    <label for="delete-btn" style="cursor:pointer;">스터디 삭제</label>
+                </button>
+                <input id="delete-btn" type="submit" class="d-none">
+            </form>
+        </div>
+    </div>
+</div>
+</html>

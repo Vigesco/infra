@@ -1,0 +1,33 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studyLayout :: layout (~{::body}, 'members')}">
+
+<body>
+    <div class="row row-cols-2">
+        <div th:replace="~{::member-list (members=${study.managers}, isManager=true)}"></div>
+        <div th:replace="~{::member-list (members=${study.members}, isManager=false)}"></div>
+    </div>
+</body>
+
+<div class="col" th:fragment="member-list (members, isManager)">
+    <div   th:each="member: ${members}"
+           class="card mb-3" style="max-width: 740px;">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img th:if="${!#strings.isEmpty(member.profileImage)}" th:src="@{${member.profileImage}}"
+                     width="100" height="100" class="img-fluid rounded-star">
+                <svg th:if="${#strings.isEmpty(member.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${member.email}"
+                     width="100" height="100" class="img-fluid rounded-star"></svg>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span th:text="${member.nickname}">닉네임</span>
+                        <span th:if="${isManager}" class="fw-medium text-monospace badge ms-1 text-bg-primary">관리자</span>
+                    </h5>
+                    <p class="card-text" th:text="${member.bio}">소개</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

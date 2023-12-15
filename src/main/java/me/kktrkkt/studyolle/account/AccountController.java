@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.account.exception.EmailNotFoundException;
 import me.kktrkkt.studyolle.account.model.SignUpForm;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -13,9 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -76,18 +73,11 @@ public class AccountController {
 
         accountService.completeSignUp(account);
 
-        int orderByJoinedAt = getOrderByJoinedAtWithOutNull(account);
+        int orderByJoinedAt = accounts.countAllByJoinedAtNotNullOrderByJoinedAt();
         model.addAttribute("orderByJoinedAt", orderByJoinedAt);
         model.addAttribute("nickname", account.getNickname());
 
         return CHECK_EMAIL_TOKEN_VIEW;
-    }
-
-    private int getOrderByJoinedAtWithOutNull(Account save) {
-        List<Account> findAllOrderByJoinedAt = accounts.findAll(Sort.by("joinedAt")).stream()
-                .filter(x -> x.getJoinedAt() != null)
-                .collect(Collectors.toList());
-        return findAllOrderByJoinedAt.indexOf(save) + 1;
     }
 
     @GetMapping(LOGIN_URL)

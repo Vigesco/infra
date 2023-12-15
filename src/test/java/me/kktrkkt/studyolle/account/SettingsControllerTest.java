@@ -2,23 +2,21 @@ package me.kktrkkt.studyolle.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.kktrkkt.studyolle.account.entity.Account;
-import me.kktrkkt.studyolle.topic.TopicForm;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
 import me.kktrkkt.studyolle.topic.Topic;
+import me.kktrkkt.studyolle.topic.TopicForm;
 import me.kktrkkt.studyolle.topic.TopicRepository;
 import me.kktrkkt.studyolle.zone.Zone;
 import me.kktrkkt.studyolle.zone.ZoneForm;
 import me.kktrkkt.studyolle.zone.ZoneRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles("test")
-@SpringBootTest
-@AutoConfigureMockMvc
+@MockMvcTest
+@Transactional
 public class SettingsControllerTest {
 
     @Autowired
@@ -51,29 +48,9 @@ public class SettingsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void beforeEach() {
-        createUser("user1@email.com", "user1", "password1");
-        createUser("user2@email.com", "user2", "password2");
-    }
-
-    @AfterEach
-    public void afterEach() {
-        accounts.deleteAll();
-    }
-
-    private void createUser(String email, String nickname, String password) {
-        Account user1 = new Account();
-        user1.setEmail(email);
-        user1.setNickname(nickname);
-        user1.setPassword(password);
-        user1.setEmailVerified(true);
-        accounts.save(user1);
-    }
-
     @DisplayName("프로필 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void profileUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_PROFILE_URL))
                 .andExpect(status().isOk())
@@ -84,7 +61,7 @@ public class SettingsControllerTest {
 
     @DisplayName("프로필 설정 처리 테스트 - 성공")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void profileUpdateProcess_success() throws Exception {
         String bio = "간략 자기소개";
         String url = "https://github.com/kktrkkt";
@@ -112,7 +89,7 @@ public class SettingsControllerTest {
 
     @DisplayName("프로필 설정 처리 테스트 - 실패")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void profileUpdateProcess_failure() throws Exception {
         String over35CharBio = "1234567890123456789012345678901234567890";
         String url = "https://github.com/kktrkkt";
@@ -141,7 +118,7 @@ public class SettingsControllerTest {
 
     @DisplayName("패스워드 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void passwordUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_PASSWORD_URL))
                 .andExpect(status().isOk())
@@ -152,7 +129,7 @@ public class SettingsControllerTest {
 
     @DisplayName("패스워드 설정 처리 테스트 - 성공")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void passwordUpdateProcess_success() throws Exception {
         String password = "asdF!@#$";
 
@@ -171,8 +148,10 @@ public class SettingsControllerTest {
 
     @DisplayName("패스워드 설정 처리 테스트 - 실패")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void passwordUpdateProcess_failure() throws Exception {
+        Account user1 = accounts.findByNickname("user1").get();
+        String oldPassword = user1.getPassword();
         String password = "1234567";
 
         this.mockMvc.perform(post(SettingsController.SETTINGS_PASSWORD_URL)
@@ -185,13 +164,13 @@ public class SettingsControllerTest {
                 .andExpect(model().hasErrors())
                 .andDo(print());
 
-        Account user1 = accounts.findByNickname("user1").get();
-        Assertions.assertEquals("password1", user1.getPassword());
+        user1 = accounts.findById(user1.getId()).get();
+        Assertions.assertEquals(oldPassword, user1.getPassword());
     }
 
     @DisplayName("알림 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void notificationUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_NOTIFICATION_URL))
                 .andExpect(status().isOk())
@@ -202,7 +181,7 @@ public class SettingsControllerTest {
 
     @DisplayName("알림 설정 저장 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void notificationSave_success() throws Exception {
         String studyCreatedByEmail = "true";
         String studyCreatedByWeb = "true";
@@ -236,7 +215,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void topicUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_TOPIC_URL))
                 .andExpect(status().isOk())
@@ -248,8 +227,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 추가 - 성공")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void addTopic_success() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/add", status().isOk());
@@ -262,8 +240,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 중복 추가 - 성공")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void addDuplicationTopic_success() throws Exception {
         Topic topic = new Topic();
         String title = "스프링";
@@ -278,8 +255,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 추가 - 실패")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void addTopic_failure() throws Exception {
         requestTopic("스", "/remove", status().isBadRequest());
         requestTopic("1", "/remove", status().isBadRequest());
@@ -294,8 +270,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 삭제 - 성공")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void removeTopic_success() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/add", status().isOk());
@@ -309,8 +284,7 @@ public class SettingsControllerTest {
 
     @DisplayName("관심주제 삭제 - 실패")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void removeTopic_failure() throws Exception {
         String spring = "스프링";
         requestTopic(spring, "/remove", status().isBadRequest());
@@ -338,7 +312,7 @@ public class SettingsControllerTest {
 
     @DisplayName("주요 지역 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void zoneUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_ZONE_URL))
                 .andExpect(status().isOk())
@@ -350,8 +324,7 @@ public class SettingsControllerTest {
 
     @DisplayName("주요지역 추가 - 성공")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void addZone_success() throws Exception {
         zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
         Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
@@ -364,8 +337,7 @@ public class SettingsControllerTest {
 
     @DisplayName("주요지역 추가 - 실패")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void addZone_failure() throws Exception {
         Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
@@ -377,8 +349,7 @@ public class SettingsControllerTest {
 
     @DisplayName("주요지역 삭제 - 성공")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void removeZone_success() throws Exception {
         zones.save(Zone.builder().city("test").localNameOfCity("테스트").province("testp").build());
         Optional<Zone> testZone = zones.findByCityAndProvince("test", "testp");
@@ -393,8 +364,7 @@ public class SettingsControllerTest {
 
     @DisplayName("주요지역 삭제 - 실패")
     @Test
-    @WithUser1
-    @Transactional
+    @WithAccount("user1")
     void removeZone_failure() throws Exception {
         Zone wrongCity = zones.findByCityAndProvince("wrongCity", "유토피아").orElse(null);
 
@@ -422,7 +392,7 @@ public class SettingsControllerTest {
 
     @DisplayName("계정 설정 화면 조회 테스트")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void accountUpdateForm() throws Exception {
         this.mockMvc.perform(get(SettingsController.SETTINGS_ACCOUNT_URL))
                 .andExpect(status().isOk())
@@ -433,7 +403,7 @@ public class SettingsControllerTest {
 
     @DisplayName("닉네임 변경 처리 테스트 - 성공")
     @Test
-    @WithUser1
+    @WithAccount("user1")
     void nicknameUpdateProcess_success() throws Exception {
         String nickname = "newUser";
 
@@ -452,7 +422,7 @@ public class SettingsControllerTest {
 
     @DisplayName("닉네임 변경 처리 테스트 - 실패")
     @Test
-    @WithUser1
+    @WithAccount({"user1", "user2"})
     void nicknameUpdateProcess_failure() throws Exception {
         updateNickname("user2");
         updateNickname("us");

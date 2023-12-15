@@ -1,15 +1,15 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{}, ~{::scripts})}">
+      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'topic', ~{})}">
 
 <body>
 <div class="row">
-    <h2 class="col-12">관심있는 스터디 주제</h2>
+    <h2 class="col-12">스터디 주제</h2>
     <div class="border-top"></div>
 </div>
 <div class="row mt-3">
     <div class="col-12">
         <div class="alert alert-info mb-3" role="alert" >
-            <span>참여하고 싶은 스터디 주제를 입력해주세요. 해당 주제의 스터디가 생기면 알림을 받을 수 있습니다. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요</span>
+            <span>스터디에서 주로 다루는 주제를 태그로 등록하세요. 태그를 입력하고 콤마(,) 또는 엔터를 입력하세요.</span>
         </div>
         <div id="whiteList" th:text="${whiteList}" hidden></div>
         <small id="titleHelp" class="form-text text-muted">
@@ -18,10 +18,7 @@
         <input id="topic" type="text" th:value="${#strings.listJoin(topicList, ',')}" class="tagify-outside" aria-describedby="titleHelp">
     </div>
 </div>
+<script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
+<script th:replace="~{fragments/scripts :: tagify_topic('/study/' + ${study.path} + '/settings/topic')}"></script>
 </body>
-
-<scripts>
-    <script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
-    <script th:replace="~{fragments/scripts :: tagify_topic('/settings/topic')}"></script>
-</scripts>
 </html>

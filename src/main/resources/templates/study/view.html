@@ -1,0 +1,7 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studyLayout :: layout (~{::body}, 'info')}">
+
+<body>
+    <div id="explanation" th:utext="${study.explanation}">Summernote</div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/settingsLayout :: base (~{::body}, ~{}, ~{::scripts})}">
+      th:replace="~{fragments/studySettingsLayout :: layout (~{::body}, 'zone', ~{})}">
 
 <body>
 <div class="row">
@@ -9,16 +9,14 @@
 <div class="row mt-3">
     <div class="col-12">
         <div class="alert alert-info mb-3" role="alert" >
-            <span>주로 스터디를 다닐 수 있는 지역을 입력하세요. 해당 지역에 스터디가 생기면 알림을 받을 수 있습니다. 시스템에 등록된 지역만 선택할 수 있습니다.</span>
+            <span>주로 스터디를 하는 지역을 입력하세요. 시스템에 등록된 지역만 선택할 수 있습니다.</span>
         </div>
         <div id="whiteList" th:text="${whiteList}" hidden></div>
         <input id="zone" type="text" th:value="${#strings.listJoin(zoneList, ',')}" class="tagify-outside">
     </div>
 </div>
-</body>
+<script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
+<script th:replace="~{fragments/scripts :: tagify_zone('/study/' + ${study.path} + '/settings/zone')}"></script>
 
-<scripts>
-    <script th:replace="~{fragments/scripts :: ajax_csrf(${_csrf.token}, ${_csrf.headerName})}"></script>
-    <script th:replace="~{fragments/scripts :: tagify_zone('/settings/zone')}"></script>
-</scripts>
+</body>
 </html>
