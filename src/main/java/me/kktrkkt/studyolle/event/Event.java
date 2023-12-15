@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.event;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 import me.kktrkkt.studyolle.study.Study;

@@ -3,11 +3,16 @@
 
 <body>
 <div class="py-5 text-center">
-    <h2><span th:text="${study.title}"></span>/새 모임 만들기</h2>
+    <span class="h2">
+        <a class="text-decoration-none" th:href="@{'/study/' + ${study.path}}">
+            <span th:text="${study.title}"></span>
+        </a>
+        /새 모임 만들기
+    </span>
 </div>
 <div class="row justify-content-center">
     <form class="needs-validation col-sm-12" action="#"
-          th:action="@{'/study' + ${study.path} + '/new-event'}" th:object="${eventForm}" method="post" novalidate>
+          th:action="@{'/study/' + ${study.path} + '/new-event'}" th:object="${eventForm}" method="post" novalidate>
         <div class="form-group mb-3">
             <label for="title">모임 이름</label>
             <input id="title" type="text"  class="form-control" th:field="*{title}" aria-describedby="titleHelp" required maxlength="50">
@@ -18,7 +23,7 @@
 
         <div class="form-group mb-3">
             <label for=eventType>모집 방법</label>
-            <select id="eventType" class="form-select" aria-describedby="eventTypeHelp" th:filed="*{eventType}" required>
+            <select id="eventType" class="form-select" aria-describedby="eventTypeHelp" th:field="*{eventType}" required>
                 <option th:each="et : ${eventTypes}" th:value="${et.ordinal}" th:text="${et.description}"></option>
             </select>
             <small id="eventTypeHelp" class="form-text text-muted">

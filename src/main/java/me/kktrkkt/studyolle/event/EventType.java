@@ -2,6 +2,8 @@ package me.kktrkkt.studyolle.event;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public enum EventType {
 
@@ -11,5 +13,12 @@ public enum EventType {
 
     EventType(String description) {
         this.description = description;
+    }
+
+    public static EventType valueOf(int ordinal) {
+        return Arrays.stream(EventType.values())
+                .filter(x->x.ordinal() == ordinal)
+                .findAny()
+                .orElseThrow(()->new IllegalArgumentException(ordinal + " value does not exist."));
     }
 }

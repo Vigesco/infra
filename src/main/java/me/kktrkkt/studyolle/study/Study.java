@@ -3,6 +3,7 @@ package me.kktrkkt.studyolle.study;
 import lombok.*;
 import me.kktrkkt.studyolle.account.AccountUserDetails;
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.event.Event;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.zone.Zone;
@@ -65,8 +66,12 @@ public class Study extends BaseEntity<Study> {
     @JoinTable(name = "study_zone",
             joinColumns = @JoinColumn(name = "study_id"),
             inverseJoinColumns = @JoinColumn(name = "zone_id"))
+
     @OrderColumn
     private List<Zone> zones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "study")
+    private List<Event> event;
 
     private LocalDateTime recruitingUpdateTime;
 
@@ -101,7 +106,6 @@ public class Study extends BaseEntity<Study> {
     public boolean isManager(Account account) {
         return managers.contains(account);
     }
-
 
     public void publish() {
         if(!this.published && !this.closed) {
