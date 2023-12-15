@@ -33,8 +33,7 @@
 
         <div class="form-group mb-3">
             <label for="bio">짧은 소개</label>
-            <textarea id="bio" th:field="*{bio}" class="form-control" rows="3"
-                      aria-describedby="bioHelp" maxlength="255">
+            <textarea id="bio" th:field="*{bio}" class="form-control" rows="3" aria-describedby="bioHelp" maxlength="255">
             </textarea>
             <small id="bioHelp" class="form-text text-muted">
                 255자 이내로 스터디를 짧은 소개해주세요.
@@ -45,8 +44,9 @@
 
         <div class="form-group mb-3">
             <label for="explanation">상세 소개</label>
-            <textarea id="explanation" type="text" class="form-control" th:field="*{explanation}"
-                      aria-describedby="explanationHelp" maxlength="255"></textarea>
+            <textarea id="explanation" type="text" class="form-control editor" th:field="*{explanation}"
+                      aria-describedby="explanationHelp" maxlength="255"
+                      placeholder="스터디 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어주세요.">></textarea>
             <small id="explanationHelp" class="form-text text-muted">
                 스터디 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어주세요.
             </small>
@@ -60,6 +60,6 @@
     </form>
 </div>
 <script th:replace="~{fragments/scripts :: validate}"></script>
-<script th:replace="~{fragments/scripts :: summernote-explanation ('#explanation')}"></script>
+<script th:replace="~{fragments/scripts :: summernote-editor}"></script>
 </body>
 </html>

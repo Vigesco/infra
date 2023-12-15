@@ -87,7 +87,9 @@
 
         <div class="form-group mb-3">
             <label for="description">모임 설명</label>
-            <textarea id="description" type="text" class="form-control" th:field="*{description}" aria-describedby="descriptionHelp"></textarea>
+            <textarea id="description" type="text" class="form-control editor"
+                      th:field="*{description}" aria-describedby="descriptionHelp"
+                      placeholder="모임에서 다루는 주제, 장소, 진행 방식 등을 자세히 적어주세요."></textarea>
             <small id="descriptionHelp" class="form-text text-muted">
                 모임에서 다루는 주제, 장소, 진행 방식 등을 자세히 적어주세요.
             </small>
@@ -101,6 +103,6 @@
     </form>
 </div>
 <script th:replace="~{fragments/scripts :: validate}"></script>
-<script th:replace="~{fragments/scripts :: summernote-explanation ('#description')}"></script>
+<script th:replace="~{fragments/scripts :: summernote-editor}"></script>
 </body>
 </html>
