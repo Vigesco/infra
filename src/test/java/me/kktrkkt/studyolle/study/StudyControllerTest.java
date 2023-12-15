@@ -1,14 +1,10 @@
 package me.kktrkkt.studyolle.study;
 
-import me.kktrkkt.studyolle.account.AccountRepository;
 import me.kktrkkt.studyolle.account.WithAccount;
 import me.kktrkkt.studyolle.account.entity.Account;
-import me.kktrkkt.studyolle.infra.MockMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -22,18 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@MockMvcTest
 @Transactional
-class StudyControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private StudyRepository studys;
-
-    @Autowired
-    private AccountRepository accounts;
+public class StudyControllerTest extends StudyBaseTest {
 
     @DisplayName("스터디 생성 폼 조회")
     @Test
@@ -62,7 +48,7 @@ class StudyControllerTest {
                         .param("explanation", explanation)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(STUDY_BASE_URL.replace("{path}", path)))
+                .andExpect(redirectedUrl(replacePath(path, STUDY_BASE_URL)))
                 .andExpect(flash().attributeExists("study"))
                 .andDo(print());
         Optional<Study> byUrl = studys.findByPath(path);
@@ -97,9 +83,9 @@ class StudyControllerTest {
     @Test
     @WithAccount("user1")
     void studyView() throws Exception {
-        Study study = createStudy();
+        Study study = createStudy("user1");
 
-        this.mockMvc.perform(get(STUDY_BASE_URL.replace("{path}", study.getPath())))
+        this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_BASE_URL)))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("study"))
                 .andExpect(view().name(STUDY_VIEW))
@@ -110,9 +96,9 @@ class StudyControllerTest {
     @Test
     @WithAccount("user1")
     void studyMembers() throws Exception {
-        Study study = createStudy();
+        Study study = createStudy("user1");
 
-        this.mockMvc.perform(get(STUDY_MEMBERS_URL.replace("{path}", study.getPath())))
+        this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_MEMBERS_URL)))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("study"))
                 .andExpect(view().name(STUDY_MEMBERS_VIEW))
@@ -121,12 +107,13 @@ class StudyControllerTest {
 
     @DisplayName("스터디 참여")
     @Test
-    @WithAccount("user1")
+    @WithAccount({"user1", "user2"})
     void joinStudy() throws Exception {
-        Study study = createStudy();
+        Study study = createStudy("user2");
         study.publish();
         study.startRecruiting();
-        String studyBaseUrl = STUDY_BASE_URL.replace("{path}", study.getPath());
+
+        String studyBaseUrl = replacePath(study.getPath(), STUDY_BASE_URL);
 
         this.mockMvc.perform(post(studyBaseUrl + "/join").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -138,15 +125,15 @@ class StudyControllerTest {
 
     @DisplayName("스터디 탈퇴")
     @Test
-    @WithAccount("user1")
+    @WithAccount({"user1", "user2"})
     void leaveStudy() throws Exception {
-        Study study = createStudy();
+        Study study = createStudy("user2");
         study.publish();
         study.startRecruiting();
         Account user1 = accounts.findByNickname("user1").get();
         study.addMember(user1);
 
-        String studyBaseUrl = STUDY_BASE_URL.replace("{path}", study.getPath());
+        String studyBaseUrl = replacePath(study.getPath(), STUDY_BASE_URL);
 
         this.mockMvc.perform(post(studyBaseUrl+"/leave").with(csrf()))
                 .andExpect(status().is3xxRedirection())
@@ -154,20 +141,5 @@ class StudyControllerTest {
                 .andDo(print());
 
         assertFalse(study.getMembers().contains(user1));
-    }
-
-    private Study createStudy() {
-        String path = "new-study";
-        String title = "new-study";
-        String bio = "bio";
-        String explanation = "explanation";
-
-        Study newStudy = new Study();
-        newStudy.setPath(path);
-        newStudy.setTitle(title);
-        newStudy.setBio(bio);
-        newStudy.setExplanation(explanation);
-
-        return studys.save(newStudy);
     }
 }
