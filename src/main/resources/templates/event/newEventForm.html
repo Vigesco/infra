@@ -24,7 +24,7 @@
         <div class="form-group mb-3">
             <label for=eventType>모집 방법</label>
             <select id="eventType" class="form-select" aria-describedby="eventTypeHelp" th:field="*{eventType}" required>
-                <option th:each="et : ${eventTypes}" th:value="${et.ordinal}" th:text="${et.description}"></option>
+                <option th:each="et : ${eventTypes}" th:value="${et.name}" th:text="${et.description}"></option>
             </select>
             <small id="eventTypeHelp" class="form-text text-muted">
                 <span>모집 방법에는 크게 두가지 방법이 있습니다.</span><br>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="form-group row mb-3">
-            <div class="col-sm-3">
+            <div class="col-md-3">
                 <label for="limitOfEnrollments">모집 인원</label>
                 <input id="limitOfEnrollments" type="number" class="form-control" th:field="*{limitOfEnrollments}"
                        aria-describedby="limitOfEnrollmentsHelp" required min="2">
@@ -53,7 +53,7 @@
                 <small class="invalid-feedback">모집 인원을 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('limitOfEnrollments')}" th:errors="*{limitOfEnrollments}">LimitOfEnrollments Error</small>
             </div>
-            <div class="col-sm-3">
+            <div class="col-md-3">
                 <label for="endEnrollmentDateTime">등록 마감 일시</label>
                 <input id="endEnrollmentDateTime" type="datetime-local" class="form-control" th:field="*{endEnrollmentDateTime}"
                        aria-describedby="endEnrollmentDateTimeHelp" required>
@@ -63,7 +63,7 @@
                 <small class="invalid-feedback">등록 마감 일시를 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('endEnrollmentDateTime')}" th:errors="*{endEnrollmentDateTime}">EndEnrollmentDateTime Error</small>
             </div>
-            <div class="col-sm-3">
+            <div class="col-md-3">
                 <label for="startDateTime">모임 시작 일시</label>
                 <input id="startDateTime" type="datetime-local" class="form-control" th:field="*{startDateTime}"
                        aria-describedby="startDateTimeHelp" required>
@@ -73,7 +73,7 @@
                 <small class="invalid-feedback">모임 시작 일시를 입력하세요.</small>
                 <small class="form-text text-danger" th:if="${#fields.hasErrors('startDateTime')}" th:errors="*{startDateTime}">StartDateTime Error</small>
             </div>
-            <div class="col-sm-3">
+            <div class="col-md-3">
                 <label for="endDateTime">모임 종료 일시</label>
                 <input id="endDateTime" type="datetime-local" class="form-control" th:field="*{endDateTime}"
                        aria-describedby="endDateTimeHelp" required>

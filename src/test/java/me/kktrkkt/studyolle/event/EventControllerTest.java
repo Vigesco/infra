@@ -56,7 +56,7 @@ class EventControllerTest extends EventBaseTest {
 
         this.mockMvc.perform(post(studyBaseUrl).with(csrf())
                         .param("title", title)
-                        .param("eventType", String.valueOf(eventType.ordinal()))
+                        .param("eventType", eventType.name())
                         .param("limitOfEnrollments", String.valueOf(limitOfEnrollments))
                         .param("endDateTime", endDateTime.format(DateTimeFormatter.ISO_DATE_TIME))
                         .param("endEnrollmentDateTime", endEnrollmentDateTime.format(DateTimeFormatter.ISO_DATE_TIME))
@@ -76,23 +76,23 @@ class EventControllerTest extends EventBaseTest {
     void createNewEvent_failure() throws Exception {
         Study study = createStudy("user1");
 
-        requestWrongNewEvent("abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdea", EventType.FCFS.ordinal(),
+        requestWrongNewEvent("abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdea", EventType.FCFS.name(),
                 2, now().plus(2, ChronoUnit.DAYS),
                 now().plus(1, ChronoUnit.DAYS),
                 now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
-        requestWrongNewEvent("title", -1, 2,
+        requestWrongNewEvent("title", "nope", 2,
                 now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
                 now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
-        requestWrongNewEvent("title", EventType.FCFS.ordinal(), 1,
+        requestWrongNewEvent("title", EventType.FCFS.name(), 1,
                 now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
                 now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         assertTrue(events.findAll().isEmpty());
     }
 
-    private void requestWrongNewEvent(String title, int eventType, int limitOfEnrollments, LocalDateTime endDateTime, LocalDateTime endEnrollmentDateTime, LocalDateTime startDateTime, String description, String studyBaseUrl) throws Exception {
+    private void requestWrongNewEvent(String title, String eventType, int limitOfEnrollments, LocalDateTime endDateTime, LocalDateTime endEnrollmentDateTime, LocalDateTime startDateTime, String description, String studyBaseUrl) throws Exception {
         this.mockMvc.perform(post(studyBaseUrl).with(csrf())
                         .param("title", title)
                         .param("eventType", String.valueOf(eventType))

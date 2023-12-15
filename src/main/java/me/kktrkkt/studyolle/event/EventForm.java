@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.event;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -16,18 +17,21 @@ public class EventForm {
     private String title;
 
     @NotNull
-    private EventType eventType;
+    private EventType eventType = EventType.FCFS;
 
     @Min(2)
-    private int limitOfEnrollments;
+    private int limitOfEnrollments = 2;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endEnrollmentDateTime;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startDateTime;
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDateTime;
 
     private String description;
