@@ -8,6 +8,7 @@ import me.kktrkkt.studyolle.study.StudyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,6 +24,11 @@ public class EventController {
 
     private final StudyService studyService;
     private final EventService eventService;
+
+    @InitBinder("eventForm")
+    public void validEventForm(WebDataBinder dataBinder){
+        dataBinder.addValidators(new EventValidator());
+    }
 
     @ModelAttribute
     public Study getStudyToUpdate(@PathVariable String path, @CurrentUser Account account){
