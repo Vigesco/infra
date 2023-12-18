@@ -72,10 +72,7 @@
                 </li>
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img th:if="${!#strings.isEmpty(#authentication.principal.account.profileImage)}" th:src="@{${#authentication.principal.account.profileImage}}"
-                             width="28" height="28" class="rounded-5 border bg-light">
-                        <svg th:if="${#strings.isEmpty(#authentication.principal.account.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.principal.account.email}"
-                             width="28" height="28" class="rounded-5 border bg-light"></svg>
+                        <th:block th:replace="~{:: profileImage (${#authentication.principal.account.profileImage}, ${#authentication.name})}"></th:block>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
@@ -98,4 +95,10 @@
         </div>
     </div>
 </nav>
+<th:block th:fragment="profileImage (profileImage, email)">
+    <img th:if="${!#strings.isEmpty(profileImage)}" th:src="@{${profileImage}}"
+         width="28" height="28" class="rounded-5 border bg-white">
+    <svg th:if="${#strings.isEmpty(profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${email}"
+         width="28" height="28" class="rounded-5 border bg-white"></svg>
+</th:block>
 </html>
