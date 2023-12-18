@@ -23,6 +23,8 @@ public class StudyController {
     static final String STUDY_VIEW= "study/view";
     static final String NEW_STUDY_URL = "/new-study";
     static final String NEW_STUDY_VIEW = "study/newStudySubmitForm";
+    static final String STUDY_EVENTS_URL = STUDY_BASE_URL + "/events";
+    static final String STUDY_EVENTS_VIEW = "study/events";
     static final String STUDY_MEMBERS_URL = STUDY_BASE_URL + "/members";
     static final String STUDY_MEMBERS_VIEW= "study/members";
 
@@ -53,6 +55,14 @@ public class StudyController {
         return STUDY_VIEW;
     }
 
+    @GetMapping(STUDY_EVENTS_URL)
+    public String eventList(@PathVariable String path, @CurrentUser Account account,
+                            Model model) {
+        Study study = studyService.getStudyToEvent(path, account);
+        model.addAttribute(study);
+        return STUDY_EVENTS_VIEW;
+    }
+
     @GetMapping(STUDY_MEMBERS_URL)
     public String studyMembers(@PathVariable String path, Model model) {
         Study byPath = studyService.getStudy(path);
@@ -62,14 +72,14 @@ public class StudyController {
 
     @PostMapping(STUDY_BASE_URL + "/join")
     public String joinStudy(@PathVariable String path, @CurrentUser Account account) {
-        Study byPath = studyService.getStudyToUpdateMembers(path);
+        Study byPath = studyService.getStudyToMembers(path);
         studyService.addMember(byPath, account);
         return "redirect:" + STUDY_BASE_URL;
     }
 
     @PostMapping(STUDY_BASE_URL + "/leave")
     public String leaveStudy(@PathVariable String path, @CurrentUser Account account) {
-        Study byPath = studyService.getStudyToUpdateMembers(path);
+        Study byPath = studyService.getStudyToMembers(path);
         studyService.removeMember(byPath, account);
         return "redirect:" + STUDY_BASE_URL;
     }

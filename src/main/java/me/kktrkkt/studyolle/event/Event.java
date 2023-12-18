@@ -45,4 +45,12 @@ public class Event extends BaseEntity<Event> {
 
     @Enumerated(EnumType.ORDINAL)
     private EventType eventType;
+
+    public boolean isNew() {
+        return !this.endDateTime.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isOld() {
+        return !isNew();
+    }
 }

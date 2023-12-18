@@ -1,0 +1,61 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/studyLayout :: layout (~{::body}, 'events')}">
+
+<body>
+<div class="row justify-content-between">
+    <div class="col-2">
+        <ol class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">새 모임</div>
+                </div>
+                <span class="badge bg-primary rounded-pill" th:text="${study.countNewEvent()}">1</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">지난 모임</div>
+                </div>
+                <span class="badge bg-primary rounded-pill" th:text="${study.countOldEvent()}">1</span>
+            </li>
+        </ol>
+    </div>
+    <div class="col-10">
+        <div th:each="event: ${study.events}" class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <span th:if="${event.isNew()}" class="fw-bold text-monospace badge text-bg-success me-3 my-auto">
+                        <span class="text-decoration-none text-white">새 모임</span>
+                    </span>
+                    <span th:if="${event.isOld()}" class="fw-bold text-monospace badge text-bg-secondary me-3 my-auto">
+                        <span class="text-decoration-none text-white">지난 모임</span>
+                    </span>
+                    <h5 class="mb-0" th:text="${event.title}">모임 이름</h5>
+                </div>
+                <a th:href="@{'/study/' + ${study.path} + '/event/' + ${event.id}}" class="btn btn-primary">자세히 보기</a>
+            </div>
+            <div class="card-body">
+                <p>
+                    <span><i class="fa fa-hourglass-end" aria-hidden="true"></i> 신청 마감 : </span>
+                    <span th:text="${#temporals.format(event.endEnrollmentDateTime, 'yyyy년 MM월 dd일 EEEE a hh:mm')}"></span>
+                </p>
+                <p>
+                    <span><i class="fa fa-calendar" aria-hidden="true"></i> 일시 : </span>
+                    <span th:text="${#temporals.format(event.startDateTime, 'yyyy년 MM월 dd일 EEEE a hh:mm')}"></span> ~
+                    <span th:text="${#temporals.format(event.endDateTime, 'yyyy년 MM월 dd일 EEEE a hh:mm')}"></span>
+                </p>
+                <small class="text-muted" th:text="${event.createdBy.nickname + ' · '}"></small><small class="text-muted fromNow" th:text="${event.createdDateTime}"></small>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/resources/node_modules/moment/min/moment-with-locales.min.js" th:src="@{/resources/node_modules/moment/min/moment-with-locales.min.js}"></script>
+<script type="application/javascript">
+    $(function(){
+        moment.locale('ko');
+        $(".fromNow").text(function(index, dateTime) {
+            return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
+        });
+    })
+</script>
+</body>
+</html>
