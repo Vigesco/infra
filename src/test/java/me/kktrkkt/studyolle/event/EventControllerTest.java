@@ -48,8 +48,8 @@ class EventControllerTest extends EventBaseTest {
         EventType eventType = EventType.FCFS;
         int limitOfEnrollments = 5;
         LocalDateTime endDateTime = now().plus(3, ChronoUnit.DAYS);
-        LocalDateTime endEnrollmentDateTime = now().plus(2, ChronoUnit.DAYS);
-        LocalDateTime startDateTime = now().plus(1, ChronoUnit.DAYS);
+        LocalDateTime endEnrollmentDateTime = now().plus(1, ChronoUnit.DAYS);
+        LocalDateTime startDateTime = now().plus(2, ChronoUnit.DAYS);
         String description = "description";
 
         String studyBaseUrl = replacePath(study.getPath(), NEW_EVENT_URL);
@@ -78,32 +78,28 @@ class EventControllerTest extends EventBaseTest {
 
         requestWrongNewEvent("abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdea", EventType.FCFS.name(),
                 2, now().plus(3, ChronoUnit.DAYS),
-                now().plus(2, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(1, ChronoUnit.DAYS),
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", "nope", 2,
-                now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(3, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 1,
-                now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(3, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 2,
                 now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
                 now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 2,
+                now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+
+        requestWrongNewEvent("title", EventType.FCFS.name(), 1,
                 now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
-                now().plus(4, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
-
-        requestWrongNewEvent("title", EventType.FCFS.name(), 1,
-                now().plus(3, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
-
-        requestWrongNewEvent("title", EventType.FCFS.name(), 1,
-                now().plus(3, ChronoUnit.DAYS), now().plus(3, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         assertTrue(events.findAll().isEmpty());
     }

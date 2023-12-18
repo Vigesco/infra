@@ -29,9 +29,9 @@ public class EventValidator implements Validator {
                     "종료일은 시작일보다 이전이어야 합니다.");
         }
 
-        if(endEnrollmentDateTime.isBefore(startDateTime) || endEnrollmentDateTime.isAfter(endDateTime)) {
+        if(!endEnrollmentDateTime.isBefore(startDateTime)) {
             errors.rejectValue("endEnrollmentDateTime", "endEnrollmentDateTime",
-                    "등록 신청 마감일은 모임 시작일과 마감일 사이여야 합니다.");
+                    "등록 신청 마감일은 모임 시작일보다 이전이어야합니다.");
         }
     }
 }
