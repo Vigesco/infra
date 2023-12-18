@@ -30,25 +30,25 @@ public class EventController {
         dataBinder.addValidators(new EventValidator());
     }
 
-    @ModelAttribute
-    public Study getStudyToUpdate(@PathVariable String path, @CurrentUser Account account){
-        return studyService.getStudyToUpdateStatus(account, path);
-    }
-
     @GetMapping(NEW_EVENT_URL)
-    public String newEventForm(Model model) {
+    public String newEventForm(@PathVariable String path, @CurrentUser Account account, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        model.addAttribute(study);
         model.addAttribute("eventTypes", EventType.values());
         model.addAttribute(new EventForm());
         return NEW_EVENT_VIEW;
     }
 
     @PostMapping(NEW_EVENT_URL)
-    public String createNewEvent(@CurrentUser Account account, @Valid EventForm eventForm, Errors errors, Model model) {
+    public String createNewEvent(@PathVariable String path, @CurrentUser Account account,
+                                 @Valid EventForm eventForm, Errors errors, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
         if(errors.hasErrors()){
+            model.addAttribute(study);
             model.addAttribute("eventTypes", EventType.values());
             return NEW_EVENT_VIEW;
         }
-        Event newEvent = eventService.create(account, eventForm);
+        Event newEvent = eventService.create(account, eventForm, study);
         return "redirect:" + EVENT_URL.replace("{id}", String.valueOf(newEvent.getId()));
     }
 }
