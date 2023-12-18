@@ -31,9 +31,9 @@
             </div>
             <div class="mb-3">
                 <h5>모임장</h5>
-                <a class="btn justify-content-between btn-light">
-                    <th:block th:replace="~{fragments/header :: profileImage (${event.createBy.profileImage}, ${event.createBy.email})}"></th:block>
-                    <span class="ms-2 pe-none" th:text="${event.createBy.nickname}"></span>
+                <a th:href="@{'/profile/' + ${event.createdBy.nickname}}" class="btn justify-content-between btn-light">
+                    <th:block th:replace="~{fragments/header :: profileImage (${event.createdBy.profileImage}, ${event.createdBy.email})}"></th:block>
+                    <span class="ms-2 pe-none" th:text="${event.createdBy.nickname}"></span>
                     <i class="fa fa-external-link" aria-hidden="true"></i>
                 </a>
             </div>

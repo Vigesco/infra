@@ -15,7 +15,7 @@ import java.util.List;
 public class Event extends BaseEntity<Event> {
 
     @ManyToOne
-    private Account createBy;
+    private Account createdBy;
 
     @ManyToOne
     private Study study;

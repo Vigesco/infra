@@ -18,7 +18,7 @@ public class EventService {
 
     public Event create(Account account, EventForm eventForm, Study study) {
         Event event = modelMapper.map(eventForm, Event.class);
-        event.setCreateBy(account);
+        event.setCreatedBy(account);
         event.setCreatedDateTime(LocalDateTime.now());
         event.setStudy(study);
         return events.save(event);
