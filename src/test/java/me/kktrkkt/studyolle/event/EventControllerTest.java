@@ -90,15 +90,15 @@ class EventControllerTest extends EventBaseTest {
                 now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 2,
-                now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
-                now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(3, ChronoUnit.DAYS), now(),
+                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 2,
                 now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
-                now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 1,
-                now().plus(3, ChronoUnit.DAYS), now().plus(2, ChronoUnit.DAYS),
+                now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
                 now().plus(2, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         assertTrue(events.findAll().isEmpty());
