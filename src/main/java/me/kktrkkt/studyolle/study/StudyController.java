@@ -72,14 +72,14 @@ public class StudyController {
 
     @PostMapping(STUDY_BASE_URL + "/join")
     public String joinStudy(@PathVariable String path, @CurrentUser Account account) {
-        Study byPath = studyService.getStudyToMembers(path);
+        Study byPath = studyService.getStudyToMember(path);
         studyService.addMember(byPath, account);
         return "redirect:" + STUDY_BASE_URL;
     }
 
     @PostMapping(STUDY_BASE_URL + "/leave")
     public String leaveStudy(@PathVariable String path, @CurrentUser Account account) {
-        Study byPath = studyService.getStudyToMembers(path);
+        Study byPath = studyService.getStudyToMember(path);
         studyService.removeMember(byPath, account);
         return "redirect:" + STUDY_BASE_URL;
     }

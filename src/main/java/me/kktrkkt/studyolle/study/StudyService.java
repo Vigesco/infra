@@ -55,8 +55,13 @@ public class StudyService {
         return getStudyToUpdate(account, path, byPath);
     }
 
-    public Study getStudyToMembers(String path) {
+    public Study getStudyToMember(String path) {
         Optional<Study> byPath = studys.findWithMemberByPath(path);
+        return ifStudy(byPath, path);
+    }
+
+    public Study getStudyToMemberAndManager(String path) {
+        Optional<Study> byPath = studys.findWithMemberAndManagerByPath(path);
         return ifStudy(byPath, path);
     }
 

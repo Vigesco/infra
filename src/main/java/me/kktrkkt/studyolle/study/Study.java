@@ -14,15 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedEntityGraph(
-        name = "Study.withAll",
-        attributeNodes = {
-                @NamedAttributeNode("managers"),
-                @NamedAttributeNode("members"),
-                @NamedAttributeNode("zones"),
-                @NamedAttributeNode("topics"),
-        }
-)
 @Entity
 @Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor

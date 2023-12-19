@@ -58,12 +58,12 @@ public class EventController {
     @GetMapping(EVENT_URL)
     public String eventView(@PathVariable String path, @PathVariable Long id,
                             @CurrentUser Account account, Model model) {
-        Study study = studyService.getStudyToMembers(path);
+        Study study = studyService.getStudyToMemberAndManager(path);
         if(!study.isMember(account) && !study.isManager(account)){
             throw new AccessDeniedException("해당 모임에 접근할 권한이 없습니다.");
         }
         model.addAttribute(study);
-        model.addAttribute(events.findById(id).orElseThrow());
+        model.addAttribute(events.findWithEnrollmentById(id).orElseThrow());
         return EVENT_VIEW;
     }
 }
