@@ -60,9 +60,11 @@ public class StudyService {
         return ifStudy(byPath, path);
     }
 
-    public Study getStudyToMemberAndManager(String path) {
+    public Study getStudyToMemberAndManager(String path, Account account) {
         Optional<Study> byPath = studys.findWithMemberAndManagerByPath(path);
-        return ifStudy(byPath, path);
+        Study study = ifStudy(byPath, path);
+        ifMember(study, account);
+        return study;
     }
 
     public Study getStudyToEvent(String path, Account account) {

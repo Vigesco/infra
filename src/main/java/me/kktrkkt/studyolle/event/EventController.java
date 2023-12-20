@@ -6,7 +6,6 @@ import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.study.Study;
 import me.kktrkkt.studyolle.study.StudyService;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -27,14 +26,14 @@ public class EventController {
     static final String EVENT_VIEW = "event/view";
     static final String EVENT_UPDATE_URL = EVENT_URL + "/edit";
     static final String EVENT_UPDATE_VIEW = "event/eventUpdateForm";
-    static final String EVENT_DELETE_URL = EVENT_URL + "/delete";;
+    static final String EVENT_DELETE_URL = EVENT_URL + "/delete";
+    static final String EVENT_JOIN_URL = EVENT_URL + "/join";
 
     private final StudyService studyService;
     private final EventService eventService;
     private final EventRepository events;
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
-
 
     @InitBinder("eventForm")
     public void validEventForm(WebDataBinder dataBinder){
@@ -66,10 +65,7 @@ public class EventController {
     @GetMapping(EVENT_URL)
     public String eventView(@PathVariable String path, @PathVariable Long id,
                             @CurrentUser Account account, Model model) {
-        Study study = studyService.getStudyToMemberAndManager(path);
-        if(!study.isMember(account) && !study.isManager(account)){
-            throw new AccessDeniedException("해당 모임에 접근할 권한이 없습니다.");
-        }
+        Study study = studyService.getStudyToMemberAndManager(path, account);
         model.addAttribute(study);
         model.addAttribute(events.findWithEnrollmentById(id).orElseThrow());
         return EVENT_VIEW;
@@ -105,6 +101,16 @@ public class EventController {
         eventService.update(eventForm, event);
         ra.addFlashAttribute("success", "success");
         return "redirect:" + EVENT_UPDATE_URL;
+    }
+
+    @PostMapping(EVENT_JOIN_URL)
+    public String joinEvent(@PathVariable String path, @CurrentUser Account account,
+                            @PathVariable Long id, RedirectAttributes ra) {
+        studyService.getStudyToMemberAndManager(path, account);
+        Event event = events.findById(id).orElseThrow();
+        eventService.join(event, account);
+        ra.addFlashAttribute("success", "success");
+        return "redirect:" + EVENT_URL;
     }
 
     @PostMapping(EVENT_DELETE_URL)

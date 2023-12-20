@@ -54,4 +54,8 @@ public class Event extends BaseEntity<Event> {
     public boolean isOld() {
         return !isNew();
     }
+
+    public boolean isJoinable(Account account) {
+        return enrollments.stream().noneMatch(x -> x.getAccount().equals(account));
+    }
 }

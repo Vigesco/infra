@@ -52,12 +52,26 @@
                 </a>
             </div>
             <div class="mb-3">
+                <h5>모임 참가 신청 (<span th:text="${event.enrollments.size()}"></span>)</h5>
+                <div class="row row-cols-2">
+                    <span th:if="${event.enrollments.isEmpty}" class="text-muted">참가 신청이 없습니다</span>
+                    <div th:each="enrollment : ${event.enrollments}" class="col mb-3">
+                        <a th:href="@{'/profile/' + ${enrollment.account.nickname}}" class="btn justify-content-between" th:classappend="${enrollment.accepted} ? 'btn-outline-success' : 'btn-light'">
+                            <th:block th:replace="~{fragments/header :: profileImage (${enrollment.account.profileImage}, ${enrollment.account.email})}"></th:block>
+                            <span class="ms-2 pe-none" th:text="${enrollment.account.nickname}"></span>
+                            <i th:if="${enrollment.accepted}" class="fa fa-check" aria-hidden="true"></i>
+                            <i th:if="${!enrollment.accepted}" class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
                 <h5>신청인원 / 모집인원</h5>
                 <span th:text="${event.enrollments.size()}"></span> /
                 <span th:text="${event.limitOfEnrollments}"></span>
             </div>
             <div class="form-group d-grid gap-2">
-                <button type="submit" class="btn btn-primary ">참가하기</button>
+                <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#join-modal">참가하기</button>
             </div>
         </div>
     </div>
@@ -77,6 +91,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                 <form method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/delete'}">
+                    <button type="submit" class="btn btn-primary">확인</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="join-modal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="joinModalLabel" th:text="${event.title}"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>모임에 참석하시겠습니까? 일정을 캘린더에 등록해 두시면 좋습니다.</p>
+                <p>확인 버튼을 클릭하면 모임 참가 신청을 합니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <form method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/join'}">
                     <button type="submit" class="btn btn-primary">확인</button>
                 </form>
             </div>
