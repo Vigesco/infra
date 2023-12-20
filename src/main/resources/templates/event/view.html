@@ -6,12 +6,18 @@
 <div class="col-12 py-5">
     <div class="row">
         <div class="col-md-8">
-            <span class="h2">
-                <a class="text-decoration-none" th:href="@{'/study/' + ${study.path} + '/events'}">
-                    <span th:text="${study.title}"></span>
-                </a>
-                / <span th:text="${event.title}"></span>
-            </span>
+            <div class="row">
+                <span class="h2 col-8">
+                    <a class="text-decoration-none" th:href="@{'/study/' + ${study.path} + '/events'}">
+                        <span th:text="${study.title}"></span>
+                    </a>
+                    / <span th:text="${event.title}"></span>
+                </span>
+                <div class="col d-md-block text-end">
+                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/edit'}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 수정</a>
+                </div>
+            </div>
+
             <div class="mt-3" th:utext="${event.description}">Description</div>
         </div>
         <div class="col-md-4 mb-3">

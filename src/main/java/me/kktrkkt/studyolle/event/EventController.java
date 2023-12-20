@@ -5,6 +5,7 @@ import me.kktrkkt.studyolle.account.CurrentUser;
 import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.study.Study;
 import me.kktrkkt.studyolle.study.StudyService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,14 +24,18 @@ public class EventController {
     static final String NEW_EVENT_VIEW = "event/newEventForm";
     static final String EVENT_URL = BASE_URL + "/event/{id}";
     static final String EVENT_VIEW = "event/view";
+    static final String UPDATE_EVENT_URL = EVENT_URL + "/edit";
+    static final String UPDATE_EVENT_VIEW = "event/editEventForm";
 
     private final StudyService studyService;
     private final EventService eventService;
     private final EventRepository events;
+    private final ModelMapper modelMapper;
+    private final EventValidator eventValidator;
 
     @InitBinder("eventForm")
     public void validEventForm(WebDataBinder dataBinder){
-        dataBinder.addValidators(new EventValidator());
+        dataBinder.addValidators(eventValidator);
     }
 
     @GetMapping(NEW_EVENT_URL)
@@ -65,5 +70,34 @@ public class EventController {
         model.addAttribute(study);
         model.addAttribute(events.findWithEnrollmentById(id).orElseThrow());
         return EVENT_VIEW;
+    }
+
+    @GetMapping(UPDATE_EVENT_URL)
+    public String updateEventForm(@PathVariable String path, @CurrentUser Account account,
+                                @PathVariable Long id, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        model.addAttribute(study);
+        model.addAttribute(event);
+        model.addAttribute("eventTypes", EventType.values());
+        model.addAttribute(modelMapper.map(event, EventForm.class));
+        return UPDATE_EVENT_VIEW;
+    }
+
+    @PostMapping(UPDATE_EVENT_URL)
+    public String updateEvent(@PathVariable String path, @CurrentUser Account account,
+                              @PathVariable Long id, @Valid EventForm eventForm,
+                              Errors errors, Model model) {
+        Study study = studyService.getStudyToUpdateStatus(account, path);
+        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        eventValidator.validateUpdateForm(eventForm, event, errors);
+        if(errors.hasErrors()){
+            model.addAttribute(study);
+            model.addAttribute(event);
+            model.addAttribute("eventTypes", EventType.values());
+            return UPDATE_EVENT_VIEW;
+        }
+        eventService.update(eventForm, event);
+        return "redirect:" + UPDATE_EVENT_URL;
     }
 }

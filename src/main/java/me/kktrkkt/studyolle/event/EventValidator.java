@@ -1,15 +1,17 @@
 package me.kktrkkt.studyolle.event;
 
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.time.LocalDateTime;
 
+@Component
 public class EventValidator implements Validator {
 
     @Override
     public boolean supports(Class clazz) {
-        return clazz.isAssignableFrom(EventForm.class);
+        return EventForm.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -32,6 +34,12 @@ public class EventValidator implements Validator {
         if(!endDateTime.isAfter(startDateTime)){
             errors.rejectValue("endDateTime", "endDateTime",
                     "종료일은 시작일보다 이후이어야 합니다.");
+        }
+    }
+
+    public void validateUpdateForm(EventForm eventForm, Event event, Errors errors) {
+        if(event.getEnrollments().size() > eventForm.getLimitOfEnrollments()){
+            errors.rejectValue("limitOfEnrollments", "limitOfEnrollments", "최대 모집 인원은 현재 모집한 인원보다 많거나 같게 설정해야합니다.");
         }
     }
 }

@@ -41,9 +41,10 @@
                     <span th:text="${#temporals.format(event.endDateTime, 'yyyy년 MM월 dd일 EEEE a hh:mm')}"></span>
                 </p>
                 <p>
-                    <span><i class="fa fa-users" aria-hidden="true"></i> 신청 인원 / 모집 인원 : </span>
+                    <i class="fa fa-users" aria-hidden="true"></i>
                     <span th:text="${event.enrollments.size()}"></span> /
                     <span th:text="${event.limitOfEnrollments}"></span>
+                    <span> (신청/모집)</span>
                 </p>
                 <small class="text-muted" th:text="${event.createdBy.nickname + ' · '}"></small><small class="text-muted fromNow" th:text="${event.createdDateTime}"></small>
             </div>

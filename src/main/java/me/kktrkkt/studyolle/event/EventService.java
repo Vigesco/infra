@@ -23,4 +23,9 @@ public class EventService {
         event.setStudy(study);
         return events.save(event);
     }
+
+    public void update(EventForm eventForm, Event event) {
+        modelMapper.map(eventForm, event);
+        events.save(event);
+    }
 }
