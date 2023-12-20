@@ -1,6 +1,0 @@
-<html xmlns:th="https://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
-
-<body th:insert ="~{event/newEventForm :: eventForm (mode='edit', action='/event/' + ${event.id} + '/edit')}">
-</body>
-</html>

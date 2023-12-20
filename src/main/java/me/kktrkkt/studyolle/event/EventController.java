@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
@@ -24,8 +25,8 @@ public class EventController {
     static final String NEW_EVENT_VIEW = "event/newEventForm";
     static final String EVENT_URL = BASE_URL + "/event/{id}";
     static final String EVENT_VIEW = "event/view";
-    static final String UPDATE_EVENT_URL = EVENT_URL + "/edit";
-    static final String UPDATE_EVENT_VIEW = "event/editEventForm";
+    static final String EVENT_UPDATE_URL = EVENT_URL + "/edit";
+    static final String EVENT_UPDATE_VIEW = "event/eventUpdateForm";
 
     private final StudyService studyService;
     private final EventService eventService;
@@ -72,7 +73,7 @@ public class EventController {
         return EVENT_VIEW;
     }
 
-    @GetMapping(UPDATE_EVENT_URL)
+    @GetMapping(EVENT_UPDATE_URL)
     public String updateEventForm(@PathVariable String path, @CurrentUser Account account,
                                 @PathVariable Long id, Model model) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
@@ -81,13 +82,15 @@ public class EventController {
         model.addAttribute(event);
         model.addAttribute("eventTypes", EventType.values());
         model.addAttribute(modelMapper.map(event, EventForm.class));
-        return UPDATE_EVENT_VIEW;
+        return EVENT_UPDATE_VIEW;
     }
 
-    @PostMapping(UPDATE_EVENT_URL)
+
+    @PostMapping(EVENT_UPDATE_URL)
     public String updateEvent(@PathVariable String path, @CurrentUser Account account,
                               @PathVariable Long id, @Valid EventForm eventForm,
-                              Errors errors, Model model) {
+                              Errors errors, Model model,
+                              RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
         Event event = events.findWithEnrollmentById(id).orElseThrow();
         eventValidator.validateUpdateForm(eventForm, event, errors);
@@ -95,9 +98,10 @@ public class EventController {
             model.addAttribute(study);
             model.addAttribute(event);
             model.addAttribute("eventTypes", EventType.values());
-            return UPDATE_EVENT_VIEW;
+            return EVENT_UPDATE_VIEW;
         }
         eventService.update(eventForm, event);
-        return "redirect:" + UPDATE_EVENT_URL;
+        ra.addFlashAttribute("success", "success");
+        return "redirect:" + EVENT_UPDATE_URL;
     }
 }

@@ -62,7 +62,7 @@ public class Study extends BaseEntity<Study> {
     private List<Zone> zones = new ArrayList<>();
 
     @OneToMany(mappedBy = "study")
-    private List<Event> events;
+    private List<Event> events = new ArrayList<>();
 
     private LocalDateTime recruitingUpdateTime;
 

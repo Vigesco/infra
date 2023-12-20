@@ -8,6 +8,7 @@ import me.kktrkkt.studyolle.study.Study;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class Event extends BaseEntity<Event> {
     private Study study;
 
     @OneToMany(mappedBy = "event")
-    private Set<Enrollment> enrollments;
+    private Set<Enrollment> enrollments = new HashSet<>();
 
     @Column(nullable = false)
     private String title;

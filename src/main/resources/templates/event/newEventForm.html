@@ -48,9 +48,9 @@
                 <div class="col-md-3">
                     <label for="limitOfEnrollments">모집 인원</label>
                     <input id="limitOfEnrollments" type="number" class="form-control" th:field="*{limitOfEnrollments}"
-                           aria-describedby="limitOfEnrollmentsHelp" required min="2">
+                           aria-describedby="limitOfEnrollmentsHelp" required th:min="${mode == 'edit' && event.enrollments.size() > 2 ? event.enrollments.size() : 2}">
                     <small id="limitOfEnrollmentsHelp" class="form-text text-muted">
-                        최대 수용 가능한 모임 참석 인원을 설정하세요. 최소 2인 이상 모임이어야 합니다.
+                        최대 수용 가능한 모임 참석 인원을 설정하세요. 최소 <span th:text="${mode == 'edit' && event.enrollments.size() > 2 ? event.enrollments.size() : 2}"></span>인 이상 모임이어야 합니다.
                     </small>
                     <small class="invalid-feedback">모집 인원을 입력하세요.</small>
                     <small class="form-text text-danger" th:if="${#fields.hasErrors('limitOfEnrollments')}" th:errors="*{limitOfEnrollments}">LimitOfEnrollments Error</small>

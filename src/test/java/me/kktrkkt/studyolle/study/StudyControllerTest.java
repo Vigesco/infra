@@ -105,6 +105,19 @@ public class StudyControllerTest extends StudyBaseTest {
                 .andDo(print());
     }
 
+    @DisplayName("스터디 모임 목록 조회")
+    @Test
+    @WithAccount("user1")
+    void studyEvents() throws Exception {
+        Study study = createStudy("user1");
+
+        this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_EVENTS_URL)))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(view().name(STUDY_EVENTS_VIEW))
+                .andDo(print());
+    }
+
     @DisplayName("스터디 참여")
     @Test
     @WithAccount({"user1", "user2"})
