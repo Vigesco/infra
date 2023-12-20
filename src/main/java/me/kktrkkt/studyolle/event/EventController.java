@@ -27,12 +27,14 @@ public class EventController {
     static final String EVENT_VIEW = "event/view";
     static final String EVENT_UPDATE_URL = EVENT_URL + "/edit";
     static final String EVENT_UPDATE_VIEW = "event/eventUpdateForm";
+    static final String EVENT_DELETE_URL = EVENT_URL + "/delete";;
 
     private final StudyService studyService;
     private final EventService eventService;
     private final EventRepository events;
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
+
 
     @InitBinder("eventForm")
     public void validEventForm(WebDataBinder dataBinder){
@@ -103,5 +105,13 @@ public class EventController {
         eventService.update(eventForm, event);
         ra.addFlashAttribute("success", "success");
         return "redirect:" + EVENT_UPDATE_URL;
+    }
+
+    @PostMapping(EVENT_DELETE_URL)
+    public String deleteEvent(@PathVariable String path, @CurrentUser Account account,
+                              @PathVariable Long id) {
+        studyService.getStudyToUpdateStatus(account, path);
+        eventService.delete(id);
+        return "redirect:" + BASE_URL + "/events";
     }
 }

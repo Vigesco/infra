@@ -13,8 +13,16 @@
                     </a>
                     / <span th:text="${event.title}"></span>
                 </span>
-                <div class="col d-md-block text-end">
-                    <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/edit'}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 수정</a>
+                <div class="col row gap-2 justify-content-end">
+                    <div class="w-auto d-md-block text-end">
+                        <a class="btn btn-outline-primary" th:href="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/edit'}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 수정</a>
+                    </div>
+                    <div class="w-auto d-md-block text-end">
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i> 삭제
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -50,6 +58,27 @@
             </div>
             <div class="form-group d-grid gap-2">
                 <button type="submit" class="btn btn-primary ">참가하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel" th:text="${event.title}"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>모임을 삭제하시겠습니까?</p>
+                <p>확인하시면 본 모임 및 참가 신청 관련 데이터를 삭제합니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <form method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/delete'}">
+                    <button type="submit" class="btn btn-primary">확인</button>
+                </form>
             </div>
         </div>
     </div>

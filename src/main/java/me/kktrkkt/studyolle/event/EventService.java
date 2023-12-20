@@ -28,4 +28,8 @@ public class EventService {
         modelMapper.map(eventForm, event);
         events.save(event);
     }
+
+    public void delete(Long id) {
+        events.deleteById(id);
+    }
 }
