@@ -225,6 +225,25 @@ class EventControllerTest extends EventBaseTest {
         assertNotEquals(description, event.getDescription());
     }
 
+    @DisplayName("모임 삭제")
+    @Test
+    @WithAccount("user1")
+    void deleteEvent() throws Exception {
+        Study study = createStudy("user1");
+        Event event = createEvent("user1", study);
+        event.getEnrollments().addAll(Arrays.asList(createEnrollment(event), createEnrollment(event), createEnrollment(event)));
+        events.save(event);
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_DELETE_URL, study.getPath(), event.getId())).with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern(BASE_URL+"/events"));
+
+        assertTrue(events.findById(event.getId()).isEmpty());
+        assertTrue(enrollments.findAll().isEmpty());
+    }
+
     private Enrollment createEnrollment(Event event) {
         Enrollment enrollment = new Enrollment();
         enrollment.setEvent(event);
