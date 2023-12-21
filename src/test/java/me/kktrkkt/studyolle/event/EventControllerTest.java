@@ -102,7 +102,7 @@ class EventControllerTest extends EventBaseTest {
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 2,
                 now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
-                now().plus(1, ChronoUnit.DAYS), "description", replacePath(study.getPath(), NEW_EVENT_URL));
+                now(), "description", replacePath(study.getPath(), NEW_EVENT_URL));
 
         requestWrongNewEvent("title", EventType.FCFS.name(), 1,
                 now().plus(2, ChronoUnit.DAYS), now().plus(1, ChronoUnit.DAYS),
