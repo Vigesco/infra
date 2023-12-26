@@ -68,7 +68,7 @@ public class StudyService {
     }
 
     public Study getStudyToEvent(String path, Account account) {
-        Optional<Study> byPath = studys.findWithEventsByPath(path);
+        Optional<Study> byPath = studys.findByPath(path);
         Study study = ifStudy(byPath, path);
         ifMember(study, account);
         return study;

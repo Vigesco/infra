@@ -9,18 +9,18 @@
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">새 모임</div>
                 </div>
-                <span class="badge bg-primary rounded-pill" th:text="${study.countNewEvent()}">1</span>
+                <span class="badge bg-primary rounded-pill" th:text="${newEvents.size()}">1</span>
             </li>
             <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold">지난 모임</div>
                 </div>
-                <span class="badge bg-primary rounded-pill" th:text="${study.countOldEvent()}">1</span>
+                <span class="badge bg-primary rounded-pill" th:text="${oldEvents.size()}">1</span>
             </li>
         </ol>
     </div>
     <div class="col-10">
-        <div th:each="event: ${study.events}" th:if="${event.isNew()}" class="card mb-3">
+        <div th:each="event: ${newEvents}" class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <span class="fw-bold text-monospace badge text-bg-success me-3 my-auto">
@@ -49,7 +49,7 @@
                 <small class="text-muted" th:text="${event.createdBy.nickname + ' · '}"></small><small class="text-muted fromNow" th:text="${event.createdDateTime}"></small>
             </div>
         </div>
-        <div th:each="event: ${study.events}" th:if="${event.isOld()}" class="card mb-3">
+        <div th:each="event: ${oldEvents}" class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <span class="fw-bold text-monospace badge text-bg-secondary me-3 my-auto">

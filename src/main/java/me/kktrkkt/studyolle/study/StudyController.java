@@ -3,6 +3,8 @@ package me.kktrkkt.studyolle.study;
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.account.CurrentUser;
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.event.Event;
+import me.kktrkkt.studyolle.event.EventRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -14,6 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class StudyController {
     static final String STUDY_MEMBERS_VIEW= "study/members";
 
     private final StudyService studyService;
+    private final EventRepository events;
 
     @GetMapping(NEW_STUDY_URL)
     public String newStudyForm(Model model) {
@@ -59,7 +64,15 @@ public class StudyController {
     public String eventList(@PathVariable String path, @CurrentUser Account account,
                             Model model) {
         Study study = studyService.getStudyToEvent(path, account);
+        List<Event> eventList = events.findByStudyOrderByCreatedDateTime(study);
+
         model.addAttribute(study);
+        model.addAttribute("newEvents", eventList.stream()
+                .filter(Event::isNew)
+                .collect(Collectors.toList()));
+        model.addAttribute("oldEvents", eventList.stream()
+                .filter(Event::isOld)
+                .collect(Collectors.toList()));
         return STUDY_EVENTS_VIEW;
     }
 

@@ -114,6 +114,8 @@ public class StudyControllerTest extends StudyBaseTest {
         this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_EVENTS_URL)))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("newEvents"))
+                .andExpect(model().attributeExists("oldEvents"))
                 .andExpect(view().name(STUDY_EVENTS_VIEW))
                 .andDo(print());
     }

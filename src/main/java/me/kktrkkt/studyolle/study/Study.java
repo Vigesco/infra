@@ -57,12 +57,8 @@ public class Study extends BaseEntity<Study> {
     @JoinTable(name = "study_zone",
             joinColumns = @JoinColumn(name = "study_id"),
             inverseJoinColumns = @JoinColumn(name = "zone_id"))
-
     @OrderColumn
     private List<Zone> zones = new ArrayList<>();
-
-    @OneToMany(mappedBy = "study")
-    private List<Event> events = new ArrayList<>();
 
     private LocalDateTime recruitingUpdateTime;
 
@@ -175,13 +171,5 @@ public class Study extends BaseEntity<Study> {
         else {
             throw new RuntimeException("Study members cannot be removed. You are not a study member or the study has ended.");
         }
-    }
-
-    public long countNewEvent() {
-        return this.events.stream().filter(Event::isNew).count();
-    }
-
-    public long countOldEvent() {
-        return this.events.stream().filter(Event::isOld).count();
     }
 }
