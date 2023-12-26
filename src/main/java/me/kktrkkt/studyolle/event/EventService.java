@@ -5,11 +5,13 @@ import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.study.Study;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EventService {
 
     private final ModelMapper modelMapper;
@@ -28,22 +30,20 @@ public class EventService {
 
     public void update(EventForm eventForm, Event event) {
         modelMapper.map(eventForm, event);
-        events.save(event);
+        event.updateEnrollmentsStatus();
     }
 
     public void delete(Long id) {
         events.deleteById(id);
     }
 
-    public void join(Event event, Account account) {
-        if(!event.isJoinable(account)){
-            throw new IllegalStateException("You have already joined the event");
+    public void enroll(Event event, Account account) {
+        if(event.isEnrollable(account)){
+            enrollments.save(event.newEnrollment(account));
         }
-        Enrollment enrollment = new Enrollment();
-        enrollment.setEvent(event);
-        enrollment.setAccepted(EventType.FCFS.equals(event.getEventType()) && event.getLimitOfEnrollments() >= event.getEnrollments().size());
-        enrollment.setEnrolledAt(LocalDateTime.now());
-        enrollment.setAccount(account);
-        enrollments.save(enrollment);
+    }
+
+    public void cancelEnrollment(Event event, Account account) {
+        enrollments.delete(event.cancelEnrollment(account));
     }
 }

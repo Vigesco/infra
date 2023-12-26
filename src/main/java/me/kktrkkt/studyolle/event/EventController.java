@@ -27,7 +27,8 @@ public class EventController {
     static final String EVENT_UPDATE_URL = EVENT_URL + "/edit";
     static final String EVENT_UPDATE_VIEW = "event/eventUpdateForm";
     static final String EVENT_DELETE_URL = EVENT_URL + "/delete";
-    static final String EVENT_JOIN_URL = EVENT_URL + "/join";
+    static final String EVENT_ENROLL_URL = EVENT_URL + "/enroll";
+    static final String EVENT_DISENROLL_URL = EVENT_URL + "/disenroll";
 
     private final StudyService studyService;
     private final EventService eventService;
@@ -103,13 +104,22 @@ public class EventController {
         return "redirect:" + EVENT_UPDATE_URL;
     }
 
-    @PostMapping(EVENT_JOIN_URL)
-    public String joinEvent(@PathVariable String path, @CurrentUser Account account,
-                            @PathVariable Long id, RedirectAttributes ra) {
+    @PostMapping(EVENT_ENROLL_URL)
+    public String newEnrollment(@PathVariable String path, @CurrentUser Account account,
+                              @PathVariable Long id, RedirectAttributes ra) {
         studyService.getStudyToMemberAndManager(path, account);
         Event event = events.findById(id).orElseThrow();
-        eventService.join(event, account);
-        ra.addFlashAttribute("success", "success");
+        eventService.enroll(event, account);
+        ra.addFlashAttribute("success", "success.enroll");
+        return "redirect:" + EVENT_URL;
+    }
+
+    @PostMapping(EVENT_DISENROLL_URL)
+    public String cancelEnrollment(@CurrentUser Account account, @PathVariable Long id,
+                              RedirectAttributes ra) {
+        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        eventService.cancelEnrollment(event, account);
+        ra.addFlashAttribute("success", "success.cancel");
         return "redirect:" + EVENT_URL;
     }
 

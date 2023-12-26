@@ -8,8 +8,7 @@ import me.kktrkkt.studyolle.study.Study;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter @Setter
@@ -30,7 +29,7 @@ public class Event extends BaseEntity<Event> {
     @Lob
     private String description;
 
-    private Integer limitOfEnrollments;
+    private int limitOfEnrollments;
 
     @Column(nullable = false)
     private LocalDateTime createdDateTime;
@@ -55,7 +54,50 @@ public class Event extends BaseEntity<Event> {
         return !isNew();
     }
 
-    public boolean isJoinable(Account account) {
-        return enrollments.stream().noneMatch(x -> x.getAccount().equals(account));
+    public boolean isEnrollable(Account account) {
+        return !isEnrollDateTimeEnd() && !isEnrolled(account);
+    }
+
+    public boolean isEnrollDateTimeEnd() {
+        return this.endEnrollmentDateTime.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isEnrolled(Account account) {
+        return enrollments.stream().anyMatch(x -> x.getAccount().equals(account));
+    }
+
+    public Enrollment newEnrollment(Account account) {
+        Enrollment enrollment = new Enrollment();
+        enrollment.setEvent(this);
+        enrollment.setEnrolledAt(LocalDateTime.now());
+        enrollment.setAccount(account);
+        updateAccept(enrollment);
+        this.enrollments.add(enrollment);
+        return enrollment;
+    }
+
+    public Enrollment cancelEnrollment(Account account) {
+        Enrollment enrollment = findEnrollment(account);
+        this.enrollments.remove(enrollment);
+        updateEnrollmentsStatus();
+        return enrollment;
+    }
+
+    public Enrollment findEnrollment(Account account) {
+        return enrollments.stream().filter(x -> x.getAccount().equals(account)).findFirst().orElseThrow();
+    }
+
+    public void updateEnrollmentsStatus() {
+        this.enrollments.forEach(this::updateAccept);
+    }
+
+    public void updateAccept(Enrollment enrollment) {
+        if(!enrollment.isAccepted()){
+            enrollment.setAccepted(this.eventType.equals(EventType.FCFS) && this.limitOfEnrollments > acceptCount());
+        }
+    }
+
+    public long acceptCount() {
+        return this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
 }
