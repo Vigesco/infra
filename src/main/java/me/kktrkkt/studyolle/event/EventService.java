@@ -38,9 +38,7 @@ public class EventService {
     }
 
     public void enroll(Event event, Account account) {
-        if(event.isEnrollable(account)){
-            enrollments.save(event.newEnrollment(account));
-        }
+        enrollments.save(event.newEnrollment(account));
     }
 
     public void cancelEnrollment(Event event, Account account) {

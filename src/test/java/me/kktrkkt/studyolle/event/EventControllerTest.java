@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.event;
 
 import me.kktrkkt.studyolle.account.WithAccount;
+import me.kktrkkt.studyolle.account.entity.Account;
 import me.kktrkkt.studyolle.study.Study;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -226,6 +227,145 @@ class EventControllerTest extends EventBaseTest {
         assertNotEquals(endEnrollmentDateTime, event.getEndEnrollmentDateTime());
         assertNotEquals(startDateTime, event.getStartDateTime());
         assertNotEquals(description, event.getDescription());
+    }
+
+    @DisplayName("모임 참가 신청 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void enrollEvent_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("success", "success.enroll"))
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertEquals(3, event.getEnrollments().size());
+        assertTrue(user2Enrollment.isAccepted());
+        assertTrue(user3Enrollment.isAccepted());
+        Enrollment user1Enrollment = event.getEnrollments().stream()
+                .filter(x -> x.getAccount().getNickname().equals("user1"))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(user1Enrollment.isAccepted());
+    }
+
+    @DisplayName("모임 참가 신청 - 실패")
+    @Test
+    @WithAccount({"user1"})
+    void enrollEvent_failure() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setLimitOfEnrollments(2);
+        event.setEndEnrollmentDateTime(now());
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+        event.setEndEnrollmentDateTime(now().plus(1, ChronoUnit.DAYS));
+        assertEquals(0, event.getEnrollments().size());
+
+        Enrollment enrollment = event.newEnrollment(accounts.findByNickname("user1").orElseThrow());
+        enrollments.save(enrollment);
+        this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+        assertEquals(1, event.getEnrollments().size());
+    }
+
+    @DisplayName("모임 참가 신청취소 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void cancelEnrollment_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setLimitOfEnrollments(2);
+        Account user1 = accounts.findByNickname("user1").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user1Enrollment = event.newEnrollment(user1);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user1Enrollment);
+        enrollments.save(user2Enrollment);
+        enrollments.save(user3Enrollment);
+
+        assertTrue(user1Enrollment.isAccepted());
+        assertTrue(user2Enrollment.isAccepted());
+        assertFalse(user3Enrollment.isAccepted());
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_DISENROLL_URL, study.getPath(), event.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("success", "success.cancel"))
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertEquals(2, event.getEnrollments().size());
+        assertTrue(user2Enrollment.isAccepted());
+        assertTrue(user3Enrollment.isAccepted());
+    }
+
+    @DisplayName("모임 모집인원 수정후 참가자 신청상태 변경 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void updateEventLimitOfEnrolmentAndUpdateEnrollmentAccept_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setLimitOfEnrollments(2);
+        Account user1 = accounts.findByNickname("user1").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user1Enrollment = event.newEnrollment(user1);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user1Enrollment);
+        enrollments.save(user2Enrollment);
+        enrollments.save(user3Enrollment);
+
+        assertTrue(user1Enrollment.isAccepted());
+        assertTrue(user2Enrollment.isAccepted());
+        assertFalse(user3Enrollment.isAccepted());
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_UPDATE_URL, study.getPath(), event.getId())).with(csrf())
+                        .param("title", event.getTitle())
+                        .param("eventType", event.getEventType().name())
+                        .param("limitOfEnrollments", "3")
+                        .param("endDateTime", event.getEndDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .param("endEnrollmentDateTime", event.getEndEnrollmentDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .param("startDateTime", event.getStartDateTime().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .param("description", event.getDescription())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("success"))
+                .andExpect(redirectedUrlPattern(EVENT_UPDATE_URL));
+
+        assertTrue(user2Enrollment.isAccepted());
+        assertTrue(user3Enrollment.isAccepted());
+        assertTrue(user3Enrollment.isAccepted());
     }
 
     @DisplayName("모임 삭제")

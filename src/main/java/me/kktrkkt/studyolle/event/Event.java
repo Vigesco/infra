@@ -67,13 +67,18 @@ public class Event extends BaseEntity<Event> {
     }
 
     public Enrollment newEnrollment(Account account) {
-        Enrollment enrollment = new Enrollment();
-        enrollment.setEvent(this);
-        enrollment.setEnrolledAt(LocalDateTime.now());
-        enrollment.setAccount(account);
-        updateAccept(enrollment);
-        this.enrollments.add(enrollment);
-        return enrollment;
+        if(isEnrollable(account)){
+            Enrollment enrollment = new Enrollment();
+            enrollment.setEvent(this);
+            enrollment.setEnrolledAt(LocalDateTime.now());
+            enrollment.setAccount(account);
+            updateAccept(enrollment);
+            this.enrollments.add(enrollment);
+            return enrollment;
+        }
+        else {
+            throw new RuntimeException("You cannot enroll the event. Application for participation is closed or you have already enrolled");
+        }
     }
 
     public Enrollment cancelEnrollment(Account account) {
