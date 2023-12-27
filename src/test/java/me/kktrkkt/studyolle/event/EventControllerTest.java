@@ -229,10 +229,10 @@ class EventControllerTest extends EventBaseTest {
         assertNotEquals(description, event.getDescription());
     }
 
-    @DisplayName("모임 참가 신청 - 성공")
+    @DisplayName("모임 참가 신청 - 자동수락")
     @Test
     @WithAccount({"user1", "user2", "user3"})
-    void enrollEvent_success() throws Exception {
+    void enrollEvent_fcfs() throws Exception {
         Study study = createStudy("user1");
         study.publish();
         study.startRecruiting();
@@ -256,6 +256,41 @@ class EventControllerTest extends EventBaseTest {
         assertEquals(3, event.getEnrollments().size());
         assertTrue(user2Enrollment.isAccepted());
         assertTrue(user3Enrollment.isAccepted());
+        Enrollment user1Enrollment = event.getEnrollments().stream()
+                .filter(x -> x.getAccount().getNickname().equals("user1"))
+                .findFirst()
+                .orElseThrow();
+        assertFalse(user1Enrollment.isAccepted());
+    }
+
+    @DisplayName("모임 참가 신청 - 관리자확인")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void enrollEvent_confirm() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setLimitOfEnrollments(2);
+        event.setEventType(EventType.CONFIRMATIVE);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attribute("success", "success.enroll"))
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertEquals(3, event.getEnrollments().size());
+        assertFalse(user2Enrollment.isAccepted());
+        assertFalse(user3Enrollment.isAccepted());
         Enrollment user1Enrollment = event.getEnrollments().stream()
                 .filter(x -> x.getAccount().getNickname().equals("user1"))
                 .findFirst()
