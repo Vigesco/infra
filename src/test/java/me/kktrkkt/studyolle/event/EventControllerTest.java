@@ -183,11 +183,14 @@ class EventControllerTest extends EventBaseTest {
 
     @DisplayName("모임 수정 - 실패")
     @Test
-    @WithAccount("user1")
+    @WithAccount({"user1", "user2"})
     void updateEvent_failure() throws Exception {
         Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
         Event event = createEvent("user1", study);
-        event.getEnrollments().addAll(Arrays.asList(createEnrollment(event), createEnrollment(event), createEnrollment(event)));
+        event.getEnrollments().addAll(Arrays.asList(createEnrollment(event, true),
+                createEnrollment(event, true), createEnrollment(event, true)));
         events.save(event);
 
         String title = "new title";
@@ -248,6 +251,12 @@ class EventControllerTest extends EventBaseTest {
         Enrollment enrollment = new Enrollment();
         enrollment.setEvent(event);
         return enrollments.save(enrollment);
+    }
+
+    private Enrollment createEnrollment(Event event, boolean accept) {
+        Enrollment enrollment = createEnrollment(event);
+        enrollment.setAccepted(accept);
+        return enrollment;
     }
 
     private Event createEvent(String nickname, Study study) {
