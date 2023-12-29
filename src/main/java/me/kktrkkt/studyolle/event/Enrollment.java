@@ -23,4 +23,8 @@ public class Enrollment extends BaseEntity<Enrollment> {
     private boolean accepted;
 
     private boolean attended;
+
+    public boolean canAccept(){
+        return !attended && !accepted;
+    }
 }

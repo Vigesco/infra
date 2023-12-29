@@ -105,4 +105,8 @@ public class Event extends BaseEntity<Event> {
     public long acceptCount() {
         return this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
+
+    public boolean isOwner(Account account) {
+        return this.createdBy.equals(account);
+    }
 }
