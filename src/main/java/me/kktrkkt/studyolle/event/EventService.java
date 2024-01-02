@@ -44,4 +44,20 @@ public class EventService {
     public void cancelEnrollment(Event event, Account account) {
         enrollments.delete(event.cancelEnrollment(account));
     }
+
+    public void accept(Enrollment enrollment) {
+        enrollment.accept();
+    }
+
+    public void reject(Enrollment enrollment) {
+        enrollment.reject();
+    }
+
+    public void checkIn(Enrollment enrollment) {
+        enrollment.attend();
+    }
+
+    public void cancelCheckIn(Enrollment enrollment) {
+        enrollment.cancelAttend();
+    }
 }

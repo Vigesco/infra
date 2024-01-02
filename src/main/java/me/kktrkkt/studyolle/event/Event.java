@@ -21,6 +21,7 @@ public class Event extends BaseEntity<Event> {
     private Study study;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE)
+    @OrderBy("enrolledAt")
     private Set<Enrollment> enrollments = new HashSet<>();
 
     @Column(nullable = false)

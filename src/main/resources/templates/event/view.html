@@ -65,7 +65,7 @@
             <div class="mb-3">
                 <h5>
                     모임 참가 신청 (<span th:text="${event.enrollments.size()}"></span>)
-                    <a class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#edit-enrollment-modal"><i th:if="${event.isOwner(#authentication.principal.account)}" class="fa fa-pencil" aria-hidden="true"></i></a>
+                    <a class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#edit-enrollment-modal"><i th:if="${event.isOwner(#authentication.principal.account)}" class="fa fa-pencil" aria-hidden="true"></i></a>
                 </h5>
                 <div class="row row-cols-2">
                     <span th:if="${event.enrollments.isEmpty}" class="text-muted">참가 신청이 없습니다</span>
@@ -183,26 +183,30 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="enrollment : ${event.enrollments}">
-                        <th scope="row"></th>
-                        <td th:text="${enrollment.account.nickname}"></td>
-                        <td>
-                            <a th:if="${!enrollment.accepted}" class="btn btn-sm btn-primary">수락</a>
-                            <a th:if="${enrollment.accepted}" class="btn btn-sm btn-danger">취소</a>
-                        </td>
-                        <td>
-                            <a th:if="${enrollment.attended}" class="btn btn-sm btn-primary">체크인</a>
-                            <a th:if="${!enrollment.attended}" class="btn btn-sm btn-danger">취소</a>
-                        </td>
-                        <td>@mdo</td>
-                    </tr>
-                    <div th:each="enrollment : ${event.enrollments}" th:if="${enrollment.accepted}" class="col mb-3">
-                        <a th:href="@{'/profile/' + ${enrollment.account.nickname}}" class="btn justify-content-between btn-outline-success">
-                            <th:block th:replace="~{fragments/header :: profileImage (${enrollment.account.profileImage}, ${enrollment.account.email})}"></th:block>
-                            <span class="ms-2 pe-none" th:text="${enrollment.account.nickname}"></span>
-                            <i class="fa fa-check" aria-hidden="true"></i>
-                        </a>
-                    </div>
+                        <tr th:each="enrollment : ${event.enrollments}">
+                            <th scope="row" th:text="${enrollmentStat.count}"></th>
+                            <td th:text="${enrollment.account.nickname}"></td>
+                            <td>
+                                <label th:if="${enrollment.canAccept()}" th:for="${'accept_' + enrollment.id}"><a class="btn btn-sm btn-primary">수락</a></label>
+                                <form th:if="${enrollment.canAccept()}" class="d-none" method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/enrollment/' + ${enrollment.id} + '/accept'}">
+                                    <button th:id="${'accept_' + enrollment.id}" type="submit"></button>
+                                </form>
+                                <label th:if="${enrollment.canReject()}" th:for="${'reject_' + enrollment.id}"><a class="btn btn-sm btn-danger">취소</a></label>
+                                <form th:if="${enrollment.canReject()}" class="d-none" method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/enrollment/' + ${enrollment.id} + '/reject'}">
+                                    <button th:id="${'reject_' + enrollment.id}" type="submit"></button>
+                                </form>
+                            </td>
+                            <td>
+                                <label th:if="${enrollment.canAttend()}" th:for="${'accept_' + enrollment.id}"><a class="btn btn-sm btn-primary">체크인</a></label>
+                                <form th:if="${enrollment.canAttend()}" class="d-none" method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/enrollment/' + ${enrollment.id} + '/check-in'}">
+                                    <button th:id="${'accept_' + enrollment.id}" type="submit"></button>
+                                </form>
+                                <label th:if="${enrollment.canCancelAttend()}" th:for="${'reject_' + enrollment.id}"><a class="btn btn-sm btn-danger">취소</a></label>
+                                <form th:if="${enrollment.canCancelAttend()}" class="d-none" method="post" th:action="@{'/study/' + ${study.path} + '/event/' + ${event.id} + '/enrollment/' + ${enrollment.id} + '/cancel-check-in'}">
+                                    <button th:id="${'reject_' + enrollment.id}" type="submit"></button>
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
