@@ -359,6 +359,32 @@ class EventControllerTest extends EventBaseTest {
         assertTrue(user3Enrollment.isAccepted());
     }
 
+    @DisplayName("다른 스터디의 주인이 남의 스터디의 모임을 수락")
+    @Test
+    @WithAccount({"user2", "user1", "user3"})
+    void anotherStudyOwnerAcceptAnotherStudyEvent() throws Exception {
+        Study study1 = createStudy("user1");
+        study1.publish();
+        study1.startRecruiting();
+        Event event = createEvent("user1", study1);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study1.addMember(user2);
+        study1.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        Study study2 = createStudy("user2", "study2");
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study2.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
     @DisplayName("모임 모집인원 수정후 참가자 신청상태 변경 - 성공")
     @Test
     @WithAccount({"user1", "user2", "user3"})
@@ -467,5 +493,9 @@ class EventControllerTest extends EventBaseTest {
 
     private String replacePathAndId(String eventUrl, String path, Long id) {
         return eventUrl.replace("{path}", path).replace("{id}", String.valueOf(id));
+    }
+
+    private String replacePathAndIdAndEnrollmentId(String eventUrl, String path, Long id, Long enrollmentId) {
+        return eventUrl.replace("{path}", path).replace("{id}", String.valueOf(id)).replace("{enrollmentId}", String.valueOf(enrollmentId));
     }
 }

@@ -47,6 +47,13 @@ public class EventController {
         dataBinder.addValidators(eventValidator);
     }
 
+    @ModelAttribute
+    public void validStudyEventOwner(@PathVariable String path, @PathVariable(value="id", required = false) Event event){
+        if(event != null && !event.getStudy().getPath().equals(path)){
+            throw new IllegalArgumentException();
+        }
+    }
+
     @GetMapping(NEW_EVENT_URL)
     public String newEventForm(@PathVariable String path, @CurrentUser Account account, Model model) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
@@ -139,7 +146,7 @@ public class EventController {
 
     @PostMapping(EVENT_ENROLLMENT_ACCEPT_URL)
     public String acceptEnrollment(@PathVariable String path, @CurrentUser Account account,
-                                   @PathVariable("enrollmentId") Enrollment enrollment, RedirectAttributes ra) {
+                                   @PathVariable("enrollmentId") Enrollment enrollment) {
         studyService.getStudyToUpdateStatus(account, path);
         eventService.accept(enrollment);
         return "redirect:" + EVENT_URL;
@@ -147,7 +154,7 @@ public class EventController {
 
     @PostMapping(EVENT_ENROLLMENT_REJECT_URL)
     public String rejectEnrollment(@PathVariable String path, @CurrentUser Account account,
-                                   @PathVariable("enrollmentId") Enrollment enrollment, @PathVariable Long id) {
+                                   @PathVariable("enrollmentId") Enrollment enrollment) {
         studyService.getStudyToUpdateStatus(account, path);
         eventService.reject(enrollment);
         return "redirect:" + EVENT_URL;
@@ -155,7 +162,7 @@ public class EventController {
 
     @PostMapping(EVENT_ENROLLMENT_CHECK_IN_URL)
     public String checkInEnrollment(@PathVariable String path, @CurrentUser Account account,
-                                   @PathVariable("enrollmentId") Enrollment enrollment, RedirectAttributes ra) {
+                                   @PathVariable("enrollmentId") Enrollment enrollment) {
         studyService.getStudyToUpdateStatus(account, path);
         eventService.checkIn(enrollment);
         return "redirect:" + EVENT_URL;
@@ -163,7 +170,7 @@ public class EventController {
 
     @PostMapping(EVENT_ENROLLMENT_CANCEL_CHECK_IN_URL)
     public String cancelCheckInEnrollment(@PathVariable String path, @CurrentUser Account account,
-                                   @PathVariable("enrollmentId") Enrollment enrollment, @PathVariable Long id) {
+                                   @PathVariable("enrollmentId") Enrollment enrollment) {
         studyService.getStudyToUpdateStatus(account, path);
         eventService.cancelCheckIn(enrollment);
         return "redirect:" + EVENT_URL;
