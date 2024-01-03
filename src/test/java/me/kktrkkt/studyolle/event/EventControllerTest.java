@@ -359,6 +359,228 @@ class EventControllerTest extends EventBaseTest {
         assertTrue(user3Enrollment.isAccepted());
     }
 
+    @DisplayName("모임 참가 신청 수락 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void acceptEnrollment_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertEquals(2, event.getEnrollments().size());
+        assertTrue(user2Enrollment.isAccepted());
+        assertFalse(user3Enrollment.isAccepted());
+    }
+
+    @DisplayName("모임 참가 신청 수락 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void acceptEnrollment_failure() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        user2Enrollment.accept();
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("모임 참가 신청 취소 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void rejectEnrollment_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        user2Enrollment.accept();
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_REJECT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertFalse(user2Enrollment.isAccepted());
+        assertFalse(user3Enrollment.isAccepted());
+    }
+
+    @DisplayName("모임 참가 신청 취소 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void rejectEnrollment_failure() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_REJECT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("모임 체크인 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void checkInEvent_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        user2Enrollment.accept();
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertTrue(user2Enrollment.isAttended());
+        assertFalse(user3Enrollment.isAttended());
+    }
+
+    @DisplayName("모임 체크인 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void checkInEvent_failure() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        user2Enrollment.accept();
+        user2Enrollment.attend();
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("모임 체크인 취소 - 성공")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void cancelCheckInEvent_success() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        user2Enrollment.accept();
+        user2Enrollment.attend();
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CANCEL_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern(EVENT_URL));
+
+        assertFalse(user2Enrollment.isAttended());
+        assertFalse(user3Enrollment.isAttended());
+    }
+
+    @DisplayName("모임 체크인 - 실패")
+    @Test
+    @WithAccount({"user1", "user2", "user3"})
+    void cancelCheckInEvent_failure() throws Exception {
+        Study study = createStudy("user1");
+        study.publish();
+        study.startRecruiting();
+        Event event = createEvent("user1", study);
+        event.setEventType(EventType.CONFIRMATIVE);
+        event.setLimitOfEnrollments(2);
+        Account user2 = accounts.findByNickname("user2").orElseThrow();
+        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        study.addMember(user2);
+        study.addMember(user3);
+        Enrollment user2Enrollment = event.newEnrollment(user2);
+        Enrollment user3Enrollment = event.newEnrollment(user3);
+        user2Enrollment.accept();
+        enrollments.save(user3Enrollment);
+        enrollments.save(user2Enrollment);
+
+        this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CANCEL_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
     @DisplayName("다른 스터디의 주인이 남의 스터디의 모임을 수락")
     @Test
     @WithAccount({"user2", "user1", "user3"})
