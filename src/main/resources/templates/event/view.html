@@ -93,7 +93,8 @@
             </div>
             <div class="form-group d-grid gap-2">
                 <button th:if="${event.isEnrollable(#authentication.principal.account)}" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enroll-modal">참가하기</button>
-                <button th:if="${event.isEnrolled(#authentication.principal.account)}" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancel-modal">참가취소</button>
+                <button th:if="${event.isEnrolled(#authentication.principal.account) && !event.isAttended(#authentication.principal.account)}" type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancel-modal">참가취소</button>
+                <button th:if="${event.isAttended(#authentication.principal.account)}" type="button" class="btn btn-secondary disabled">참가완료</button>
                 <button th:if="${event.isEnrollDateTimeEnd() && !event.isEnrolled(#authentication.principal.account)}" type="button" class="btn btn-secondary disabled">참가신청마감</button>
             </div>
         </div>
@@ -171,8 +172,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>모임 참석을 취소하시겠습니까?</p>
-                <p>확인 버튼을 클릭하면 모임 참가 신청을 취소합니다.</p>
+                <p>참가 신청을 관리합니다.</p>
+                <p>수락 버튼을 클릭해 참가신청을 허용합니다.<p>
+                <p>체크인 버튼을 클릭해 참여완료 여부를 표시합니다. 체크인이 되면 참여취소가 불가능해집니다<p>
+                <p>취소 버튼을 클릭해 참가신청또는 체크인을 취소합니다.<p>
                 <table class="table">
                     <thead>
                     <tr>

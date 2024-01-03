@@ -67,6 +67,10 @@ public class Event extends BaseEntity<Event> {
         return enrollments.stream().anyMatch(x -> x.getAccount().equals(account));
     }
 
+    public boolean isAttended(Account account) {
+        return enrollments.stream().anyMatch(x -> x.getAccount().equals(account) && x.isAttended());
+    }
+
     public Enrollment newEnrollment(Account account) {
         if(isEnrollable(account)){
             Enrollment enrollment = new Enrollment();
