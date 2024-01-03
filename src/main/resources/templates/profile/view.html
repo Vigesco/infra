@@ -3,10 +3,10 @@
 
 <body>
     <div class="row mt-5 justify-content-center">
-        <div class="col-2">
+        <div class="col-2 text-center">
             <img th:if="${!#strings.isEmpty(account.profileImage)}" th:src="@{${account.profileImage}}"
                  width="128" height="128" class="rounded">
-            <svg th:if="${#strings.isEmpty(account.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${#authentication.name}"
+            <svg th:if="${#strings.isEmpty(account.profileImage)}" data-jdenticon-value="user127" th:data-jdenticon-value="${account.email}"
                  width="128" height="128" class="rounded"></svg>
         </div>
         <div class="col-8">
@@ -55,7 +55,7 @@
                         </span>
                         <span class="col-11" th:text="${#temporals.format(account.joinedAt, 'yyyy년 MM월 가입')}">joinedAt</span>
                     </p>
-                    <p th:if="${!account.emailVerified}">
+                    <p th:if="${#authentication.name == account.email && !account.emailVerified}">
                         <span class="col-1">
                             <i class="fa fa-sign-in col-1" aria-hidden="true"></i>
                         </span>

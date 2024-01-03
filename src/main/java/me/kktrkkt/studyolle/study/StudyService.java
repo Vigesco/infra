@@ -55,9 +55,23 @@ public class StudyService {
         return getStudyToUpdate(account, path, byPath);
     }
 
-    public Study getStudyToUpdateMembers(String path) {
+    public Study getStudyToMember(String path) {
         Optional<Study> byPath = studys.findWithMemberByPath(path);
         return ifStudy(byPath, path);
+    }
+
+    public Study getStudyToMemberAndManager(String path, Account account) {
+        Optional<Study> byPath = studys.findWithMemberAndManagerByPath(path);
+        Study study = ifStudy(byPath, path);
+        ifMember(study, account);
+        return study;
+    }
+
+    public Study getStudyToEvent(String path, Account account) {
+        Optional<Study> byPath = studys.findByPath(path);
+        Study study = ifStudy(byPath, path);
+        ifMember(study, account);
+        return study;
     }
 
     public void updateBanner(Study study, String banner) {
@@ -111,6 +125,12 @@ public class StudyService {
     private void ifManager(Account account, Study study) {
         if(!study.isManager(account)){
             throw new AccessDeniedException("해당 기능을 수정할 권한이 없습니다!");
+        }
+    }
+
+    private void ifMember(Study study, Account account) {
+        if(!study.isManager(account) && !study.isMember(account)){
+            throw new AccessDeniedException("해당 기능을 접근할 권한이 없습니다!");
         }
     }
 

@@ -3,6 +3,7 @@ package me.kktrkkt.studyolle.study;
 import lombok.*;
 import me.kktrkkt.studyolle.account.AccountUserDetails;
 import me.kktrkkt.studyolle.account.entity.Account;
+import me.kktrkkt.studyolle.event.Event;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 import me.kktrkkt.studyolle.topic.Topic;
 import me.kktrkkt.studyolle.zone.Zone;
@@ -13,15 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedEntityGraph(
-        name = "Study.withAll",
-        attributeNodes = {
-                @NamedAttributeNode("managers"),
-                @NamedAttributeNode("members"),
-                @NamedAttributeNode("zones"),
-                @NamedAttributeNode("topics"),
-        }
-)
 @Entity
 @Getter @Setter
 @Builder @AllArgsConstructor @NoArgsConstructor
@@ -102,6 +94,9 @@ public class Study extends BaseEntity<Study> {
         return managers.contains(account);
     }
 
+    public boolean isManagerOrMember(Account account) {
+        return isManager(account) || isMember(account);
+    }
 
     public void publish() {
         if(!this.published && !this.closed) {

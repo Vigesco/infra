@@ -99,13 +99,15 @@
             let $currentProfileImage = $("#current-profile-image");
             let $resultImage = $("#cropped-new-profile-image");
             let $profileImage = $("#inputProfileImage");
+            let $profileImageFile = $("#profile-image-file");
 
             $confirmBtn.hide();
             $resetBtn.hide();
             $cutBtn.hide();
             $newProfileImage.hide();
 
-            $("#profile-image-file").change(function(e){
+
+            $profileImageFile.change(function(e){
                 const reader = new FileReader();
                 reader.onload = e => {
                     if(e.target.result) {
@@ -138,6 +140,7 @@
                 $newProfileImage.hide();
                 $resultImage.hide();
                 $profileImage.val('');
+                $profileImageFile.val('');
             })
 
             $cutBtn.click(function (){

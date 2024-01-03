@@ -1,0 +1,13 @@
+<html xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
+
+<alert>
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" >
+        <span th:text="'모임을 성공적으로 수정했습니다!'"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</alert>
+
+<body th:insert ="~{event/newEventForm :: eventForm (mode='edit', action='/event/' + ${event.id} + '/edit')}">
+</body>
+</html>

@@ -9,7 +9,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface StudyRepository extends JpaRepository<Study, Long> {
 
-    @EntityGraph(value = "Study.withAll", type= EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"managers", "members", "topics", "zones"}, type= EntityGraph.EntityGraphType.LOAD)
     Optional<Study> findByPath(String path);
 
     @EntityGraph(attributePaths = "managers", type = EntityGraph.EntityGraphType.FETCH)
@@ -21,6 +21,9 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     @EntityGraph(attributePaths = {"zones", "managers"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<Study> findWithZoneByPath(String path);
 
-    @EntityGraph(attributePaths = {"members"}, type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = "members", type = EntityGraph.EntityGraphType.FETCH)
     Optional<Study> findWithMemberByPath(String path);
+
+    @EntityGraph(attributePaths = {"members", "managers"}, type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Study> findWithMemberAndManagerByPath(String path);
 }

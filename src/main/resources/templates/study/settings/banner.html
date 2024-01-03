@@ -70,7 +70,6 @@
     </div>
 </div>
 <script th:replace="~{fragments/scripts :: validate}"></script>
-<script th:replace="~{fragments/scripts :: summernote-explanation ('#explanation')}"></script>
 <script th:replace="~{fragments/scripts :: cropper}"></script>
 <script type="application/javascript">
     $(function (){
@@ -130,6 +129,7 @@
             $resultImage.hide();
             $image.val('');
             $submitBtn.addClass('d-none')
+            $imageFile.val('');
         })
 
         $cutBtn.click(function (){
