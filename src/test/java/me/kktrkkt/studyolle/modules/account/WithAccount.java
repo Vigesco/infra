@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle;
+package me.kktrkkt.studyolle.modules.account;
 
 import org.springframework.security.test.context.support.WithSecurityContext;
 

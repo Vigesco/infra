@@ -1,9 +1,8 @@
 package me.kktrkkt.studyolle.modules.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.kktrkkt.studyolle.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
-import me.kktrkkt.studyolle.MockMvcTest;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.topic.TopicForm;
 import me.kktrkkt.studyolle.modules.topic.TopicRepository;

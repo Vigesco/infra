@@ -1,14 +1,19 @@
 package me.kktrkkt.studyolle.modules.study;
 
-import me.kktrkkt.studyolle.WithAccount;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
+import me.kktrkkt.studyolle.modules.account.AccountRepository;
+import me.kktrkkt.studyolle.modules.account.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static me.kktrkkt.studyolle.infra.Utils.replacePath;
 import static me.kktrkkt.studyolle.modules.study.StudyController.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,8 +23,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@MockMvcTest
 @Transactional
-public class StudyControllerTest extends StudyBaseTest {
+public class StudyControllerTest{
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private StudyFactory studyFactory;
+
+    @Autowired
+    private StudyRepository studys;
+
+    @Autowired
+    private AccountRepository accounts;
 
     @DisplayName("스터디 생성 폼 조회")
     @Test
@@ -83,7 +101,7 @@ public class StudyControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studyView() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_BASE_URL)))
                 .andExpect(status().isOk())
@@ -96,7 +114,7 @@ public class StudyControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studyMembers() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), STUDY_MEMBERS_URL)))
                 .andExpect(status().isOk())
@@ -109,7 +127,7 @@ public class StudyControllerTest extends StudyBaseTest {
     @Test
     @WithAccount({"user1", "user2"})
     void joinStudy() throws Exception {
-        Study study = createStudy("user2");
+        Study study = studyFactory.createStudy("user2");
         study.publish();
         study.startRecruiting();
 
@@ -127,7 +145,7 @@ public class StudyControllerTest extends StudyBaseTest {
     @Test
     @WithAccount({"user1", "user2"})
     void leaveStudy() throws Exception {
-        Study study = createStudy("user2");
+        Study study = studyFactory.createStudy("user2");
         study.publish();
         study.startRecruiting();
         Account user1 = accounts.findByNickname("user1").get();

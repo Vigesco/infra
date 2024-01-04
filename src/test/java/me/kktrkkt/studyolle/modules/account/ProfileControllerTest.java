@@ -1,7 +1,6 @@
 package me.kktrkkt.studyolle.modules.account;
 
-import me.kktrkkt.studyolle.MockMvcTest;
-import me.kktrkkt.studyolle.WithAccount;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

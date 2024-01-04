@@ -1,7 +1,9 @@
 package me.kktrkkt.studyolle.modules.study;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.kktrkkt.studyolle.WithAccount;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
+import me.kktrkkt.studyolle.modules.account.AccountRepository;
+import me.kktrkkt.studyolle.modules.account.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.topic.TopicForm;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static me.kktrkkt.studyolle.infra.Utils.replacePath;
 import static me.kktrkkt.studyolle.modules.study.StudySettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -30,8 +34,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@MockMvcTest
 @Transactional
-class StudySettingsControllerTest extends StudyBaseTest {
+class StudySettingsControllerTest{
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private StudyFactory studyFactory;
+
+    @Autowired
+    private StudyRepository studys;
+
+    @Autowired
+    private AccountRepository accounts;
 
     @Autowired
     private TopicRepository topics;
@@ -46,7 +63,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studySettingsInfoForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_INFO_URL)))
                 .andExpect(status().isOk())
@@ -60,7 +77,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyInfo_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String studySettingsInfoUrl = replacePath(study.getPath(), SETTINGS_INFO_URL);
 
         String bio = "new-bio";
@@ -83,7 +100,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyInfo_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String studySettingsInfoUrl = replacePath(study.getPath(), SETTINGS_INFO_URL);
 
         String over256 = new Random().ints(0, 1)
@@ -110,7 +127,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studySettingsBannerForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_BANNER_URL)))
                 .andExpect(status().isOk())
@@ -123,7 +140,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyBannerUse_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String studySettingsBannerUrl = replacePath(study.getPath(), SETTINGS_BANNER_URL);
 
         this.mockMvc.perform(post(studySettingsBannerUrl+"/true").with(csrf()))
@@ -146,7 +163,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyBanner_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String studySettingsBannerUrl = replacePath(study.getPath(), SETTINGS_BANNER_URL);
 
         String banner = "banner";
@@ -166,7 +183,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studySettingsTopicForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_TOPIC_URL)))
                 .andExpect(status().isOk())
@@ -180,7 +197,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void addStudyTopic_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String spring = "스프링";
         requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isOk());
 
@@ -193,7 +210,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void addDuplicationStudyTopic_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Topic topic = new Topic();
         String title = "스프링";
         topic.setTitle(title);
@@ -209,7 +226,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void addStudyTopic_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         requestTopic("스", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
         requestTopic("1", replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isBadRequest());
@@ -225,7 +242,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void removeStudyTopic_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         String spring = "스프링";
         requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/add", status().isOk());
@@ -240,7 +257,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void removeStudyTopic_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         String spring = "스프링";
         requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/remove", status().isBadRequest());
@@ -254,7 +271,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studySettingsZoneForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_ZONE_URL)))
                 .andExpect(status().isOk())
@@ -268,7 +285,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void addStudyZone_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트").province("testp").build();
         zones.save(testZone);
 
@@ -281,7 +298,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void addStudyZone_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         requestZone("wrong(Zone)/Name", replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/add", status().isBadRequest());
 
@@ -293,7 +310,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @WithAccount("user1")
     void
     _success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         Zone testZone = Zone.builder().city("test").localNameOfCity("테스트").province("testp").build();
         zones.save(testZone);
@@ -309,7 +326,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void removeStudyZone_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         requestZone("wrong(Zone)/Name", replacePath(study.getPath(), SETTINGS_ZONE_URL) +"/remove", status().isBadRequest());
 
@@ -320,7 +337,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void studySettingsStudyForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         this.mockMvc.perform(get(replacePath(study.getPath(), SETTINGS_STUDY_URL)))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_STUDY_VIEW))
@@ -333,7 +350,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3", "user4", "user5"})
     void publishStudy_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Zone city1 = Zone.builder().city("city1").localNameOfCity("name1").province("province1").build();
         Topic spring = Topic.builder().title("spring").build();
         Topic java = Topic.builder().title("java").build();
@@ -374,7 +391,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3", "user4", "user5"})
     void publishPublishedStudy_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
 
         String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
@@ -388,7 +405,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3", "user4", "user5"})
     void publishClosedStudy_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.close();
 
@@ -403,7 +420,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void closePublishedStudy_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
@@ -420,7 +437,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void closeNotPublishStudy_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyPublishedUrl +"/close").with(csrf()))
@@ -432,7 +449,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void closeClosedStudy_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.close();
         String settingsStudyPublishedUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
@@ -446,7 +463,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void startRecruiting_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
@@ -464,7 +481,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void startNotPublicStudyRecruiting_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/recruiting/start").with(csrf()))
@@ -476,7 +493,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void startClosedStudyRecruiting_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.close();
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
@@ -490,7 +507,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void startStudyRecruitmentTwiceIn1Hour_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
@@ -504,7 +521,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void stopRecruiting_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.setRecruiting(true);
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
@@ -522,7 +539,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyPath_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
         String path = "new-new-path";
 
@@ -541,7 +558,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void updateStudyTitle_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
         String title = "new-new-title";
 
@@ -560,7 +577,7 @@ class StudySettingsControllerTest extends StudyBaseTest {
     @Test
     @WithAccount("user1")
     void deleteStudy() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String settingsStudyUrl = replacePath(study.getPath(), SETTINGS_STUDY_URL);
 
         this.mockMvc.perform(post(settingsStudyUrl +"/delete").with(csrf()))

@@ -1,7 +1,7 @@
 package me.kktrkkt.studyolle.modules.account;
 
 import me.kktrkkt.studyolle.modules.account.entity.Account;
-import me.kktrkkt.studyolle.MockMvcTest;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
 import me.kktrkkt.studyolle.infra.mail.EmailService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

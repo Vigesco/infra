@@ -1,12 +1,16 @@
 package me.kktrkkt.studyolle.modules.event;
 
-import me.kktrkkt.studyolle.WithAccount;
+import me.kktrkkt.studyolle.infra.MockMvcTest;
+import me.kktrkkt.studyolle.modules.account.AccountRepository;
+import me.kktrkkt.studyolle.modules.account.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
 import me.kktrkkt.studyolle.modules.study.Study;
+import me.kktrkkt.studyolle.modules.study.StudyFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -15,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 import static java.time.LocalDateTime.now;
+import static me.kktrkkt.studyolle.infra.Utils.*;
 import static me.kktrkkt.studyolle.modules.event.EventController.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -23,8 +28,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@MockMvcTest
 @Transactional
-class EventControllerTest extends EventBaseTest {
+class EventControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @Autowired
+    private StudyFactory studyFactory;
+
+    @Autowired
+    private AccountRepository accounts;
+
+    @Autowired
+    private EventRepository events;
 
     @Autowired
     private EventService eventService;
@@ -36,7 +54,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void newEventForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), NEW_EVENT_URL)))
                 .andDo(print())
@@ -51,7 +69,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void createNewEvent_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         String title = "title";
         EventType eventType = EventType.FCFS;
         int limitOfEnrollments = 5;
@@ -82,7 +100,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void createNewEvent_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         requestWrongNewEvent("abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdea", EventType.FCFS.name(),
                 2, now().plus(3, ChronoUnit.DAYS),
@@ -116,7 +134,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void studyEvents() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
 
         this.mockMvc.perform(get(replacePath(study.getPath(), EVENTS_URL)))
                 .andExpect(status().isOk())
@@ -131,7 +149,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void eventView() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Event event = createEvent("user1", study);
 
         this.mockMvc.perform(get(replacePathAndId(EVENT_URL, study.getPath(), event.getId())))
@@ -146,7 +164,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void eventUpdateForm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Event event = createEvent("user1", study);
 
         this.mockMvc.perform(get(replacePathAndId(EVENT_UPDATE_URL, study.getPath(), event.getId())))
@@ -163,7 +181,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void updateEvent_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Event event = createEvent("user1", study);
 
         String title = "new title";
@@ -201,7 +219,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2"})
     void updateEvent_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -248,7 +266,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void enrollEvent_fcfs() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -282,7 +300,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void enrollEvent_confirm() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -317,7 +335,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1"})
     void enrollEvent_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -342,7 +360,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void cancelEnrollment_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -378,7 +396,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void acceptEnrollment_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -407,7 +425,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void acceptEnrollment_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -432,7 +450,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void rejectEnrollment_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -461,7 +479,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void rejectEnrollment_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -485,7 +503,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void checkInEvent_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -514,7 +532,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void checkInEvent_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -545,7 +563,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void cancelCheckInEvent_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -575,7 +593,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void cancelCheckInEvent_failure() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -600,7 +618,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user2", "user1", "user3"})
     void anotherStudyOwnerAcceptAnotherStudyEvent() throws Exception {
-        Study study1 = createStudy("user1");
+        Study study1 = studyFactory.createStudy("user1");
         study1.publish();
         study1.startRecruiting();
         Event event = createEvent("user1", study1);
@@ -615,7 +633,7 @@ class EventControllerTest extends EventBaseTest {
         enrollments.save(user3Enrollment);
         enrollments.save(user2Enrollment);
 
-        Study study2 = createStudy("user2", "study2");
+        Study study2 = studyFactory.createStudy("user2", "study2");
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study2.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
@@ -626,7 +644,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount({"user1", "user2", "user3"})
     void updateEventLimitOfEnrolmentAndUpdateEnrollmentAccept_success() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         study.publish();
         study.startRecruiting();
         Event event = createEvent("user1", study);
@@ -670,7 +688,7 @@ class EventControllerTest extends EventBaseTest {
     @Test
     @WithAccount("user1")
     void deleteEvent() throws Exception {
-        Study study = createStudy("user1");
+        Study study = studyFactory.createStudy("user1");
         Event event = createEvent("user1", study);
         event.getEnrollments().addAll(Arrays.asList(createEnrollment(event), createEnrollment(event), createEnrollment(event)));
         events.save(event);
@@ -726,13 +744,5 @@ class EventControllerTest extends EventBaseTest {
                 .andExpect(model().attributeExists("eventForm"))
                 .andExpect(model().attributeExists("eventTypes"))
                 .andExpect(model().hasErrors());
-    }
-
-    private String replacePathAndId(String eventUrl, String path, Long id) {
-        return eventUrl.replace("{path}", path).replace("{id}", String.valueOf(id));
-    }
-
-    private String replacePathAndIdAndEnrollmentId(String eventUrl, String path, Long id, Long enrollmentId) {
-        return eventUrl.replace("{path}", path).replace("{id}", String.valueOf(id)).replace("{enrollmentId}", String.valueOf(enrollmentId));
     }
 }

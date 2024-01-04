@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle;
+package me.kktrkkt.studyolle.infra;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
