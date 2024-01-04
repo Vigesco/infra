@@ -112,6 +112,21 @@ class EventControllerTest extends EventBaseTest {
         assertTrue(events.findAll().isEmpty());
     }
 
+    @DisplayName("모임 목록 조회")
+    @Test
+    @WithAccount("user1")
+    void studyEvents() throws Exception {
+        Study study = createStudy("user1");
+
+        this.mockMvc.perform(get(replacePath(study.getPath(), EVENTS_URL)))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("study"))
+                .andExpect(model().attributeExists("newEvents"))
+                .andExpect(model().attributeExists("oldEvents"))
+                .andExpect(view().name(EVENTS_VIEW))
+                .andDo(print());
+    }
+
     @DisplayName("모임 조회")
     @Test
     @WithAccount("user1")

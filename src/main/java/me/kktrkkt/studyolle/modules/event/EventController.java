@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +24,8 @@ public class EventController {
     static final String BASE_URL = "/study/{path}";
     static final String NEW_EVENT_URL = BASE_URL + "/new-event";
     static final String NEW_EVENT_VIEW = "event/newEventForm";
+    static final String EVENTS_URL = BASE_URL + "/events";
+    static final String EVENTS_VIEW = "study/events";
     static final String EVENT_URL = BASE_URL + "/event/{id}";
     static final String EVENT_VIEW = "event/view";
     static final String EVENT_UPDATE_URL = EVENT_URL + "/edit";
@@ -40,7 +44,6 @@ public class EventController {
     private final EventRepository events;
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
-    private final EnrollmentRepository enrollments;
 
     @InitBinder("eventForm")
     public void validEventForm(WebDataBinder dataBinder){
@@ -76,6 +79,30 @@ public class EventController {
         return "redirect:" + EVENT_URL.replace("{id}", String.valueOf(newEvent.getId()));
     }
 
+    @GetMapping(EVENTS_URL)
+    public String eventList(@PathVariable String path, @CurrentUser Account account,
+                            Model model) {
+        Study study = studyService.getStudyToEvent(path, account);
+        List<Event> eventList = events.findByStudyOrderByCreatedDateTime(study);
+
+        model.addAttribute(study);
+
+        List<Event> newEvents = new ArrayList<>();
+        List<Event> oldEvents = new ArrayList<>();
+        eventList.forEach(e -> {
+            if (e.isOld()) {
+                oldEvents.add(e);
+            }
+            else if (e.isNew()) {
+                newEvents.add(e);
+            }
+        });
+
+        model.addAttribute("newEvents", newEvents);
+        model.addAttribute("oldEvents", oldEvents);
+        return EVENTS_VIEW;
+    }
+
     @GetMapping(EVENT_URL)
     public String eventView(@PathVariable String path, @PathVariable Long id,
                             @CurrentUser Account account, Model model) {
@@ -96,7 +123,6 @@ public class EventController {
         model.addAttribute(modelMapper.map(event, EventForm.class));
         return EVENT_UPDATE_VIEW;
     }
-
 
     @PostMapping(EVENT_UPDATE_URL)
     public String updateEvent(@PathVariable String path, @CurrentUser Account account,
