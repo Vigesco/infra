@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:12:///tests-db
+  jpa:
+    hibernate:
+      ddl-auto: create
