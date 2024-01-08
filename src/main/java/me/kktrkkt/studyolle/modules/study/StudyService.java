@@ -28,7 +28,6 @@ public class StudyService {
         Study newStudy = modelMapper.map(studySubmitForm, Study.class);
         newStudy.getManagers().add(account);
         Study save = studys.save(newStudy);
-        eventPublisher.publishEvent(new StudyCreatedEvent(save));
         return save;
     }
 
@@ -106,6 +105,7 @@ public class StudyService {
 
     public void publish(Study study) {
         study.publish();
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
 
     public void close(Study study) {

@@ -26,4 +26,7 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 
     @EntityGraph(attributePaths = {"members", "managers"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<Study> findWithMemberAndManagerByPath(String path);
+
+    @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Study> findWithTopicAndZoneById(Long id);
 }
