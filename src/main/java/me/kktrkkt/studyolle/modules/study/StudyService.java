@@ -2,9 +2,11 @@ package me.kktrkkt.studyolle.modules.study;
 
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
+import me.kktrkkt.studyolle.modules.study.event.StudyCreatedEvent;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.zone.Zone;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,14 @@ public class StudyService {
 
     private final ModelMapper modelMapper;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     public Study create(Account account, StudyForm studySubmitForm) {
         Study newStudy = modelMapper.map(studySubmitForm, Study.class);
         newStudy.getManagers().add(account);
-        return studys.save(newStudy);
+        Study save = studys.save(newStudy);
+        eventPublisher.publishEvent(new StudyCreatedEvent(save));
+        return save;
     }
 
     public void updateInfo(Study study, StudyInfoForm infoForm) {

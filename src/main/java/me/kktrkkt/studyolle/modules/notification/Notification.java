@@ -3,7 +3,6 @@ package me.kktrkkt.studyolle.modules.notification;
 import lombok.*;
 import me.kktrkkt.studyolle.infra.entity.BaseEntity;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
