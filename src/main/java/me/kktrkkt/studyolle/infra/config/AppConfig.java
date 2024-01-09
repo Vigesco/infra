@@ -1,12 +1,11 @@
 package me.kktrkkt.studyolle.infra.config;
 
 import lombok.RequiredArgsConstructor;
-import me.kktrkkt.studyolle.modules.notification.NotificationInterceptor;
-import me.kktrkkt.studyolle.modules.notification.NotificationRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -14,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class AppConfig implements WebMvcConfigurer {
 
-    private final NotificationRepository notificationRepository;
+    private final HandlerInterceptor notificationInterceptor;
 
     @Bean
     public ModelMapper modelMapper(){
@@ -27,7 +26,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new NotificationInterceptor(notificationRepository))
+        registry.addInterceptor(notificationInterceptor)
                 .excludePathPatterns("/resources/**");
     }
 }
