@@ -56,6 +56,7 @@ public class StudyEventListener {
                                 .title(study.getTitle())
                                 .message(study.getBio())
                                 .createdAt(LocalDateTime.now())
+                                .link("/study/" + study.getPath())
                                 .build());
             }
         });
