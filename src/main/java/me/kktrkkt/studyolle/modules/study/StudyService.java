@@ -3,6 +3,7 @@ package me.kktrkkt.studyolle.modules.study;
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
 import me.kktrkkt.studyolle.modules.study.event.StudyCreatedEvent;
+import me.kktrkkt.studyolle.modules.study.event.StudyUpdatedEvent;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.zone.Zone;
 import org.modelmapper.ModelMapper;
@@ -33,6 +34,7 @@ public class StudyService {
 
     public void updateInfo(Study study, StudyInfoForm infoForm) {
         modelMapper.map(infoForm, study);
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디 소개를 수정했습니다."));
     }
 
     public Study getStudy(String path) {
@@ -110,14 +112,17 @@ public class StudyService {
 
     public void close(Study study) {
         study.close();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디 종료했습니다."));
     }
 
     public void stopRecruiting(Study study) {
         study.stopRecruiting();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "팀원 모집을 중지합니다."));
     }
 
     public void startRecruiting(Study study) {
         study.startRecruiting();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "팀원 모집을 시작합니다."));
     }
 
     public void updatePath(Study study, StudyPathForm studyPathForm) {
