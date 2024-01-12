@@ -7,19 +7,20 @@ import com.tngtech.archunit.lang.ArchRule;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
-@AnalyzeClasses(packages = "me/kktrkkt/studyolle/modules")
+@AnalyzeClasses(packagesOf = App.class)
 public class PackageDependencyTest {
 
-    private static final String ACCOUNT = "..account..";
-    private static final String STUDY = "..study..";
-    private static final String TOPIC = "..topic..";
-    private static final String ZONE = "..zone..";
-    private static final String EVENT = "..event..";
+    private static final String ACCOUNT = "..modules.account..";
+    private static final String STUDY = "..modules.study..";
+    private static final String TOPIC = "..modules.topic..";
+    private static final String ZONE = "..modules.zone..";
+    private static final String EVENT = "..modules.event..";
+    private static final String NOTIFICATION = "..modules.notification..";
 
     @ArchTest
     private ArchRule accountPackageRule = classes().that().resideInAnyPackage(ACCOUNT)
             .should().onlyBeAccessed().byClassesThat()
-            .resideInAnyPackage(ACCOUNT, STUDY, EVENT);
+            .resideInAnyPackage(ACCOUNT, STUDY, EVENT, NOTIFICATION);
 
     @ArchTest
     private ArchRule studyPackageRule = classes().that().resideInAnyPackage(STUDY)
@@ -42,6 +43,10 @@ public class PackageDependencyTest {
             .resideInAnyPackage(EVENT);
 
     @ArchTest
-    private ArchRule freeOfCycles = slices().matching("..(*)..")
+    private ArchRule notificationPackageRule = classes().that().resideInAnyPackage(NOTIFICATION)
+            .should().accessClassesThat().resideInAnyPackage(NOTIFICATION, ACCOUNT);
+
+    @ArchTest
+    private ArchRule freeOfCycles = slices().matching("me.kktrkkt.studyolle.modules.(*)..")
             .should().beFreeOfCycles();
 }

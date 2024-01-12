@@ -4,11 +4,15 @@ import me.kktrkkt.studyolle.infra.MockMvcTest;
 import me.kktrkkt.studyolle.modules.account.AccountRepository;
 import me.kktrkkt.studyolle.modules.account.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
+import me.kktrkkt.studyolle.modules.event.event.EnrollmentEvent;
+import me.kktrkkt.studyolle.modules.event.event.EventEventListener;
 import me.kktrkkt.studyolle.modules.study.Study;
 import me.kktrkkt.studyolle.modules.study.StudyFactory;
+import me.kktrkkt.studyolle.modules.study.event.StudyUpdatedEvent;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,8 @@ import static java.time.LocalDateTime.now;
 import static me.kktrkkt.studyolle.infra.Utils.*;
 import static me.kktrkkt.studyolle.modules.event.EventController.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +55,9 @@ class EventControllerTest {
 
     @Autowired
     private EnrollmentRepository enrollments;
+
+    @MockBean
+    private EventEventListener EventEventListener;
 
     @DisplayName("모임 생성 폼")
     @Test
@@ -419,6 +428,8 @@ class EventControllerTest {
         assertEquals(2, event.getEnrollments().size());
         assertTrue(user2Enrollment.isAccepted());
         assertFalse(user3Enrollment.isAccepted());
+
+        then(EventEventListener).should().handleEnrollmentEvent(any(EnrollmentEvent.class));
     }
 
     @DisplayName("모임 참가 신청 수락 - 실패")
@@ -473,6 +484,8 @@ class EventControllerTest {
 
         assertFalse(user2Enrollment.isAccepted());
         assertFalse(user3Enrollment.isAccepted());
+
+        then(EventEventListener).should().handleEnrollmentEvent(any(EnrollmentEvent.class));
     }
 
     @DisplayName("모임 참가 신청 취소 - 실패")

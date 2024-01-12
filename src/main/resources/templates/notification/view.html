@@ -1,0 +1,112 @@
+<!doctype html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/header :: header (_)}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/header :: main-nav}"></nav>
+
+<div class="row mt-5 mx-1 justify-content-center">
+    <div class="col-3">
+        <div class="list-group">
+            <a th:href="@{/notification/unread}" class="list-group-item d-flex justify-content-between align-items-start"
+               th:classappend="${#httpServletRequest.requestURI.contains('/unread')} ? 'active'"
+               th:aria-current="${#httpServletRequest.requestURI.contains('/unread')} ? true : false">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">읽지 않은 알림</div>
+                </div>
+                <span class="rounded-pill" th:text="${unreadCount}">1</span>
+            </a>
+            <a th:href="@{/notification/read}" class="list-group-item d-flex justify-content-between align-items-start"
+               th:classappend="${#httpServletRequest.requestURI.contains('/read')} ? 'active'"
+               th:aria-current="${#httpServletRequest.requestURI.contains('/read')} ? true : false">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">읽은 알림</div>
+                </div>
+                <span class="rounded-pill" th:text="${readCount}">1</span>
+            </a>
+        </div>
+        <div class="list-group mt-4">
+            <a class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    신규 스터디 관련 알림
+                </div>
+                <span class="rounded-pill" th:text="${studyCreatedNotificationList.size()}">1</span>
+            </a>
+            <a class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    참여 스터디 관련 알림
+                </div>
+                <span class="rounded-pill" th:text="${studyUpdatedNotificationList.size()}">1</span>
+            </a>
+            <a class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    모임 참가 관련 알림
+                </div>
+                <span class="rounded-pill" th:text="${eventEnrollmentNotificationList.size()}">1</span>
+            </a>
+        </div>
+        <form class="d-grid" method="post" th:action="@{/notification/delete-all}">
+            <button type="submit" class="btn btn-outline-warning mt-4 d-grid gap-2">읽은 알림 삭제</button>
+        </form>
+    </div>
+    <div class="col-9">
+        <div th:if="${notificationList.size() == 0}" class="card">
+            <div class="card-header text-center">
+                <span>알림 메시지가 없습니다.</span>
+            </div>
+        </div>
+        <div th:if="${studyCreatedNotificationList.size() > 0}" class="card">
+            <div class="card-header text-center">
+                <span>신규 스터디 관련 소식이 있습니다.</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li th:each="notification : ${studyCreatedNotificationList}" class="list-group-item">
+                    <a class="link-offset-2 link-underline link-underline-opacity-0" th:href="@{${notification.link}}">
+                        <div class="row justify-content-around">
+                            <small class="col text-muted" th:text="${notification.title}"></small>
+                            <small class="col-1 text-muted fromNow text-end" th:text="${notification.createdAt}"></small>
+                        </div>
+                        <p class="text-black" th:text="${notification.message}"></p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div th:if="${studyUpdatedNotificationList.size() > 0}" class="card mt-4">
+            <div class="card-header text-center">
+                <span>참여중인 스터디 관련 소식이 있습니다.</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li th:each="notification : ${studyUpdatedNotificationList}" class="list-group-item">
+                    <a class="link-offset-2 link-underline link-underline-opacity-0" th:href="@{${notification.link}}">
+                        <div class="row justify-content-around">
+                            <small class="col text-muted" th:text="${notification.title}"></small>
+                            <small class="col-1 text-muted fromNow text-end" th:text="${notification.createdAt}"></small>
+                        </div>
+                        <p class="text-black" th:text="${notification.message}"></p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div th:if="${eventEnrollmentNotificationList.size() > 0}" class="card mt-4">
+            <div class="card-header text-center">
+                <span>모임 참가 신청 관련 소식이 있습니다.</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li th:each="notification : ${eventEnrollmentNotificationList}" class="list-group-item">
+                    <a class="link-offset-2 link-underline link-underline-opacity-0" th:href="@{${notification.link}}">
+                        <div class="row justify-content-around">
+                            <small class="col text-muted" th:text="${notification.title}"></small>
+                            <small class="col-1 text-muted fromNow text-end" th:text="${notification.createdAt}"></small>
+                        </div>
+                        <p class="text-black" th:text="${notification.message}"></p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<script th:replace="~{fragments/scripts :: validate}"></script>
+<th:block th:replace="~{fragments/scripts :: moment}"></th:block>
+</body>
+</html>

@@ -156,4 +156,15 @@
     </script>
 </div>
 
+<th:block th:fragment="moment">
+    <script src="/static/resources/node_modules/moment/min/moment-with-locales.min.js" th:src="@{/resources/node_modules/moment/min/moment-with-locales.min.js}"></script>
+    <script type="application/javascript">
+        $(function(){
+            moment.locale('ko');
+            $(".fromNow").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
+            });
+        })
+    </script>
+</th:block>
 </html>

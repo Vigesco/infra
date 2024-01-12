@@ -2,9 +2,12 @@ package me.kktrkkt.studyolle.modules.study;
 
 import lombok.RequiredArgsConstructor;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
+import me.kktrkkt.studyolle.modules.study.event.StudyCreatedEvent;
+import me.kktrkkt.studyolle.modules.study.event.StudyUpdatedEvent;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.zone.Zone;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +23,18 @@ public class StudyService {
 
     private final ModelMapper modelMapper;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     public Study create(Account account, StudyForm studySubmitForm) {
         Study newStudy = modelMapper.map(studySubmitForm, Study.class);
         newStudy.getManagers().add(account);
-        return studys.save(newStudy);
+        Study save = studys.save(newStudy);
+        return save;
     }
 
     public void updateInfo(Study study, StudyInfoForm infoForm) {
         modelMapper.map(infoForm, study);
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디 소개를 수정했습니다."));
     }
 
     public Study getStudy(String path) {
@@ -100,18 +107,22 @@ public class StudyService {
 
     public void publish(Study study) {
         study.publish();
+        eventPublisher.publishEvent(new StudyCreatedEvent(study));
     }
 
     public void close(Study study) {
         study.close();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "스터디 종료했습니다."));
     }
 
     public void stopRecruiting(Study study) {
         study.stopRecruiting();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "팀원 모집을 중지합니다."));
     }
 
     public void startRecruiting(Study study) {
         study.startRecruiting();
+        eventPublisher.publishEvent(new StudyUpdatedEvent(study, "팀원 모집을 시작합니다."));
     }
 
     public void updatePath(Study study, StudyPathForm studyPathForm) {

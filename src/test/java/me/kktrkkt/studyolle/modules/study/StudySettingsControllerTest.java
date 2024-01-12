@@ -5,6 +5,9 @@ import me.kktrkkt.studyolle.infra.MockMvcTest;
 import me.kktrkkt.studyolle.modules.account.AccountRepository;
 import me.kktrkkt.studyolle.modules.account.WithAccount;
 import me.kktrkkt.studyolle.modules.account.entity.Account;
+import me.kktrkkt.studyolle.modules.study.event.StudyCreatedEvent;
+import me.kktrkkt.studyolle.modules.study.event.StudyEventListener;
+import me.kktrkkt.studyolle.modules.study.event.StudyUpdatedEvent;
 import me.kktrkkt.studyolle.modules.topic.Topic;
 import me.kktrkkt.studyolle.modules.topic.TopicForm;
 import me.kktrkkt.studyolle.modules.topic.TopicRepository;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -28,6 +32,8 @@ import java.util.stream.Collectors;
 import static me.kktrkkt.studyolle.infra.Utils.replacePath;
 import static me.kktrkkt.studyolle.modules.study.StudySettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,6 +64,9 @@ class StudySettingsControllerTest{
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private StudyEventListener studyEventListener;
 
     @DisplayName("스터디 설정 소개 조회")
     @Test
@@ -94,6 +103,8 @@ class StudySettingsControllerTest{
         Study byId = studys.findById(study.getId()).get();
         assertEquals(bio, byId.getBio());
         assertEquals(explanation, byId.getExplanation());
+
+        then(studyEventListener).should().handleStudyUpdatedEvent(any(StudyUpdatedEvent.class));
     }
 
     @DisplayName("스터디 소개 설정 - 실패")
@@ -385,6 +396,8 @@ class StudySettingsControllerTest{
         assertTrue(study.isPublished());
         assertTrue(accountList.contains(user2));
         assertTrue(accountList.contains(user3));
+
+        then(studyEventListener).should().handleStudyCreatedEvent(any(StudyCreatedEvent.class));
     }
 
     @DisplayName("공개된 스터디 공개 - 실패")
@@ -431,6 +444,8 @@ class StudySettingsControllerTest{
                 .andDo(print());
 
         assertTrue(study.isClosed());
+
+        then(studyEventListener).should().handleStudyUpdatedEvent(any(StudyUpdatedEvent.class));
     }
 
     @DisplayName("공개되지 않은 스터디 종료 - 실패")
@@ -475,6 +490,7 @@ class StudySettingsControllerTest{
 
         assertTrue(study.isRecruiting());
 
+        then(studyEventListener).should().handleStudyUpdatedEvent(any(StudyUpdatedEvent.class));
     }
 
     @DisplayName("미공개 스터디 모집 시작 - 실패")
@@ -533,6 +549,8 @@ class StudySettingsControllerTest{
                 .andDo(print());
 
         assertFalse(study.isRecruiting());
+
+        then(studyEventListener).should().handleStudyUpdatedEvent(any(StudyUpdatedEvent.class));
     }
 
     @DisplayName("스터디 경로 수정 - 성공")

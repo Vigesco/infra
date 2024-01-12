@@ -80,10 +80,9 @@ public class EventController {
     }
 
     @GetMapping(EVENTS_URL)
-    public String eventList(@PathVariable String path, @CurrentUser Account account,
-                            Model model) {
+    public String eventList(@PathVariable String path, @CurrentUser Account account, Model model) {
         Study study = studyService.getStudyToEvent(path, account);
-        List<Event> eventList = events.findByStudyOrderByCreatedDateTime(study);
+        List<Event> eventList = events.findByStudyOrderByCreatedDateTimeDesc(study);
 
         model.addAttribute(study);
 

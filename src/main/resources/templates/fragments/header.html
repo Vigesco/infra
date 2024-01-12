@@ -64,8 +64,16 @@
                 <li class="nav-item" sec:authorize="!isAuthenticated()">
                     <a class="nav-link" th:href="@{/sign-up}">가입</a>
                 </li>
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link"><i class="fa fa-bell-o" aria-hidden="true"></i></a>
+                <li class="nav-item my-auto" sec:authorize="isAuthenticated()">
+                    <a th:href="@{/notification/unread}" th:if="${notificationCount == 0}" class="nav-link position-relative">
+                        <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    </a>
+                    <a th:href="@{/notification/unread}" th:if="${notificationCount != 0}" class="nav-link position-relative">
+                        <i class="fa fa-bell text-warning" aria-hidden="true"></i>
+                        <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 25%; left: 83%;">
+                            <span th:text="${notificationCount}"></span><span class="visually-hidden">unread messages</span>
+                        </span>
+                    </a>
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link btn btn-outline-primary" th:href="@{'/new-study'}"><i class="fa fa-plus" aria-hidden="true"></i> 스터디 개설</a>
