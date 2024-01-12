@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @MockMvcTest
@@ -73,5 +75,34 @@ class NotificationControllerTest {
                 .andExpect(model().attributeExists("studyCreatedNotificationList"))
                 .andExpect(model().attributeExists("studyUpdatedNotificationList"))
                 .andExpect(model().attributeExists("eventEnrollmentNotificationList"));
+    }
+
+    @DisplayName("읽은 알림 목록 삭제")
+    @Test
+    @WithAccount("user1")
+    void deleteNotificationReadList() throws Exception {
+        Account user1 = accounts.findByNickname("user1").orElseThrow();
+        notificationFactory.createNotification(user1, "noti1");
+        notificationFactory.createNotification(user1, "noti2");
+        notificationFactory.createNotification(user1, "noti3");
+        notificationFactory.createNotification(user1, "noti4");
+
+        deleteAll();
+
+        List<Notification> unreadList = notifications.findAllByToAndCheckedOrderByCreatedAt(user1, false);
+        assertEquals(4, unreadList.size());
+
+        unreadList.forEach(n->n.setChecked(true));
+
+        deleteAll();
+
+        List<Notification> readList = notifications.findAllByToAndCheckedOrderByCreatedAt(user1, true);
+        assertEquals(0, readList.size());
+    }
+
+    private void deleteAll() throws Exception {
+        this.mockMvc.perform(post(NotificationController.NOTIFICATION_URL + "/delete-all").with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(NotificationController.NOTIFICATION_URL + "/read"));
     }
 }

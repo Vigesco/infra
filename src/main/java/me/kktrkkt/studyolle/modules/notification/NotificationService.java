@@ -11,7 +11,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
+    private final NotificationRepository notifications;
+
     public void check(List<Notification> notificationList) {
         notificationList.forEach(x->x.setChecked(true));
+    }
+
+    public void deleteAll(List<Notification> notificationList) {
+        notifications.deleteAll(notificationList);
     }
 }

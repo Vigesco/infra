@@ -45,9 +45,9 @@
                 <span class="rounded-pill" th:text="${eventEnrollmentNotificationList.size()}">1</span>
             </a>
         </div>
-        <div class="d-grid">
-            <button class="btn btn-outline-warning mt-4 d-grid gap-2">읽은 알림 삭제</button>
-        </div>
+        <form class="d-grid" method="post" th:action="@{/notification/delete-all}">
+            <button type="submit" class="btn btn-outline-warning mt-4 d-grid gap-2">읽은 알림 삭제</button>
+        </form>
     </div>
     <div class="col-9">
         <div th:if="${notificationList.size() == 0}" class="card">

@@ -6,6 +6,7 @@ import me.kktrkkt.studyolle.modules.account.entity.Account;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,13 @@ public class NotificationController {
         List<Notification> notificationList = notifications.findAllByToAndCheckedOrderByCreatedAt(account, true);
         putCategorizeNotifications(model, notificationList, notifications.countByToAndChecked(account, false), notificationList.size());
         return "notification/view";
+    }
+
+    @PostMapping(NOTIFICATION_URL + "/delete-all")
+    public String deleteAllNotification(@CurrentUser Account account) {
+        List<Notification> notificationList = notifications.findAllByToAndCheckedOrderByCreatedAt(account, true);
+        notificationService.deleteAll(notificationList);
+        return "redirect:" + NOTIFICATION_URL + "/read";
     }
 
     private void putCategorizeNotifications(Model model, List<Notification> notificationList, int unreadCount, int readCount) {
