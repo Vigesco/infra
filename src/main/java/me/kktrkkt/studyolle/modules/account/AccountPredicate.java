@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.modules.study;
+package me.kktrkkt.studyolle.modules.account;
 
 import com.querydsl.core.types.Predicate;
 import me.kktrkkt.studyolle.modules.account.entity.QAccount;
