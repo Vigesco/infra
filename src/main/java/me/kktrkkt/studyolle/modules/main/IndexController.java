@@ -26,7 +26,7 @@ public class IndexController {
         List<Study> all = studyRepository.findByKeyword(keyword);
         model.addAttribute("studyList", all);
         model.addAttribute("keyword", keyword);
-        return "searchStudy";
+        return "search";
     }
 
 }
