@@ -53,8 +53,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarToggler">
-            <form class="navbar-nav me-auto d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="스터디 찾기" aria-label="Search">
+            <form class="navbar-nav me-auto d-flex" role="search" th:action="@{/search/study}">
+                <input class="form-control me-2" th:value="${keyword}" name="keyword" type="search" placeholder="스터디 찾기" aria-label="Search">
                 <button class="btn btn-outline-success text-nowrap" type="submit">검색</button>
             </form>
             <ul class="navbar-nav d-flex">

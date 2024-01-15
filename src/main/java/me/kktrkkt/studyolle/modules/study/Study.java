@@ -61,6 +61,8 @@ public class Study extends BaseEntity<Study> {
 
     private LocalDateTime recruitingUpdateTime;
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     private boolean recruiting;
 
     private boolean published;

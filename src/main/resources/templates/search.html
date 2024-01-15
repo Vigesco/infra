@@ -1,0 +1,53 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
+
+<body>
+<div class="py-5 text-center" th:if="${studyList.size() != 0}">
+    <h2 th:if="${keyword != ''}">
+        <span class="bg-warning" th:text="${keyword}"></span>에 해당하는 스터디를
+        <span th:text="${studyList.size()}"></span>개 찾았습니다.
+    </h2>
+</div>
+
+<div class="py-5 text-center" th:if="${studyList.size() == 0}">
+    <h2>
+        <span class="bg-warning" th:text="${keyword}"></span>에 해당하는 스터디가 없습니다.
+    </h2>
+</div>
+<div class="container text-center" th:if="${studyList.size() != 0}">
+    <div class="row row-cols-3">
+        <div th:each="study : ${studyList}" class="col">
+            <div class="card mb-3">
+                <img th:if="${!study.useBanner}" th:src="@{/resources/images/default_banner.png}"
+                     class="card-img-top" alt="banner">
+                <img th:if="${study.useBanner && !#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}"
+                     class="card-img-top" alt="banner">
+                <img th:if="${study.useBanner && #strings.isEmpty(study.banner)}" th:src="@{/resources/images/default_banner.png}"
+                     class="card-img-top" alt="banner">
+                <div class="card-body text-start">
+                    <h5 class="card-title"><a th:href="@{'/study/'+${study.path}}" th:text="${study.title}"></a></h5>
+                    <p class="card-text" th:text="${study.bio}"></p>
+                    <p>
+                        <span th:each="topic: ${study.topics}"
+                              class="fw-light text-monospace badge badge-pill text-bg-info me-3">
+                            <a th:href="@{'/search/topic/' + ${topic.title}}" class="text-decoration-none text-white">
+                                <i class="fa fa-tag"></i> <span th:text="${topic.title}">Topic</span>
+                            </a>
+                        </span>
+                        <span th:each="zone: ${study.zones}" class="fw-light text-monospace badge text-bg-primary me-3">
+                            <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                                <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
+                            </a>
+                        </span>
+                    </p>
+                    <div class="justify-content-between d-flex">
+                        <p class="card-text text-start"><small class="text-body-secondary"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span th:text="${_}"></span>명</small></p>
+                        <p class="card-text text-end"><small class="text-body-secondary" th:text="${#temporals.format(study.createdAt, 'yyyy년 MM월 dd일')}"></small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
