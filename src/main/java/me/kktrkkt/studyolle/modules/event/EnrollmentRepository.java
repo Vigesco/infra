@@ -10,6 +10,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    @EntityGraph(attributePaths = {"event"}, type = EntityGraph.EntityGraphType.FETCH)
-    List<Enrollment> findAllByAccountAndAcceptedTrueAndAttendedFalse(Account account);
+    @EntityGraph(attributePaths = {"event", "event.study"}, type = EntityGraph.EntityGraphType.FETCH)
+    List<Enrollment> findAllByAccountAndAcceptedTrueAndAttendedFalseOrderByEnrolledAtDesc(Account account);
 }

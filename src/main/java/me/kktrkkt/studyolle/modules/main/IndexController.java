@@ -38,10 +38,10 @@ public class IndexController {
         }
         else {
             Account accountWithTopicAndZone = accounts.findWithTopicAndZoneAndAuthorityById(account.getId()).orElseThrow();
-            List<Enrollment> enrollmentList = enrollments.findAllByAccountAndAcceptedTrueAndAttendedFalse(account);
+            List<Enrollment> enrollmentList = enrollments.findAllByAccountAndAcceptedTrueAndAttendedFalseOrderByEnrolledAtDesc(account);
             List<Study> studyList = studys.findByAccountTopicAndZone(accountWithTopicAndZone);
-            List<Study> studyManagerOf = studys.findTop5ByManagersContainsOrderByCreatedAtDesc(account);
-            List<Study> studyMemberOf = studys.findTop5ByMembersContainsOrderByPublishedAtDesc(account);
+            List<Study> studyManagerOf = studys.findTop5ByClosedFalseAndManagersContainsOrderByCreatedAtDesc(account);
+            List<Study> studyMemberOf = studys.findTop5ByPublishedTrueAndMembersContainsOrderByPublishedAtDesc(account);
             model.addAttribute("account", accountWithTopicAndZone);
             model.addAttribute("enrollmentList", enrollmentList);
             model.addAttribute("studyList", studyList);
