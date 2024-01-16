@@ -1,5 +1,6 @@
 package me.kktrkkt.studyolle.modules.study;
 
+import me.kktrkkt.studyolle.modules.account.entity.Account;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,4 +34,8 @@ public interface StudyRepository extends JpaRepository<Study, Long>, StudyReposi
 
     @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
     List<Study> findTop9ByPublishedTrueOrderByPublishedAtDesc();
+
+    List<Study> findTop5ByManagersContainsOrderByCreatedAtDesc(Account manager);
+
+    List<Study> findTop5ByMembersContainsOrderByPublishedAtDesc(Account member);
 }

@@ -1,6 +1,11 @@
 package me.kktrkkt.studyolle.modules.main;
 
 import lombok.RequiredArgsConstructor;
+import me.kktrkkt.studyolle.modules.account.AccountRepository;
+import me.kktrkkt.studyolle.modules.account.CurrentUser;
+import me.kktrkkt.studyolle.modules.account.entity.Account;
+import me.kktrkkt.studyolle.modules.event.Enrollment;
+import me.kktrkkt.studyolle.modules.event.EnrollmentRepository;
 import me.kktrkkt.studyolle.modules.study.Study;
 import me.kktrkkt.studyolle.modules.study.StudyRepository;
 import org.springframework.data.domain.Page;
@@ -20,11 +25,30 @@ public class IndexController {
 
     private final StudyRepository studys;
 
+    private final AccountRepository accounts;
+
+    private final EnrollmentRepository enrollments;
+
     @GetMapping("/")
-    public String indexPage(Model model) {
-        List<Study> studyList = studys.findTop9ByPublishedTrueOrderByPublishedAtDesc();
-        model.addAttribute("studyList", studyList);
-        return "index";
+    public String indexPage(@CurrentUser Account account, Model model) {
+        if(account == null){
+            List<Study> studyList = studys.findTop9ByPublishedTrueOrderByPublishedAtDesc();
+            model.addAttribute("studyList", studyList);
+            return "index";
+        }
+        else {
+            Account accountWithTopicAndZone = accounts.findWithTopicAndZoneAndAuthorityById(account.getId()).orElseThrow();
+            List<Enrollment> enrollmentList = enrollments.findAllByAccountAndAcceptedTrueAndAttendedFalse(account);
+            List<Study> studyList = studys.findByAccountTopicAndZone(accountWithTopicAndZone);
+            List<Study> studyManagerOf = studys.findTop5ByManagersContainsOrderByCreatedAtDesc(account);
+            List<Study> studyMemberOf = studys.findTop5ByMembersContainsOrderByPublishedAtDesc(account);
+            model.addAttribute("account", accountWithTopicAndZone);
+            model.addAttribute("enrollmentList", enrollmentList);
+            model.addAttribute("studyList", studyList);
+            model.addAttribute("studyManagerOf", studyManagerOf);
+            model.addAttribute("studyMemberOf", studyMemberOf);
+            return "index-after-login";
+        }
     }
 
     @GetMapping("/search/study")

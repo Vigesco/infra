@@ -1,14 +1,8 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
-
-<alert>
-    <div class="alert alert-warning" role="alert" sec:authorize-expr="isAuthenticated()" th:if="${!#authentication.principal.account.emailVerified}">
-        스터디올레 가입을 완료하려면 <a th:href="@{/check-email}">계정 인증 이메일을 확인</a>하세요
-    </div>
-</alert>
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
 
 <body>
-<div class="p-5 mb-4 bg-body-tertiary rounded-3" sec:authorize-expr="!isAuthenticated()">
+<div class="p-5 mb-4 bg-body-tertiary rounded-3">
     <div class="container-fluid pt-5">
         <h1 class="display-5 fw-bold">스터디올래</h1>
         <p class="col-md-8 fs-4">태그와 지역 기반으로 스터디를 찾고 참여하세요.<br>스터디 모임 관리 기능을 제공합니다.</p>
@@ -20,39 +14,8 @@
         스터디가 없습니다. 첫번째 스터디를 생성해보세요!
     </h2>
 </div>
-<div class="row row-cols-3 pt-5" th:if="${!studyList.isEmpty()}">
-    <div th:each="study : ${studyList}" class="col">
-        <div class="card mb-3">
-            <img th:if="${!study.useBanner}" th:src="@{/resources/images/default_banner.png}"
-                 class="card-img-top" alt="banner">
-            <img th:if="${study.useBanner && !#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}"
-                 class="card-img-top" alt="banner">
-            <img th:if="${study.useBanner && #strings.isEmpty(study.banner)}" th:src="@{/resources/images/default_banner.png}"
-                 class="card-img-top" alt="banner">
-            <div class="card-body text-start">
-                <h5 class="card-title context"><a th:href="@{'/study/'+${study.path}}" th:text="${study.title}"></a></h5>
-                <p class="card-text" th:text="${study.bio}"></p>
-                <p class="context">
-                    <span th:each="topic: ${study.topics}"
-                          class="fw-light text-monospace badge badge-pill text-bg-info my-1 mx-1">
-                        <a th:href="@{'/search/topic/' + ${topic.title}}" class="text-decoration-none text-white">
-                            <i class="fa fa-tag"></i> <span th:text="${topic.title}">Topic</span>
-                        </a>
-                    </span>
-                    <span th:each="zone: ${study.zones}"
-                          class="fw-light text-monospace badge badge-pill text-bg-primary my-1 mx-1">
-                        <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
-                            <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
-                        </a>
-                    </span>
-                </p>
-                <div class="justify-content-between d-flex">
-                    <p class="card-text text-start"><small class="text-body-secondary"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span th:text="${study.memberCount}"></span>명</small></p>
-                    <p class="card-text text-end"><small class="text-body-secondary" th:text="${#temporals.format(study.createdAt, 'yyyy년 MM월 dd일')}"></small></p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="pt-5">
+    <div th:if="${!studyList.isEmpty()}" th:replace="fragments/components.html :: study-list (studyList=${studyList})"></div>
 </div>
 </body>
 </html>

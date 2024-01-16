@@ -1,6 +1,7 @@
 package me.kktrkkt.studyolle.modules.account;
 
 import me.kktrkkt.studyolle.modules.account.entity.Account;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>, Queryds
     Optional<Account> findByNickname(String nickname);
 
     int countAllByJoinedAtNotNullOrderByJoinedAt();
+
+    @EntityGraph(attributePaths = {"topics", "zones", "authorities"}, type = EntityGraph.EntityGraphType.FETCH)
+    Optional<Account> findWithTopicAndZoneAndAuthorityById(Long id);
 }

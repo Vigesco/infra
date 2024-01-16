@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="study-list(studyList)" class="row row-cols-3">
+    <div th:each="study : ${studyList}" class="col">
+        <div class="card mb-3">
+            <img th:if="${!study.useBanner}" th:src="@{/resources/images/default_banner.png}"
+                 class="card-img-top" alt="banner">
+            <img th:if="${study.useBanner && !#strings.isEmpty(study.banner)}" th:src="@{${study.banner}}"
+                 class="card-img-top" alt="banner">
+            <img th:if="${study.useBanner && #strings.isEmpty(study.banner)}" th:src="@{/resources/images/default_banner.png}"
+                 class="card-img-top" alt="banner">
+            <div class="card-body text-start">
+                <h5 class="card-title context"><a th:href="@{'/study/'+${study.path}}" th:text="${study.title}"></a></h5>
+                <p class="card-text" th:text="${study.bio}"></p>
+                <p class="context">
+                    <span th:each="topic: ${study.topics}"
+                          class="fw-light text-monospace badge badge-pill text-bg-info my-1 mx-1">
+                        <a th:href="@{'/search/topic/' + ${topic.title}}" class="text-decoration-none text-white">
+                            <i class="fa fa-tag"></i> <span th:text="${topic.title}">Topic</span>
+                        </a>
+                    </span>
+                    <span th:each="zone: ${study.zones}"
+                          class="fw-light text-monospace badge badge-pill text-bg-primary my-1 mx-1">
+                        <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                            <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
+                        </a>
+                    </span>
+                </p>
+                <div class="justify-content-between d-flex">
+                    <p class="card-text text-start"><small class="text-body-secondary"><i class="fa fa-user-circle-o" aria-hidden="true"></i> <span th:text="${study.memberCount}"></span>명</small></p>
+                    <p class="card-text text-end"><small class="text-body-secondary" th:text="${#temporals.format(study.createdAt, 'yyyy년 MM월 dd일')}"></small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
