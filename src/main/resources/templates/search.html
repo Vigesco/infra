@@ -41,7 +41,7 @@
                         </span>
                     </p>
                     <div class="justify-content-between d-flex">
-                        <p class="card-text text-start"><small class="text-body-secondary"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span th:text="${_}"></span>명</small></p>
+                        <p class="card-text text-start"><small class="text-body-secondary"><i class="fa fa-user-circle-o" aria-hidden="true"></i><span th:text="${!#lists.isEmpty(study.members) ? study.members.size() : 0}"></span>명</small></p>
                         <p class="card-text text-end"><small class="text-body-secondary" th:text="${#temporals.format(study.createdAt, 'yyyy년 MM월 dd일')}"></small></p>
                     </div>
                 </div>
