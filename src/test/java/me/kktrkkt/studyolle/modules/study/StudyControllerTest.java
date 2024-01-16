@@ -15,8 +15,7 @@ import java.util.Optional;
 
 import static me.kktrkkt.studyolle.infra.Utils.replacePath;
 import static me.kktrkkt.studyolle.modules.study.StudyController.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -139,6 +138,7 @@ public class StudyControllerTest{
                 .andDo(print());
 
         assertTrue(study.getMembers().contains(accounts.findByNickname("user1").get()));
+        assertEquals(1, study.getMemberCount());
     }
 
     @DisplayName("스터디 탈퇴")
@@ -159,5 +159,6 @@ public class StudyControllerTest{
                 .andDo(print());
 
         assertFalse(study.getMembers().contains(user1));
+        assertEquals(0, study.getMemberCount());
     }
 }
