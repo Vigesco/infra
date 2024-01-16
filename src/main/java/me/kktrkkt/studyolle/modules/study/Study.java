@@ -31,6 +31,8 @@ public class Study extends BaseEntity<Study> {
     @Lob
     private String banner;
 
+    private int memberCount = 0;
+
     @ManyToMany
     @JoinTable(name = "study_manager",
             joinColumns = @JoinColumn(name = "study_id"),
@@ -62,6 +64,8 @@ public class Study extends BaseEntity<Study> {
     private LocalDateTime recruitingUpdateTime;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime publishedAt;
 
     private boolean recruiting;
 
@@ -102,6 +106,7 @@ public class Study extends BaseEntity<Study> {
     public void publish() {
         if(!this.published && !this.closed) {
             this.published = true;
+            this.publishedAt = LocalDateTime.now();
         }
         else {
             throw new RuntimeException("The study cannot be made public. The study has already been published or ended.");
@@ -155,6 +160,7 @@ public class Study extends BaseEntity<Study> {
     public void addMember(Account account) {
         if(isJoinable(account)){
             this.members.add(account);
+            this.memberCount++;
         }
         else {
             throw new RuntimeException("Study members cannot be added. You are already enrolled in the study, it has ended, or is not recruiting.");
@@ -168,6 +174,7 @@ public class Study extends BaseEntity<Study> {
     public void removeMember(Account account) {
         if(isWithdraw(account)) {
             this.members.remove(account);
+            this.memberCount--;
         }
         else {
             throw new RuntimeException("Study members cannot be removed. You are not a study member or the study has ended.");
