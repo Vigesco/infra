@@ -2,33 +2,32 @@
       th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
 
 <body>
-<div class="py-5 text-center" th:if="${totalItems != 0}">
-    <h2 th:if="${keyword != ''}">
-        <span class="bg-warning" th:text="${keyword}"></span>에 해당하는 스터디를
-        <span th:text="${totalItems}"></span>개 찾았습니다.
-    </h2>
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            검색 결과 정렬 방법
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item"
-                   th:classappend="${#strings.equals(sortProperty, 'publishedAt')} ? 'active'"
-                   th:href="@{/search/study(keyword=${keyword},direction='desc',sortProperty='publishedAt')}">최신순</a></li>
-            <li><a class="dropdown-item"
-                   th:classappend="${#strings.equals(sortProperty, 'memberCount')} ? 'active'"
-                   th:href="@{/search/study(keyword=${keyword},sortProperty='memberCount')}">멤버순</a></li>
-        </ul>
+<div class="text-center">
+    <div class="py-5 text-center" th:if="${totalItems == 0}">
+        <h2>
+            <span class="context" th:text="${keyword}"></span>에 해당하는 스터디가 없습니다.
+        </h2>
     </div>
-</div>
-
-<div class="py-5 text-center" th:if="${totalItems == 0}">
-    <h2>
-        <span class="bg-warning" th:text="${keyword}"></span>에 해당하는 스터디가 없습니다.
-    </h2>
-</div>
-<div class="container text-center" th:if="${totalItems != 0}">
-    <div class="row row-cols-3">
+    <div class="py-5 text-center" th:if="${totalItems != 0}">
+        <h2 th:if="${keyword != ''}">
+            <span class="context" th:text="${keyword}"></span>에 해당하는 스터디를
+            <span th:text="${totalItems}"></span>개 찾았습니다.
+        </h2>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                검색 결과 정렬 방법
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'publishedAt')} ? 'active'"
+                       th:href="@{/search/study(keyword=${keyword},direction='desc',sortProperty='publishedAt')}">최신순</a></li>
+                <li><a class="dropdown-item"
+                       th:classappend="${#strings.equals(sortProperty, 'memberCount')} ? 'active'"
+                       th:href="@{/search/study(keyword=${keyword},sortProperty='memberCount')}">멤버순</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row row-cols-3" th:if="${totalItems != 0}">
         <div th:each="study : ${studyList}" class="col">
             <div class="card mb-3">
                 <img th:if="${!study.useBanner}" th:src="@{/resources/images/default_banner.png}"
@@ -38,9 +37,9 @@
                 <img th:if="${study.useBanner && #strings.isEmpty(study.banner)}" th:src="@{/resources/images/default_banner.png}"
                      class="card-img-top" alt="banner">
                 <div class="card-body text-start">
-                    <h5 class="card-title"><a th:href="@{'/study/'+${study.path}}" th:text="${study.title}"></a></h5>
+                    <h5 class="card-title context"><a th:href="@{'/study/'+${study.path}}" th:text="${study.title}"></a></h5>
                     <p class="card-text" th:text="${study.bio}"></p>
-                    <p>
+                    <p class="context">
                         <span th:each="topic: ${study.topics}"
                               class="fw-light text-monospace badge badge-pill text-bg-info my-1 mx-1">
                             <a th:href="@{'/search/topic/' + ${topic.title}}" class="text-decoration-none text-white">
@@ -62,7 +61,7 @@
             </div>
         </div>
     </div>
-    <nav aria-label="Pagination">
+    <nav aria-label="Pagination" th:if="${totalItems != 0}">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
                 <a th:replace=":: paging(1, '<<', '첫 페이지')"></a>
@@ -89,6 +88,26 @@
         </ul>
     </nav>
 </div>
+<script src="/static/resources/node_modules/mark.js/dist/jquery.mark.min.js" th:src="@{/resources/node_modules/mark.js/dist/jquery.mark.min.js}"></script>
+<script type="application/javascript">
+    $(function() {
+        var keyword = $("input[name='keyword']").val();
+
+        var options = {
+            "each": function(element) {
+                setTimeout(function() {
+                    $(element).addClass("animate");
+                }, 250);
+            }
+        };
+
+        $(".context").unmark({
+            done: function() {
+                $(".context").mark(keyword, options);
+            }
+        });
+    });
+</script>
 </body>
 <a th:fragment="paging(pageNum, label, tooltip)" class="page-link"
    th:href="@{/search/study(keyword=${keyword},pageNum=${pageNum},sortProperty=${sortProperty})}"
