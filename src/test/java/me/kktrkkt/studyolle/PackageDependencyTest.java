@@ -21,7 +21,7 @@ public class PackageDependencyTest {
     @ArchTest
     private ArchRule accountPackageRule = classes().that().resideInAnyPackage(ACCOUNT)
             .should().onlyBeAccessed().byClassesThat()
-            .resideInAnyPackage(ACCOUNT, STUDY, EVENT, NOTIFICATION);
+            .resideInAnyPackage(ACCOUNT, STUDY, EVENT, NOTIFICATION, MAIN);
 
     @ArchTest
     private ArchRule studyPackageRule = classes().that().resideInAnyPackage(STUDY)
@@ -41,7 +41,7 @@ public class PackageDependencyTest {
     @ArchTest
     private ArchRule eventPackageRule = classes().that().resideInAnyPackage(EVENT)
             .should().onlyBeAccessed().byClassesThat()
-            .resideInAnyPackage(EVENT);
+            .resideInAnyPackage(EVENT, MAIN);
 
     @ArchTest
     private ArchRule notificationPackageRule = classes().that().resideInAnyPackage(NOTIFICATION)
