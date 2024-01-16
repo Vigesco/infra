@@ -2,8 +2,6 @@ package me.kktrkkt.studyolle.modules.study;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
-import me.kktrkkt.studyolle.modules.account.entity.QAccount;
-import me.kktrkkt.studyolle.modules.account.entity.QAuthority;
 import me.kktrkkt.studyolle.modules.topic.QTopic;
 import me.kktrkkt.studyolle.modules.zone.QZone;
 import org.springframework.data.domain.Page;
@@ -26,8 +24,6 @@ public class StudyRepositoryExtensionImpl extends QuerydslRepositorySupport impl
                         .or(study.zones.any().localNameOfCity.containsIgnoreCase(keyword))))
                 .leftJoin(study.topics, QTopic.topic).fetchJoin()
                 .leftJoin(study.zones, QZone.zone).fetchJoin()
-                .leftJoin(study.members, QAccount.account).fetchJoin()
-                .leftJoin(QAccount.account.authorities, QAuthority.authority1).fetchJoin()
                 .distinct();
         JPQLQuery<Study> studyJPQLQuery = getQuerydsl().applyPagination(pageable, query);
         QueryResults<Study> studyQueryResults = studyJPQLQuery.fetchResults();

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -29,4 +30,7 @@ public interface StudyRepository extends JpaRepository<Study, Long>, StudyReposi
 
     @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<Study> findWithTopicAndZoneById(Long id);
+
+    @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
+    List<Study> findTop9ByPublishedTrueOrderByPublishedAtDesc();
 }

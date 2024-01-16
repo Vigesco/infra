@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +21,9 @@ public class IndexController {
     private final StudyRepository studys;
 
     @GetMapping("/")
-    public String indexPage() {
+    public String indexPage(Model model) {
+        List<Study> studyList = studys.findTop9ByPublishedTrueOrderByPublishedAtDesc();
+        model.addAttribute("studyList", studyList);
         return "index";
     }
 
