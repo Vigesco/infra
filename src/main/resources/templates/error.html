@@ -1,0 +1,13 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
+
+<body>
+<div class="p-5 mb-4 bg-body-tertiary rounded-3">
+    <div class="container-fluid pt-5">
+        <h1 class="display-5 fw-bold">스터디올래</h1>
+        <p class="col-md-8 fs-4">잘못된 요청입니다</p>
+        <a class="btn btn-primary btn-lg" type="button" th:href="@{/}">첫 페이지</a>
+    </div>
+</div>
+</body>
+</html>

@@ -353,7 +353,8 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
         event.setEndEnrollmentDateTime(now().plus(1, ChronoUnit.DAYS));
         assertEquals(0, event.getEnrollments().size());
 
@@ -361,7 +362,8 @@ class EventControllerTest {
         enrollments.save(enrollment);
         this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
         assertEquals(1, event.getEnrollments().size());
     }
 
@@ -454,7 +456,8 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
     @DisplayName("모임 참가 신청 취소 - 성공")
@@ -509,7 +512,8 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_REJECT_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
     @DisplayName("모임 체크인 - 성공")
@@ -562,14 +566,16 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
 
         user2Enrollment.accept();
         user2Enrollment.attend();
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
     @DisplayName("모임 체크인 취소 - 성공")
@@ -624,7 +630,8 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_CANCEL_CHECK_IN_URL, study.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
     @DisplayName("다른 스터디의 주인이 남의 스터디의 모임을 수락")
@@ -650,7 +657,8 @@ class EventControllerTest {
 
         this.mockMvc.perform(post(replacePathAndIdAndEnrollmentId(EVENT_ENROLLMENT_ACCEPT_URL, study2.getPath(), event.getId(), user2Enrollment.getId())).with(csrf()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(view().name("error"));
     }
 
     @DisplayName("모임 모집인원 수정후 참가자 신청상태 변경 - 성공")
