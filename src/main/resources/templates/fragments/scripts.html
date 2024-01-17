@@ -167,4 +167,21 @@
         })
     </script>
 </th:block>
+
+<th:block th:fragment="loading">
+    <script src="/static/resources/node_modules/jquery-easy-loading/dist/jquery.loading.min.js" th:src="@{/resources/node_modules/jquery-easy-loading/dist/jquery.loading.min.js}"></script>
+    <script type="application/javascript">
+        $(function(){
+            $(document.forms).each(function(i, form){
+                $(form).submit(function(){
+                    $('body').loading({
+                        overlay: $(".modal"),
+                        theme: 'light'
+                    });
+                })
+            })
+        })
+    </script>
+</th:block>
+
 </html>
