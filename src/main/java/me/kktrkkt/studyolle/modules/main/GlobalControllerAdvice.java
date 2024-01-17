@@ -1,4 +1,4 @@
-package me.kktrkkt.studyolle.infra.config;
+package me.kktrkkt.studyolle.modules.main;
 
 import lombok.extern.slf4j.Slf4j;
 import me.kktrkkt.studyolle.modules.account.CurrentUser;
