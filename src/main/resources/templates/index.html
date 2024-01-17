@@ -1,20 +1,21 @@
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{::alert})}">
-
-<alert>
-    <div class="alert alert-warning" role="alert" sec:authorize-expr="isAuthenticated()" th:if="${!#authentication.principal.account.emailVerified}">
-        스터디올레 가입을 완료하려면 <a th:href="@{/check-email}">계정 인증 이메일을 확인</a>하세요
-    </div>
-</alert>
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
 
 <body>
-<div class="py-5 text-center">
+<div class="p-5 mb-4 bg-body-tertiary rounded-3">
+    <div class="container-fluid pt-5">
+        <h1 class="display-5 fw-bold">스터디올래</h1>
+        <p class="col-md-8 fs-4">태그와 지역 기반으로 스터디를 찾고 참여하세요.<br>스터디 모임 관리 기능을 제공합니다.</p>
+        <a class="btn btn-primary btn-lg" type="button" th:href="@{/sign-up}">회원가입</a>
+    </div>
+</div>
+<div class="pt-5 text-center" th:if="${studyList.isEmpty()}">
     <h2>
-        <span sec:authorize-expr="isAuthenticated()">
-            <span sec:authentication="principal.account.nickname">Nickname</span>님
-        </span> 환영합니다
+        스터디가 없습니다. 첫번째 스터디를 생성해보세요!
     </h2>
 </div>
-
+<div class="pt-5">
+    <div th:if="${!studyList.isEmpty()}" th:replace="fragments/components.html :: study-list (studyList=${studyList})"></div>
+</div>
 </body>
 </html>

@@ -1,0 +1,82 @@
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout (_, ~{::body}, ~{})}">
+
+<body>
+<div class="py-5 text-center" th:if="${totalItems == 0}">
+    <h2>
+        <span class="context" th:text="${keyword}"></span>에 해당하는 스터디가 없습니다.
+    </h2>
+</div>
+<div class="py-5 text-center" th:if="${totalItems != 0}">
+    <h2 th:if="${keyword != ''}">
+        <span class="context" th:text="${keyword}"></span>에 해당하는 스터디를
+        <span th:text="${totalItems}"></span>개 찾았습니다.
+    </h2>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            검색 결과 정렬 방법
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item"
+                   th:classappend="${#strings.equals(sortProperty, 'publishedAt')} ? 'active'"
+                   th:href="@{/search/study(keyword=${keyword},direction='desc',sortProperty='publishedAt')}">최신순</a></li>
+            <li><a class="dropdown-item"
+                   th:classappend="${#strings.equals(sortProperty, 'memberCount')} ? 'active'"
+                   th:href="@{/search/study(keyword=${keyword},sortProperty='memberCount')}">멤버순</a></li>
+        </ul>
+    </div>
+</div>
+<div class="pt-5" th:if="${totalItems != 0}" th:replace="fragments/components.html :: study-list (studyList=${studyList})"></div>
+<nav aria-label="Pagination" th:if="${totalItems != 0}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a th:replace=":: paging(1, '<<', '첫 페이지')"></a>
+        </li>
+        <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+            <a th:replace=":: paging(${currentPage - 1}, '<', '이전 페이지')"></a>
+        </li>
+        <li class="page-item disabled" th:if="${currentPage - 2 > 1}">
+            <a class="page-link" href="#">...</a>
+        </li>
+        <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+            th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+            <a th:replace=":: paging(${page}, ${page}, ${page} + '페이지')"></a>
+        </li>
+        <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+            <a class="page-link" href="#">...</a>
+        </li>
+        <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a th:replace=":: paging(${currentPage + 1},'>', '다음 페이지')"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+            <a th:replace=":: paging(${totalPages}, '>>', '마지막 페이지')"></a>
+        </li>
+    </ul>
+</nav>
+<script src="/static/resources/node_modules/mark.js/dist/jquery.mark.min.js" th:src="@{/resources/node_modules/mark.js/dist/jquery.mark.min.js}"></script>
+<script type="application/javascript">
+    $(function() {
+        var keyword = $("input[name='keyword']").val();
+
+        var options = {
+            "each": function(element) {
+                setTimeout(function() {
+                    $(element).addClass("animate");
+                }, 250);
+            }
+        };
+
+        $(".context").unmark({
+            done: function() {
+                $(".context").mark(keyword, options);
+            }
+        });
+    });
+</script>
+</body>
+<a th:fragment="paging(pageNum, label, tooltip)" class="page-link"
+   th:href="@{/search/study(keyword=${keyword},pageNum=${pageNum},sortProperty=${sortProperty})}"
+   th:title="${tooltip}" rel="tooltip">
+    [[${label}]]
+</a>
+</html>

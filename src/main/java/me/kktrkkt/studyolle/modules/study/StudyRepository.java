@@ -1,13 +1,15 @@
 package me.kktrkkt.studyolle.modules.study;
 
+import me.kktrkkt.studyolle.modules.account.entity.Account;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
-public interface StudyRepository extends JpaRepository<Study, Long> {
+public interface StudyRepository extends JpaRepository<Study, Long>, StudyRepositoryExtension {
 
     @EntityGraph(attributePaths = {"managers", "members", "topics", "zones"}, type= EntityGraph.EntityGraphType.LOAD)
     Optional<Study> findByPath(String path);
@@ -29,4 +31,11 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
 
     @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
     Optional<Study> findWithTopicAndZoneById(Long id);
+
+    @EntityGraph(attributePaths = {"topics", "zones"}, type = EntityGraph.EntityGraphType.FETCH)
+    List<Study> findTop9ByPublishedTrueOrderByPublishedAtDesc();
+
+    List<Study> findTop5ByClosedFalseAndManagersContainsOrderByCreatedAtDesc(Account manager);
+
+    List<Study> findTop5ByPublishedTrueAndMembersContainsOrderByPublishedAtDesc(Account member);
 }

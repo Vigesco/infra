@@ -41,6 +41,21 @@
         .popover {
             font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         }
+
+        mark {
+            padding: 0;
+            background: transparent;
+            background: linear-gradient(to right, #f0ad4e 50%, transparent 50%);
+            background-position: right bottom;
+            background-size: 200% 100%;
+            transition: all .5s ease;
+            color: #fff;
+        }
+
+        mark.animate {
+            background-position: left bottom;
+            color: #000;
+        }
     </style>
 </head>
 <nav th:fragment="main-nav" class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -53,8 +68,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarToggler">
-            <form class="navbar-nav me-auto d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="스터디 찾기" aria-label="Search">
+            <form class="navbar-nav me-auto d-flex" role="search" th:action="@{/search/study}">
+                <input class="form-control me-2" th:value="${keyword}" name="keyword" type="search" placeholder="스터디 찾기" aria-label="Search">
                 <button class="btn btn-outline-success text-nowrap" type="submit">검색</button>
             </form>
             <ul class="navbar-nav d-flex">

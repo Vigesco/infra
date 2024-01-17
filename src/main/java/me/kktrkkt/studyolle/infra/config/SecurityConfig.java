@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .mvcMatchers("/", "/sign-up", "/check-email-token",
-                        "/login-without-password", "/login-by-email").permitAll()
+                        "/login-without-password", "/login-by-email", "/search/*").permitAll()
                 .anyRequest().authenticated();
         http.formLogin()
                 .loginPage("/login")

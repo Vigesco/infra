@@ -9,7 +9,7 @@ import me.kktrkkt.studyolle.modules.account.entity.Account;
 import me.kktrkkt.studyolle.modules.notification.Notification;
 import me.kktrkkt.studyolle.modules.notification.NotificationRepository;
 import me.kktrkkt.studyolle.modules.notification.NotificationType;
-import me.kktrkkt.studyolle.modules.study.AccountPredicate;
+import me.kktrkkt.studyolle.modules.account.AccountPredicate;
 import me.kktrkkt.studyolle.modules.study.Study;
 import me.kktrkkt.studyolle.modules.study.StudyRepository;
 import org.springframework.context.event.EventListener;

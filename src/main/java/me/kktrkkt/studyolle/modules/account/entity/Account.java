@@ -69,12 +69,14 @@ public class Account extends BaseEntity<Account> {
     @JoinTable(name = "account_topic",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "topic_id"))
+    @OrderColumn
     private List<Topic> topics = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "account_zone",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "zone_id"))
+    @OrderColumn
     private List<Zone> zones = new ArrayList<>();
 
     {
