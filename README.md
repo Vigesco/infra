@@ -34,5 +34,5 @@
 - AWS RDS
 - Docker
 
-# reference
+# Reference
 이 프로젝트는 백기선님의 <a href="https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-JPA-%EC%9B%B9%EC%95%B1/dashboard">스프링과 JPA 기반 웹 애플리케이션 개발</a> 강의를 베이스로 만들어졌습니다.
