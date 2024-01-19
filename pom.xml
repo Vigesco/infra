@@ -10,8 +10,8 @@
     </parent>
     <groupId>me.kktrkkt</groupId>
     <artifactId>studyolle</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>studyolle</name>
     <description>studyolle</description>
     <properties>
@@ -112,10 +112,6 @@
             <artifactId>postgresql</artifactId>
             <version>1.19.3</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.querydsl</groupId>
-            <artifactId>querydsl-jpa</artifactId>
         </dependency>
     </dependencies>
 
