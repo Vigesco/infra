@@ -42,7 +42,7 @@ public class StudyController {
         else {
             Study study = studyService.create(account, studySubmitForm);
             ra.addFlashAttribute(study);
-            return "redirect:/study/" + URLEncoder.encode(study.getPath(), StandardCharsets.UTF_8);
+            return "redirect:/study/" + study.getPath();
         }
     }
 

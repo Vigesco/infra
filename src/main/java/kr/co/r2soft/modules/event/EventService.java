@@ -42,7 +42,7 @@ public class EventService {
     }
 
     public void delete(Long id) {
-        eventPublisher.publishEvent(new StudyUpdatedEvent(events.findById(id).orElseThrow().getStudy(), "모임이 취소되었습니다."));
+        eventPublisher.publishEvent(new StudyUpdatedEvent(events.findById(id).orElseThrow(RuntimeException::new).getStudy(), "모임이 취소되었습니다."));
         events.deleteById(id);
     }
 

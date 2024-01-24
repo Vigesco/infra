@@ -279,8 +279,8 @@ class EventControllerTest {
         study.startRecruiting();
         Event event = createEvent("user1", study);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -300,7 +300,7 @@ class EventControllerTest {
         Enrollment user1Enrollment = event.getEnrollments().stream()
                 .filter(x -> x.getAccount().getNickname().equals("user1"))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(RuntimeException::new);
         assertFalse(user1Enrollment.isAccepted());
     }
 
@@ -314,8 +314,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setLimitOfEnrollments(2);
         event.setEventType(EventType.CONFIRMATIVE);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -335,7 +335,7 @@ class EventControllerTest {
         Enrollment user1Enrollment = event.getEnrollments().stream()
                 .filter(x -> x.getAccount().getNickname().equals("user1"))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(RuntimeException::new);
         assertFalse(user1Enrollment.isAccepted());
     }
 
@@ -357,7 +357,7 @@ class EventControllerTest {
         event.setEndEnrollmentDateTime(now().plus(1, ChronoUnit.DAYS));
         assertEquals(0, event.getEnrollments().size());
 
-        Enrollment enrollment = event.newEnrollment(accounts.findByNickname("user1").orElseThrow());
+        Enrollment enrollment = event.newEnrollment(accounts.findByNickname("user1").orElseThrow(RuntimeException::new));
         enrollments.save(enrollment);
         this.mockMvc.perform(post(replacePathAndId(EVENT_ENROLL_URL, study.getPath(), event.getId())).with(csrf()))
                 .andDo(print())
@@ -375,9 +375,9 @@ class EventControllerTest {
         study.startRecruiting();
         Event event = createEvent("user1", study);
         event.setLimitOfEnrollments(2);
-        Account user1 = accounts.findByNickname("user1").orElseThrow();
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user1 = accounts.findByNickname("user1").orElseThrow(RuntimeException::new);
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user1Enrollment = event.newEnrollment(user1);
@@ -412,8 +412,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -443,8 +443,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -469,8 +469,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -500,8 +500,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -525,8 +525,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -554,8 +554,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -587,8 +587,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -617,8 +617,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -643,8 +643,8 @@ class EventControllerTest {
         Event event = createEvent("user1", study1);
         event.setEventType(EventType.CONFIRMATIVE);
         event.setLimitOfEnrollments(2);
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study1.addMember(user2);
         study1.addMember(user3);
         Enrollment user2Enrollment = event.newEnrollment(user2);
@@ -669,9 +669,9 @@ class EventControllerTest {
         study.startRecruiting();
         Event event = createEvent("user1", study);
         event.setLimitOfEnrollments(2);
-        Account user1 = accounts.findByNickname("user1").orElseThrow();
-        Account user2 = accounts.findByNickname("user2").orElseThrow();
-        Account user3 = accounts.findByNickname("user3").orElseThrow();
+        Account user1 = accounts.findByNickname("user1").orElseThrow(RuntimeException::new);
+        Account user2 = accounts.findByNickname("user2").orElseThrow(RuntimeException::new);
+        Account user3 = accounts.findByNickname("user3").orElseThrow(RuntimeException::new);
         study.addMember(user2);
         study.addMember(user3);
         Enrollment user1Enrollment = event.newEnrollment(user1);
@@ -719,7 +719,7 @@ class EventControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern(BASE_URL+"/events"));
 
-        assertTrue(events.findById(event.getId()).isEmpty());
+        assertFalse(events.findById(event.getId()).isPresent());
         assertTrue(enrollments.findAll().isEmpty());
     }
 
@@ -744,7 +744,7 @@ class EventControllerTest {
         eventForm.setStartDateTime(now().plus(2, ChronoUnit.DAYS));
         eventForm.setEndDateTime(now().plus(3, ChronoUnit.DAYS));
         eventForm.setLimitOfEnrollments(5);
-        return eventService.create(accounts.findByNickname(nickname).orElseThrow(), eventForm, study);
+        return eventService.create(accounts.findByNickname(nickname).orElseThrow(RuntimeException::new), eventForm, study);
     }
 
     private void requestWrongNewEvent(String title, String eventType, int limitOfEnrollments, LocalDateTime endDateTime, LocalDateTime endEnrollmentDateTime, LocalDateTime startDateTime, String description, String studyBaseUrl) throws Exception {

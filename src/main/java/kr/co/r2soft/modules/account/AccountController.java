@@ -60,7 +60,7 @@ public class AccountController {
         String wrongEmail = "wrong.email";
         String wrongToken = "wrong.token";
 
-        if(optionalAccount.isEmpty()){
+        if(!optionalAccount.isPresent()){
             model.addAttribute(error, wrongEmail);
             return CHECK_EMAIL_TOKEN_VIEW;
         }
@@ -114,7 +114,7 @@ public class AccountController {
     public String loginWithoutPassword(@RequestParam String email, Model model) {
         Optional<Account> byEmail = accounts.findByEmail(email);
 
-        if(byEmail.isEmpty()){
+        if(!byEmail.isPresent()){
             model.addAttribute("error", "이메일을 찾을 수 없습니다!");
             return LOGIN_WITHOUT_PASSWORD_VIEW;
         }
@@ -135,7 +135,7 @@ public class AccountController {
     public String loginByEmailView(@RequestParam String email, @RequestParam String token, Model model) {
         Optional<Account> optionalAccount = accounts.findByEmail(email);
 
-        if(optionalAccount.isEmpty()){
+        if(!optionalAccount.isPresent()){
             model.addAttribute("error", "wrong.email");
             return LOGIN_BY_EMAIL_VIEW;
         }

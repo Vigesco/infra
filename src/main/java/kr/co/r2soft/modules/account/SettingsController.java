@@ -141,7 +141,7 @@ public class SettingsController {
     public ResponseEntity<Void> removeTopic(@CurrentUser Account account, @RequestBody TopicForm topicForm) {
         Optional<Topic> byTitle = topics.findByTitle(topicForm.getTitle());
 
-        if(byTitle.isEmpty()){
+        if(!byTitle.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 
@@ -166,7 +166,7 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity<Void> addZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
-        if(byCityAndProvince.isEmpty()){
+        if(!byCityAndProvince.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 
@@ -180,7 +180,7 @@ public class SettingsController {
     public ResponseEntity<Void> removeZone(@CurrentUser Account account, @RequestBody ZoneForm zoneForm) {
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
 
-        if(byCityAndProvince.isEmpty()){
+        if(!byCityAndProvince.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 

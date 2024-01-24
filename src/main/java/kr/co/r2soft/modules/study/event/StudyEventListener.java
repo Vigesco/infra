@@ -44,7 +44,7 @@ public class StudyEventListener {
 
     @EventListener
     public void handleStudyCreatedEvent(StudyCreatedEvent event){
-        Study study = studys.findWithTopicAndZoneById(event.getStudy().getId()).orElseThrow();
+        Study study = studys.findWithTopicAndZoneById(event.getStudy().getId()).orElseThrow(RuntimeException::new);
         Iterable<Account> accountList = accounts.findAll(AccountPredicate.findByTopicsAndZones(study.getTopics(), study.getZones()));
         accountList.forEach(a->{
             if(a.isStudyCreatedByEmail()){
@@ -66,7 +66,7 @@ public class StudyEventListener {
 
     @EventListener
     public void handleStudyUpdatedEvent(StudyUpdatedEvent event){
-        Study study = studys.findWithMemberAndManagerByPath(event.getStudy().getPath()).orElseThrow();
+        Study study = studys.findWithMemberAndManagerByPath(event.getStudy().getPath()).orElseThrow(RuntimeException::new);
         String message = event.getMessage();
         List<Account> accountList = new ArrayList<>();
         accountList.addAll(study.getManagers());

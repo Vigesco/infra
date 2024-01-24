@@ -3,6 +3,7 @@ package kr.co.r2soft.modules.account;
 import kr.co.r2soft.modules.account.entity.Account;
 import kr.co.r2soft.infra.MockMvcTest;
 import kr.co.r2soft.infra.mail.EmailService;
+import kr.co.r2soft.modules.account.entity.Authority;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static kr.co.r2soft.modules.account.entity.Authority.notVerifiedUser;
 import static kr.co.r2soft.modules.account.entity.Authority.user;
@@ -71,7 +71,7 @@ class AccountControllerTest {
                         .session(session))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"))
-                .andExpect(authenticated().withAuthorities(List.of(notVerifiedUser())))
+                .andExpect(authenticated().withAuthorities(Collections.singletonList(notVerifiedUser())))
                 .andDo(print());
 
         Assertions.assertTrue(accounts.existsByEmail(KKTRKKT_EMAIL));
@@ -128,7 +128,6 @@ class AccountControllerTest {
         singUpSubmit_success();
         Account kktrkkt = accounts.findByEmail(KKTRKKT_EMAIL).orElse(null);
         assertNotNull(kktrkkt);
-
         this.mockMvc.perform(get(AccountController.CHECK_EMAIL_TOKEN_URL)
                         .param("token", kktrkkt.getEmailCheckToken())
                         .param("email", kktrkkt.getEmail()))
@@ -137,7 +136,7 @@ class AccountControllerTest {
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("orderByJoinedAt"))
                 .andExpect(model().attributeExists("nickname"))
-                .andExpect(authenticated().withAuthorities(List.of(user(), notVerifiedUser())))
+                .andExpect(authenticated().withAuthorities(Arrays.asList(user(), notVerifiedUser())))
                 .andDo(print());
     }
 

@@ -94,7 +94,7 @@ public class Event extends BaseEntity<Event> {
     }
 
     public Enrollment findEnrollment(Account account) {
-        return enrollments.stream().filter(x -> x.getAccount().equals(account)).findFirst().orElseThrow();
+        return enrollments.stream().filter(x -> x.getAccount().equals(account)).findFirst().orElseThrow(RuntimeException::new);
     }
 
     public void updateEnrollmentsStatus() {

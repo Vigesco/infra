@@ -141,7 +141,7 @@ public class StudySettingsController {
         Study study = studyService.getStudyToUpdateTopic(account, path);
         Optional<Topic> byTitle = topics.findByTitle(topicForm.getTitle());
 
-        if(byTitle.isEmpty()){
+        if(!byTitle.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 
@@ -166,7 +166,7 @@ public class StudySettingsController {
                                         @RequestBody ZoneForm zoneForm) {
         Study study = studyService.getStudyToUpdateZone(account, path);
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
-        if(byCityAndProvince.isEmpty()){
+        if(!byCityAndProvince.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 
@@ -182,7 +182,7 @@ public class StudySettingsController {
         Study study = studyService.getStudyToUpdateZone(account, path);
         Optional<Zone> byCityAndProvince = zones.findByCityAndProvince(zoneForm.getCity(), zoneForm.getProvince());
 
-        if(byCityAndProvince.isEmpty()){
+        if(!byCityAndProvince.isPresent()){
             return ResponseEntity.badRequest().build();
         }
 

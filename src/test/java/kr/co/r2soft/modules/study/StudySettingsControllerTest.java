@@ -274,7 +274,7 @@ class StudySettingsControllerTest{
         requestTopic(spring, replacePath(study.getPath(), SETTINGS_TOPIC_URL) + "/remove", status().isBadRequest());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
-        Assertions.assertTrue(springTopic.isEmpty());
+        Assertions.assertFalse(springTopic.isPresent());
         Assertions.assertTrue(study.getTopics().isEmpty());
     }
 
@@ -610,7 +610,7 @@ class StudySettingsControllerTest{
                 .andExpect(redirectedUrl("/"))
                 .andDo(print());
 
-        assertTrue(studys.findById(study.getId()).isEmpty());
+        assertFalse(studys.findById(study.getId()).isPresent());
     }
 
     private void requestTopic(String title, String url, ResultMatcher status) throws Exception {

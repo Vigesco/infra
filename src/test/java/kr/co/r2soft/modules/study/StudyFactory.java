@@ -22,7 +22,7 @@ public class StudyFactory {
         newStudy.setTitle(title);
         newStudy.setBio(bio);
         newStudy.setExplanation(explanation);
-        newStudy.getManagers().add(accounts.findByNickname(nickname).orElseThrow());
+        newStudy.getManagers().add(accounts.findByNickname(nickname).orElseThrow(RuntimeException::new));
 
         return studys.save(newStudy);
     }

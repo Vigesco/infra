@@ -107,7 +107,7 @@ public class EventController {
                             @CurrentUser Account account, Model model) {
         Study study = studyService.getStudyToMemberAndManager(path, account);
         model.addAttribute(study);
-        model.addAttribute(events.findWithEnrollmentById(id).orElseThrow());
+        model.addAttribute(events.findWithEnrollmentById(id).orElseThrow(RuntimeException::new));
         return EVENT_VIEW;
     }
 
@@ -115,7 +115,7 @@ public class EventController {
     public String updateEventForm(@PathVariable String path, @CurrentUser Account account,
                                 @PathVariable Long id, Model model) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
-        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        Event event = events.findWithEnrollmentById(id).orElseThrow(RuntimeException::new);
         model.addAttribute(study);
         model.addAttribute(event);
         model.addAttribute("eventTypes", EventType.values());
@@ -129,7 +129,7 @@ public class EventController {
                               Errors errors, Model model,
                               RedirectAttributes ra) {
         Study study = studyService.getStudyToUpdateStatus(account, path);
-        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        Event event = events.findWithEnrollmentById(id).orElseThrow(RuntimeException::new);
         eventValidator.validateUpdateForm(eventForm, event, errors);
         if(errors.hasErrors()){
             model.addAttribute(study);
@@ -146,7 +146,7 @@ public class EventController {
     public String newEnrollment(@PathVariable String path, @CurrentUser Account account,
                               @PathVariable Long id, RedirectAttributes ra) {
         studyService.getStudyToMemberAndManager(path, account);
-        Event event = events.findById(id).orElseThrow();
+        Event event = events.findById(id).orElseThrow(RuntimeException::new);
         eventService.enroll(event, account);
         ra.addFlashAttribute("success", "success.enroll");
         return "redirect:" + EVENT_URL;
@@ -155,7 +155,7 @@ public class EventController {
     @PostMapping(EVENT_DISENROLL_URL)
     public String cancelEnrollment(@CurrentUser Account account, @PathVariable Long id,
                               RedirectAttributes ra) {
-        Event event = events.findWithEnrollmentById(id).orElseThrow();
+        Event event = events.findWithEnrollmentById(id).orElseThrow(RuntimeException::new);
         eventService.cancelEnrollment(event, account);
         ra.addFlashAttribute("success", "success.cancel");
         return "redirect:" + EVENT_URL;

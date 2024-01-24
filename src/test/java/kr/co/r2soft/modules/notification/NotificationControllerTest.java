@@ -38,7 +38,7 @@ class NotificationControllerTest {
     @Test
     @WithAccount("user1")
     void notificationUnreadListView() throws Exception {
-        Account user1 = accounts.findByNickname("user1").orElseThrow();
+        Account user1 = accounts.findByNickname("user1").orElseThrow(RuntimeException::new);
         notificationFactory.createNotification(user1, "noti1");
         notificationFactory.createNotification(user1, "noti2");
         notificationFactory.createNotification(user1, "noti3");
@@ -80,7 +80,7 @@ class NotificationControllerTest {
     @Test
     @WithAccount("user1")
     void deleteNotificationReadList() throws Exception {
-        Account user1 = accounts.findByNickname("user1").orElseThrow();
+        Account user1 = accounts.findByNickname("user1").orElseThrow(RuntimeException::new);
         notificationFactory.createNotification(user1, "noti1");
         notificationFactory.createNotification(user1, "noti2");
         notificationFactory.createNotification(user1, "noti3");

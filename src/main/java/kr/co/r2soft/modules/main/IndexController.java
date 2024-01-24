@@ -37,7 +37,7 @@ public class IndexController {
             return "index";
         }
         else {
-            Account accountWithTopicAndZone = accounts.findWithTopicAndZoneAndAuthorityById(account.getId()).orElseThrow();
+            Account accountWithTopicAndZone = accounts.findWithTopicAndZoneAndAuthorityById(account.getId()).orElseThrow(RuntimeException::new);
             List<Enrollment> enrollmentList = enrollments.findAllByAccountAndAcceptedTrueAndAttendedFalseOrderByEnrolledAtDesc(account);
             List<Study> studyList = studys.findByAccountTopicAndZone(accountWithTopicAndZone);
             List<Study> studyManagerOf = studys.findTop5ByClosedFalseAndManagersContainsOrderByCreatedAtDesc(account);

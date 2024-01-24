@@ -290,7 +290,7 @@ public class SettingsControllerTest {
         requestTopic(spring, "/remove", status().isBadRequest());
 
         Optional<Topic> springTopic = topics.findByTitle(spring);
-        Assertions.assertTrue(springTopic.isEmpty());
+        Assertions.assertFalse(springTopic.isPresent());
         Account user1 = accounts.findByNickname("user1").get();
         Assertions.assertTrue(user1.getTopics().isEmpty());
     }
