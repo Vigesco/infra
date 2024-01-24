@@ -4,7 +4,7 @@
 
 <body>
 <div class="py-5 text-center">
-    <p class="lead">스터디올래 가입</p>
+    <p class="lead"><span th:text="${appName}"></span> 가입</p>
     <div th:if="${success}" class="alert alert-success" role="alert" >
         인증 이메일을 성공적으로 보냈습니다!
     </div>

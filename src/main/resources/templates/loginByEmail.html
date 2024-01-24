@@ -9,7 +9,7 @@
 
 <body>
 <div class="py-5 text-center">
-    <p class="lead">스터디올래 이메일 로그인</p>
+    <p class="lead"><span th:text="${appName}"></span> 이메일 로그인</p>
     <h2 th:if="${error == null}">
         <span>이메일로 로그인 했습니다. <a th:href="@{/settings/password}">패스워드를 변경</a>하세요</span>
     </h2>

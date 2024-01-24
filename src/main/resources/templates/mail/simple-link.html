@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>스터디올래</title>
+    <title><span th:text="${appName}"></span></title>
 </head>
 <body>
     <p>안녕하세요. <span th:text="${nickname}"></span>님</p>
@@ -15,7 +15,7 @@
         <small th:text="${host + link}"></small>
     </div>
     <footer>
-        <small>스터디올래&copy; 2023</small>
+        <small><span th:text="${appName}"></span>&copy; 2023</small>
     </footer>
 </body>
 </html>

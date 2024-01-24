@@ -8,12 +8,12 @@
         <version>2.7.17-SNAPSHOT</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>me.kktrkkt</groupId>
-    <artifactId>studyolle</artifactId>
+    <groupId>kr.co.r2soft</groupId>
+    <artifactId>infra</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>studyolle</name>
-    <description>studyolle</description>
+    <name>infra</name>
+    <description>infra</description>
     <properties>
         <java.version>11</java.version>
     </properties>

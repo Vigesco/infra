@@ -16,4 +16,6 @@ spring:
 
 logging.level.org.hibernate.type.descriptor.sql: TRACE
 
-app.host: http://localhost:8081
+app:
+  host: http://localhost:8081
+  name: 인프라
