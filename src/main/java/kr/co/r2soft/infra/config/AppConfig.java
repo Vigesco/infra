@@ -15,6 +15,8 @@ public class AppConfig implements WebMvcConfigurer {
 
     private final HandlerInterceptor notificationInterceptor;
 
+    private final HandlerInterceptor commonInterceptor;
+
     @Bean
     public ModelMapper modelMapper(){
         ModelMapper modelMapper = new ModelMapper();
@@ -27,6 +29,8 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(notificationInterceptor)
+                .excludePathPatterns("/resources/**");
+        registry.addInterceptor(commonInterceptor)
                 .excludePathPatterns("/resources/**");
     }
 }

@@ -3,7 +3,7 @@
         th:fragment="layout (title, content, alert)">
 
 
-<head th:replace="~{fragments/header :: header (${title})}"></head>
+<head th:replace="~{fragments/header :: header (${appName})}"></head>
 <body class="bg-light">
 <nav th:replace="~{fragments/header :: main-nav}"></nav>
 

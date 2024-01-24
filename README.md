@@ -8,7 +8,6 @@
 - 게시판관리 x
 - 에러관리 x
 - 회원관리 x
-- 세션공유 x
 
 # 사양
 ## Language
@@ -47,3 +46,4 @@
 - Github actions
 - Docker
 
+# 제거할 의존성
